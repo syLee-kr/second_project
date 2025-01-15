@@ -111,7 +111,11 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 		userRepo.delete(user);
 		
 	}
-
-
+	// 아이디 찾기(이메일)
+	@Override
+	public Users findByEmail(String email) {
+		return userRepo.findByEmail(email);
+		
+	}
 
 }

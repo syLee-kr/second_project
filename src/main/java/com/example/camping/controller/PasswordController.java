@@ -1,8 +1,5 @@
 package com.example.camping.controller;
 
-import java.time.LocalDateTime;
-import java.util.Map;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,10 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.example.camping.entity.Users;
 import com.example.camping.security.PasswordEmailService;
 import com.example.camping.userService.UserService;
@@ -35,7 +29,6 @@ public class PasswordController {
 
 	private UserService userService;
 	private PasswordEmailService emailService;
-	
 
 	// 비밀번호 유효성 검사
 	private Boolean isPasswordValid(String password) {
@@ -51,6 +44,30 @@ public class PasswordController {
 		return true; // 개발끝나면 해당 부분 지우고 적용
 	}
 	
+	// 아이디 찾기 폼
+	@GetMapping("/find-username")
+	public String findUsernameFrom() {
+		return "users/password/forgot-password";
+	}
+	
+	// 아이디 찾기 처리
+	@PostMapping("/find-username")
+	public String findUsername(@RequestParam("email") String email, Model model) {
+        log.info("아이디 찾기 요청: 이메일 {}", email);
+        
+        // 이메일로 사용자 검색
+        Users user = userService.findByEmail(email); 
+        
+        if (user != null) {
+            model.addAttribute("usernameFound", true); // 아이디 찾기 성공
+            model.addAttribute("foundUsername", user.getUserId()); // 찾은 아이디
+           
+        } else {
+            model.addAttribute("usernameNotFound", true); // 아이디 찾기 실패
+            
+        }
+        return "users/password/forgot-password"; 
+    }
 	
 	// 비밀번호 변경 폼
 	@GetMapping("/change-password")

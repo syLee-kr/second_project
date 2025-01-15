@@ -25,6 +25,9 @@ public interface UserService {
 	// 회원탈퇴
 	void delete(Users user);
 	
+	// 이메일로 아이디 찾기
+	Users findByEmail(String email);
+	
 	
 
 }
