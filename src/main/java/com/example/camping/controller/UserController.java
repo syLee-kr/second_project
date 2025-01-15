@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.camping.entity.Users;
+import com.example.camping.security.PasswordEncoder;
 import com.example.camping.userService.UserService;
 
 import jakarta.servlet.http.HttpSession;
@@ -15,14 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
-@RequestMapping("/")
+@RequestMapping("/users")
 @AllArgsConstructor
 public class UserController {
 	
 	private UserService userService;
+	private PasswordEncoder passwordEncoder;
 	
 	// 프로필 조회
-	@GetMapping("/profile")
+	@GetMapping("/profile-form")
 	public String profile(HttpSession session, Model model) {
 		
 		// 사용자 확인
@@ -65,7 +67,7 @@ public class UserController {
 			
 			// 비밀번호 변경이 있을경우 암호화
 			if (!updatedUser.getPassword().equals(user.getPassword())) {
-				user.setPassword(updatedUser.getPassword());
+				user.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // 암호화된 비밀번호 설정
 				userService.registerUser(user);
 			}
 			

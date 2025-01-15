@@ -28,8 +28,8 @@ public class LoginController {
 	
 	// 로그인 처리
     @PostMapping("/login")
-    public String login(@RequestParam String userId, 
-    					@RequestParam String password, 
+    public String login(@RequestParam ("username")String userId, 
+    					@RequestParam ("password")String password, 
     					HttpSession session,
     					Model model) {
         Users user = userService.login(userId, password);
@@ -58,12 +58,5 @@ public class LoginController {
         return "redirect:/users/login/login-form";
     }
 	
-	@GetMapping("/loginFail")
-	public String loginFail(Model model) {
-		String error = "로그인 실패, 아이디와 비밀번호를 확인해주세요!!";
-		model.addAttribute("error" , error);
-		log.warn("로그인 실패");
-		return "users/login/login-form";
-	}
 
 }

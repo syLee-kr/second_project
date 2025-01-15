@@ -26,6 +26,7 @@ public class PasswordEmailService {
 			// 사용자 확인
 			Users user = userService.findByUserId(username);
 			if(user == null || !user.getEmail().equals(email)) {
+				log.warn("사용자 정보 또는 이메일이 일치하지 않음. username: {}, email: {}", username, email);
 				return false;
 			}	
 			
@@ -46,7 +47,7 @@ public class PasswordEmailService {
 			
 			// 인증코드 저장
 			userService.saveResetCode(username, resetCode);
-			
+			log.info("인증 코드가 {}에게 발송되었습니다.", email);
 			return true;
 			
 		} catch (MessagingException e) {			
