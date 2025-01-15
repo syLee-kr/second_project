@@ -1,7 +1,6 @@
 package com.example.camping.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.Period;
 
@@ -15,6 +14,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -87,18 +87,23 @@ public class Users {
     private OffsetDateTime regidate;
     
     // 프로필 이미지
-    @Column(columnDefinition = "varchar2(255) default 'images/profileimg.png'")
+    @Column(columnDefinition = "varchar2(255)")
     private String profileImage; 
+    
+    @PrePersist
+    public void setDefaultProfileImage() {
+        if (this.profileImage == null) {
+            this.profileImage = "images/profileimg.png";
+        }
+    }
     
     // Role Enum 추가
     public enum Role {
-        USER, ADMIN
+        ROLE_USER, ROLE_ADMIN; // ROLE_ 접두어 추가
     }
     
     // 유저 상태
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private Role role = Role.USER; 
-    
-
+    private Role role = Role.ROLE_USER; // 기본값 설정
 }

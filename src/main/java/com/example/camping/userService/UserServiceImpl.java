@@ -1,10 +1,10 @@
 package com.example.camping.userService;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.camping.entity.Users;
 import com.example.camping.repository.UserRepository;
+import com.example.camping.security.PasswordEncoder;
 
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
 			adminUser.setName("관리자");
 			adminUser.setPassword(passwordEncoder.encode("admin")); // 관리자 비밀번호 암호화
 			adminUser.setEmail("skyrimdata@naver.com");
-			adminUser.setRole(Users.Role.ADMIN); // 관리자 권한 설정
+			adminUser.setRole(Users.Role.ROLE_ADMIN); // 관리자 권한 설정
 			userRepo.save(adminUser); // DB에 관리자 계정 저장
 			log.info("새로운 관리자 계정이 생성되었습니다. (사용자명: {}, 권한: {})", adminUser.getUserId(), adminUser.getRole());
 		}else {

@@ -1,13 +1,7 @@
 package com.example.camping.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.example.camping.entity.Users;
 import com.example.camping.security.PasswordEmailService;
+import com.example.camping.security.PasswordEncoder;
 import com.example.camping.userService.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PasswordController {
 
 	private UserService userService;
+	private PasswordEncoder passwordEncoder;
 	private PasswordEmailService emailService;
 
 	// 비밀번호 유효성 검사
@@ -79,11 +75,10 @@ public class PasswordController {
 	@PostMapping("/change-password")
 	public String changePassword(@RequestParam("oldPassword") String oldPassword,
 								 @RequestParam("newPassword") String newPassword,
-								 @AuthenticationPrincipal User principal,
+								 @RequestParam("username") String userId,
 								 Model model,
 								 HttpServletRequest request, HttpServletResponse response) {
 		
-		String userId = principal.getUsername();
 		log.info("비밀번호 변경 요청: 사용자 {}", userId);
 		
 		// 비밀번호 유효성 검사
@@ -99,7 +94,6 @@ public class PasswordController {
 			return "users/password/change-password";
 		}
 
-		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		
 		// 기존 비밀번호와 새로운 비밀번호가 같을 경우
 		if (passwordEncoder.matches(newPassword,user.getPassword())) {
@@ -117,10 +111,7 @@ public class PasswordController {
 			log.info("비밀번호 변경 완료: 사용자 {}", userId);
 			
 			// 비밀번호 변경 후 로그아웃 처리(세션 무효)
-			SecurityContextHolder.clearContext();
-			LogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-			logoutHandler.logout(request, response, 
-					SecurityContextHolder.getContext().getAuthentication());
+			request.getSession().invalidate();
 			log.info("로그아웃 처리 완료: 사용자 {}", userId);
 			
 			// 메세지 전달
@@ -193,15 +184,13 @@ public class PasswordController {
     	
         // 비밀번호 유효성 검사
         if (!isPasswordValid(newPassword)) {
-            //resetPassword.js 코드에서 메세지 처리("비밀번호는 최소 6자 이상이어야 하며, 숫자, 대소문자, 특수문자가 포함되어야 합니다.")
-
+            //resetPassword.js 코드에서 메세지 처리
             return "users/password/forgot-password";
         }
         
         // 인증코드로 비밀번호 찾는 부분만 처리
         Users user = userService.findByUserId(resetCode); // 사용자가 인증코드로 식별된다면
         if (user != null) {
-            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             user.setPassword(passwordEncoder.encode(newPassword)); // 새 비밀번호로 업데이트
             userService.save(user); // 사용자 정보 저장
             log.info("비밀번호 변경 완료: 사용자 {}", user.getUserId());

@@ -4,8 +4,6 @@ import org.springframework.stereotype.Component;
 import com.example.camping.entity.Users;
 import com.example.camping.userService.UserService;
 
-import java.time.LocalDateTime;
-
 import org.springframework.mail.javamail.JavaMailSender;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
