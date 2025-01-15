@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.camping.entity.Users;
 import com.example.camping.userService.UserService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,19 +25,10 @@ public class UserController {
 	
 	// 프로필 조회
 	@GetMapping("/profile")
-	public String profile(@AuthenticationPrincipal User pricipal, Model model) {
+	public String profile(HttpSession session, Model model) {
 		
-		/*
-		 * spirng security에서는 username = userId 자동으로 인식하기 때문에 
-		 * 혼동방지를 위해 username 매개변수를 userId로 치환해서 사용
-		 */  
-		 
-		// 로그인 한 사용자의 userId
-		String userId = pricipal.getUsername();
-		
-	
 		// 사용자 확인
-		Users user = userService.findByUserId(userId);
+		Users user = (Users)session.getAttribute("user");
 		
 		if (user == null) {
 			return "redirect:/users/login/login-form";
@@ -49,11 +41,10 @@ public class UserController {
 	
 	// 프로필 수정 폼
 	@GetMapping("/edit")
-	public String editProfile(@AuthenticationPrincipal User principal, Model model) {
+	public String editProfile(HttpSession session, Model model) {
 		
-		String userId = principal.getUsername();
-		
-		Users user = userService.findByUserId(userId);
+
+		Users user = (Users)session.getAttribute("user");
 		
 		if (user == null) {
 			return "redirect:/users/login/login-form";
@@ -67,11 +58,10 @@ public class UserController {
 	// 프로필 수정 처리
 	@PostMapping("/update")
 	public String updateProfile(@ModelAttribute Users updatedUser,
-								@AuthenticationPrincipal User principal) {
-		String userId = principal.getUsername();
+								HttpSession session) {
 		
 		// 사용자 업데이트
-		Users user = userService.findByUserId(userId);
+		Users user = (Users)session.getAttribute("user");
 		
 		if (user != null) {
 			
@@ -92,6 +82,9 @@ public class UserController {
 			
 			// 업데이트 된 정보 DB에 저장
 			userService.save(user);
+			
+			// 세션에 업데이트된 사용자 정보 다시 저장
+			session.setAttribute("user", user);
 		}
 		return "redirect:/users/profile/profile-form";
 
@@ -99,13 +92,14 @@ public class UserController {
 	
 	// 회원 탈퇴 처리 
 	@PostMapping("/del-account")
-	public String deleteAccount(@AuthenticationPrincipal User principal, Model model) {
-		String userId = principal.getUsername();
-		Users user = userService.findByUserId(userId);
+	public String deleteAccount(HttpSession session, Model model) {
+		
+		Users user = (Users)session.getAttribute("user");
 		
 		if (user != null) {
 			// 사용자 삭제
 			userService.delete(user);
+			session.invalidate(); // 회원 탈퇴 후 세션 무효화
 			String message = "회원 탈퇴가 완료되었습니다.";
 			model.addAttribute("message", message);
 			

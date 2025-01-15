@@ -1,19 +1,19 @@
 package com.example.camping.userService;
 
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.camping.entity.Users;
 import com.example.camping.repository.UserRepository;
-import lombok.AllArgsConstructor;
 
+import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements UserService, UserDetailsService{
+public class UserServiceImpl implements UserService {
 
 	
 	private UserRepository userRepo;
@@ -47,28 +47,6 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 		return userRepo.save(user);
 	}
 	
-	/*
-	 * Spring Security에서 사용하는 UserDetailsService 메서드 구현 = CustomUserDetailsService
-	 * 객체를 따로 구현하지 않고 UserServiceImpl에서 메서드를 통해서 구현가능
-	 */
-	// 사용자 인증
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		
-		// 사용자 DB에서 검색
-		Users user = userRepo.findByUserId(username);
-		
-		if (user == null) {
-			throw new UsernameNotFoundException("사용자의 UserId가 없습니다:" + username);
-		}
-		
-		// Spring Security 사용
-		return User.builder()
-				   .username(user.getUserId())	  // 사용자 ID
-				   .password(user.getPassword())  // 암호화된 비밀번호
-				   .roles(user.getRole().name())  // 사용자의 권한
-				   .build();
-	}
 	
 	// 비밀번호 암호화
 	@Override
@@ -100,7 +78,6 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 			user.setPassword(passwordEncoder.encode(resetCode)); // 비밀번호 암호화 후 저장
 			userRepo.save(user);			// DB에 저장
 		}
-		
 	}
 		
 	// 회원탈퇴
@@ -115,5 +92,29 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 		return userRepo.findByEmail(email);
 		
 	}
-
+	
+	// 관리자 계정 생성
+	@PostConstruct
+	public void initAdminUser() {
+		log.info("관리자 계정 여부 확인");
+		// 관리자 계정 확인
+		Users adminUser = userRepo.findByUserId("admin");
+				
+		if (adminUser == null) {
+			log.warn("관리자 계정이 존재하지 않습니다. 새로운 관리자 계정 생성");
+			// 관리자 계정 없을 시 새로 생성
+			adminUser = new Users();
+			adminUser.setUserId("admin");
+			adminUser.setName("관리자");
+			adminUser.setPassword(passwordEncoder.encode("admin")); // 관리자 비밀번호 암호화
+			adminUser.setEmail("skyrimdata@naver.com");
+			adminUser.setRole(Users.Role.ADMIN); // 관리자 권한 설정
+			userRepo.save(adminUser); // DB에 관리자 계정 저장
+			log.info("새로운 관리자 계정이 생성되었습니다. (사용자명: {}, 권한: {})", adminUser.getUserId(), adminUser.getRole());
+		}else {
+			log.info("관리자 계정이 존재합니다. (사용자명: {}, 권한: {})", adminUser.getUserId(), adminUser.getRole());
+		}
+					
+	}
+	
 }
