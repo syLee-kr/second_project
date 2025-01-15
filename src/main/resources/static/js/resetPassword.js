@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
-                body: "username=" + document.getElementById("username").value + "&email=" + document.getElementById("email").value
+                body: "username=" + document.getElementById("username").value + "&email=" + document.getElementById("email-password").value
             })
             .then(response => response.json())
             .then(data => {
