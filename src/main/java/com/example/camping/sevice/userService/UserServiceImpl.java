@@ -1,4 +1,4 @@
-package com.example.camping.userService;
+package com.example.camping.sevice.userService;
 
 import org.springframework.stereotype.Service;
 
