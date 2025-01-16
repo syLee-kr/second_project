@@ -44,5 +44,12 @@ public class ProductServiceImpl implements ProductService {
 	public List<Products> getProductsByCategory(String category) {
 		return productRepo.findByCategory(category);
 	}
+	
+	// 특정 상품 조회
+	@Override
+	public Products getProductById(Long productId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

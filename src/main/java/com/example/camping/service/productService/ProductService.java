@@ -18,6 +18,9 @@ public interface ProductService {
 	// 카테고리 별 상품 조회
 	List<Products> getProductsByCategory(String category);
 	
+	// 특정 상품 조회
+	Products getProductById(Long productId);
+	
 	
 
 }
