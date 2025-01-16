@@ -28,7 +28,7 @@ public class LoginController {
 	
 	// 로그인 처리
     @PostMapping("/login")
-    public String login(@RequestParam ("username")String userId, 
+    public String login(@RequestParam ("userId")String userId, 
     					@RequestParam ("password")String password, 
     					HttpSession session,
     					Model model) {
@@ -36,10 +36,10 @@ public class LoginController {
 
         if (user != null) {
             // 로그인 성공 시 세션에 사용자 정보 저장
-            session.setAttribute("currentUser", user);
+            session.setAttribute("user", user);
             log.info("로그인 성공: {}", user.getUserId());
            
-            return "redirect:/users/profile/profile-form"; // 로그인 후 프로필 화면으로 이동
+            return "users/profile/profile-form"; // 로그인 후 프로필 화면으로 이동
         } else {
             // 로그인 실패 시
             model.addAttribute("error", "로그인 실패, 아이디와 비밀번호를 확인해주세요.");
@@ -49,13 +49,13 @@ public class LoginController {
     
     
     // 로그아웃 처리
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public String logout(HttpSession session) {
         // 세션 무효화
     	session.invalidate();
     	log.info("로그아웃 성공");
     	
-        return "redirect:/users/login/login-form";
+        return "users/login/login-form";
     }
 	
 

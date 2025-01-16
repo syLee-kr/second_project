@@ -86,17 +86,6 @@ public class Users {
     @Column(updatable = false)
     private OffsetDateTime regidate;
     
-    // 프로필 이미지
-    @Column(columnDefinition = "varchar2(255)")
-    private String profileImage; 
-    
-    @PrePersist
-    public void setDefaultProfileImage() {
-        if (this.profileImage == null) {
-            this.profileImage = "images/profileimg.png";
-        }
-    }
-    
     // Role Enum 추가
     public enum Role {
         ROLE_USER, ROLE_ADMIN; // ROLE_ 접두어 추가

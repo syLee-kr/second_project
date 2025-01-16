@@ -14,6 +14,7 @@ import com.example.camping.userService.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,25 +42,25 @@ public class PasswordController {
 	}
 	
 	// 아이디 찾기 폼
-	@GetMapping("/find-username")
-	public String findUsernameFrom() {
+	@GetMapping("/find-userId")
+	public String findUserIdFrom() {
 		return "users/password/forgot-password";
 	}
 	
 	// 아이디 찾기 처리
-	@PostMapping("/find-username")
-	public String findUsername(@RequestParam("email") String email, Model model) {
+	@PostMapping("/find-userId")
+	public String findUserId(@RequestParam("email") String email, Model model) {
         log.info("아이디 찾기 요청: 이메일 {}", email);
         
         // 이메일로 사용자 검색
         Users user = userService.findByEmail(email); 
         
         if (user != null) {
-            model.addAttribute("usernameFound", true); // 아이디 찾기 성공
-            model.addAttribute("foundUsername", user.getUserId()); // 찾은 아이디
+            model.addAttribute("userIdFound", true); // 아이디 찾기 성공
+            model.addAttribute("foundUserId", user.getUserId()); // 찾은 아이디
            
         } else {
-            model.addAttribute("usernameNotFound", true); // 아이디 찾기 실패
+            model.addAttribute("userIdNotFound", true); // 아이디 찾기 실패
             
         }
         return "users/password/forgot-password"; 
@@ -75,10 +76,15 @@ public class PasswordController {
 	@PostMapping("/change-password")
 	public String changePassword(@RequestParam("oldPassword") String oldPassword,
 								 @RequestParam("newPassword") String newPassword,
-								 @RequestParam("username") String userId,
+								 HttpSession session,
 								 Model model,
 								 HttpServletRequest request, HttpServletResponse response) {
 		
+		// 세션에서 사용자 정보 조회 
+		Users user = (Users) session.getAttribute("user");
+		
+		// 세션에서 userId 가져오기
+		String userId = user.getUserId();
 		log.info("비밀번호 변경 요청: 사용자 {}", userId);
 		
 		// 비밀번호 유효성 검사
@@ -87,8 +93,8 @@ public class PasswordController {
 			return "users/password/change-password";
 		}
 		// 사용자 확인
-		Users user = userService.findByUserId(userId);
-		if (user == null) {
+		Users existingUser = userService.findByUserId(userId);
+		if (existingUser == null) {
 			log.warn("사용자를 찾을 수 없음: {}", userId);
 			model.addAttribute("error", "사용자를 찾을수 없습니다.");
 			return "users/password/change-password";
@@ -136,13 +142,13 @@ public class PasswordController {
     
     // 비밀번호 찾기 인증코드 발송 처리
     @PostMapping("/forgot-password")
-    public String forgotPassword(@RequestParam("username") String username, 
+    public String forgotPassword(@RequestParam("userId") String userId, 
     							 @RequestParam("email") String email,
     							 Model model) {
-    	log.info("비밀번호 찾기 요청: 아이디 {}, 이메일 {}", username, email);
+    	log.info("비밀번호 찾기 요청: 아이디 {}, 이메일 {}", userId, email);
         
     	// 아이디로 사용자 정보 조회
-    	Users user = userService.findByUserId(username);
+    	Users user = userService.findByUserId(userId);
         
         if (user !=null) {
         	
@@ -150,24 +156,24 @@ public class PasswordController {
         	if (user.getEmail().equals(email)) {
 	        	
 	        	// 인증코드 이메일 발송
-	        	Boolean isSent = emailService.sendCodeEmail(username, email);
+	        	Boolean isSent = emailService.sendCodeEmail(userId, email);
 	        	
 	        	if (isSent) {
 	        		model.addAttribute("resetCodeSent", true); 	// 인증코드 입력란 표시
-	        		model.addAttribute("username", username);	// 아이디 유지
+	        		model.addAttribute("userId", userId);	// 아이디 유지
 	        		model.addAttribute("email", email);			// 이메일 유지
 	        	} else {
-	        		log.error("이메일 발송 실패: 사용자 {}", username);
+	        		log.error("이메일 발송 실패: 사용자 {}", userId);
 	        		model.addAttribute("error", "이메일 발송에 실패했습니다.");
 	        	}
         	} else {
-        		log.warn("이메일 불일치: 아이디: {}, 입력된 이메일 {}", username, email);
+        		log.warn("이메일 불일치: 아이디: {}, 입력된 이메일 {}", userId, email);
         		String error = "입력된 이메일과 아이디가 일치하지않습니다.";
         		model.addAttribute("error", error);
         	}	
 	
         } else {
-        	log.warn("사용자를 찾을 수 없음: {}", username);
+        	log.warn("사용자를 찾을 수 없음: {}", userId);
         	model.addAttribute("error", "사용자를 찾을 수 없습니다.");
         }
         
@@ -206,9 +212,9 @@ public class PasswordController {
     
     //인증코드 발송 처리
     @PostMapping("/sendCode")
-    public ResponseEntity<?> sendCode(@RequestParam("username") String username,
+    public ResponseEntity<?> sendCode(@RequestParam("userId") String userId,
     								  @RequestParam("email") String email){
-    	Boolean isSuccess = emailService.sendCodeEmail(username, email);
+    	Boolean isSuccess = emailService.sendCodeEmail(userId, email);
     	
     	if (isSuccess) {
     		return ResponseEntity.ok().body("{\"success\":true}");

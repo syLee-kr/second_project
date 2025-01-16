@@ -8,15 +8,15 @@
 <body>
     <h1>Profile</h1>
     <div>
-        <p>Username: {{users.userId}}</p>
+        <p>userId: {{users.userId}}</p>
         <p>Name: {{users.name}}</p>
         <p>Email: {{users.email}}</p>
         <p>Phone: {{users.phone}}</p>
         <p>Address: {{users.address}}</p>
         <p>Birthday: {{users.birthday}}</p>
         <p>Gender: {{users.gender}}</p>
-        <img src="{{user.profileImage}}" alt="Profile Image">
-        <a href="/edit">Edit Profile</a>
+        
+        <a href="/users/edit">Edit Profile</a>
         <a href="/change-password">Change Password</a>
         
         <form th:action="@{/logout}" method="POST">

@@ -12,13 +12,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
-                body: "username=" + document.getElementById("username").value + "&email=" + document.getElementById("email-password").value
+                body: "userId=" + document.getElementById("userId").value + "&email=" + document.getElementById("email-password").value
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     alert("인증코드가 발송되었습니다.");
-					window.location.href ="users/login/login-form";// 로그인 페이지로 리디렉션
+					window.location.href ="/login"; // 로그인 페이지로
                     // 인증코드가 비밀번호로 설정되는 메커니즘 실행
                     resetPasswordWithCode(data.code); // 서버에서 받은 인증코드로 비밀번호 변경
                 } else {
