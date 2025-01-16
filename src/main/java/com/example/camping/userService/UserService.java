@@ -28,6 +28,8 @@ public interface UserService {
 	// 이메일로 아이디 찾기
 	Users findByEmail(String email);
 	
+	// 이메일 중복 확인
+	Boolean emailExists(String email);
 	
 
 }

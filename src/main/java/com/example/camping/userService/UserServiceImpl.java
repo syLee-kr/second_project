@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-	
 	private UserRepository userRepo;
 	private PasswordEncoder passwordEncoder;
 	
@@ -93,22 +92,39 @@ public class UserServiceImpl implements UserService {
 		
 	}
 	
+	// 이메일 중복 체크
+	@Override
+	public Boolean emailExists(String email) {
+		Users existingUser = userRepo.findByEmail(email);
+		return existingUser != null;
+	}
+	
+	
 	// 관리자 계정 생성
 	@PostConstruct
 	public void initAdminUser() {
 		log.info("관리자 계정 여부 확인");
 		// 관리자 계정 확인
 		Users adminUser = userRepo.findByUserId("admin");
+		
+		String adminEmail = "skyrimdata@naver.com";
 				
 		if (adminUser == null) {
+			if (emailExists(adminEmail)) {
+				log.warn("존재하는 이메일 주소 입니다.");
+				return;
+			}
+			
+			
 			log.warn("관리자 계정이 존재하지 않습니다. 새로운 관리자 계정 생성");
 			// 관리자 계정 없을 시 새로 생성
 			adminUser = new Users();
 			adminUser.setUserId("admin");
 			adminUser.setName("관리자");
 			adminUser.setPassword(passwordEncoder.encode("admin")); // 관리자 비밀번호 암호화
-			adminUser.setEmail("skyrimdata@naver.com");
+			adminUser.setEmail(adminEmail);
 			adminUser.setRole(Users.Role.ROLE_ADMIN); // 관리자 권한 설정
+			adminUser.setGender(Users.Gender.MALE); // 성별 설정 (기본값을 명시적으로 설정)
 			userRepo.save(adminUser); // DB에 관리자 계정 저장
 			log.info("새로운 관리자 계정이 생성되었습니다. (사용자명: {}, 권한: {})", adminUser.getUserId(), adminUser.getRole());
 		}else {
@@ -116,5 +132,7 @@ public class UserServiceImpl implements UserService {
 		}
 					
 	}
+
+
 	
 }
