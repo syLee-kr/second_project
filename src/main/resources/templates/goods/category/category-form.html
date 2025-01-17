@@ -1,0 +1,32 @@
+<!-- goods/category/category-form.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카테고리 폼</title>
+</head>
+<body>
+
+    <h1>카테고리 정보</h1>
+
+    <!-- 카테고리 추가 및 수정 폼 -->
+    <form th:action="@{/category/add}" th:object="${category}" method="post">
+        <label for="name">카테고리 이름:</label>
+        <input type="text" id="name" th:field="*{name}" placeholder="카테고리 이름을 입력하세요" required>
+        <button type="submit">저장</button>
+    </form>
+
+    <!-- 수정 폼일 경우 카테고리 번호 hidden으로 추가 -->
+    <form th:action="@{/category/edit/{cseq}(cseq=${category.cseq})}" th:object="${category}" method="post" th:if="${category != null}">
+        <input type="hidden" th:field="*{cseq}">
+        <label for="name">카테고리 이름:</label>
+        <input type="text" id="name" th:field="*{name}" placeholder="카테고리 이름을 수정하세요" required>
+        <button type="submit">수정</button>
+    </form>
+
+    <!-- 메시지 출력 -->
+    <div th:if="${message}" th:text="${message}"></div>
+
+</body>
+</html>

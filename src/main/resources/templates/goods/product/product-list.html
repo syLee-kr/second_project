@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>상품 목록</title>
+    <!-- JS 파일 로드 -->
+    <script th:src="@{/js/product-alert.js}" defer></script>
 </head>
 <body>
     <h1>상품 목록</h1>
-
     <table>
         <thead>
             <tr>
@@ -14,15 +15,20 @@
                 <th>가격</th>
                 <th>카테고리</th>
                 <th>상세 보기</th>
+                <th>삭제</th>
             </tr>
         </thead>
         <tbody>
-            <!-- products 변수에 담긴 상품 리스트를 반복하여 출력 -->
             <tr th:each="product : ${products}">
                 <td th:text="${product.name}"></td>
-                <td th:text="${product.price}"></td>
+                <td th:text="${product.price1}"></td>
                 <td th:text="${product.category}"></td>
-                <td><a th:href="@{/products/{id}(id=${product.id})}">상세보기</a></td>
+                <td><a th:href="@{/products/{pseq}(pseq=${product.pseq})}">상세보기</a></td>
+                <td>
+                    <form th:action="@{/products/delete/{pseq}(pseq=${product.pseq})}" method="post" onsubmit="return productAlert.confirmDelete();">
+                        <button type="submit">삭제</button>
+                    </form>
+                </td>
             </tr>
         </tbody>
     </table>

@@ -18,8 +18,13 @@ public interface ProductService {
 	// 카테고리 별 상품 조회
 	List<Products> getProductsByCategory(String category);
 	
-	// 특정 상품 조회
-	Products getProductById(Long productId);
+	// 상품 상세 보기 
+	Products getProductById(Long pseq);
+	
+	// 상품 수정처리
+	Products updateProduct(Long pseq, Products product);
+	
+
 	
 	
 
