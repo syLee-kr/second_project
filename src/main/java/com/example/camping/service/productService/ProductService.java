@@ -16,7 +16,7 @@ public interface ProductService {
 	List<Products> getAllProducts();
 	
 	// 카테고리 별 상품 조회
-	List<Products> getProductsByCategory(String category);
+	List<Products> getProductsByCategory(String name);
 	
 	// 상품 상세 보기 
 	Products getProductById(Long pseq);

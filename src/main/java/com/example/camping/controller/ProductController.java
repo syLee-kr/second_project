@@ -1,5 +1,6 @@
 package com.example.camping.controller;
 
+import com.example.camping.entity.Category;
 import com.example.camping.entity.Products;
 import com.example.camping.repository.CategoryRepository;
 import com.example.camping.service.productService.ProductService;
@@ -24,7 +25,7 @@ public class ProductController {
 
     private ProductService productService;
     private CategoryRepository categoryRepo;
-    
+        
     // 상품 등록 폼
     @GetMapping("/product-register")
     public String registerProductForm(Model model) {
@@ -117,12 +118,22 @@ public class ProductController {
         return "goods/product/product-list";
     }
 
-    // 상품 전체 조회
-    @GetMapping("/product-all")
+    // 상품 목록
+    @GetMapping("/product-list")
     public String getAllProducts(Model model) {
         List<Products> products = productService.getAllProducts();
         model.addAttribute("products", products);
         return "goods/product/product-list";
+    }
+    
+    // 기본경로 접근시 상품목록으로 반환
+    @GetMapping("")  // /goods 경로
+    public String getGoodsList(Model model) {
+        List<Products> products = productService.getAllProducts();
+        List<Category> categories = categoryRepo.findAll();
+        model.addAttribute("products", products);
+        model.addAttribute("categories", categories);
+        return "goods/product/product-list";  // 상품 목록 페이지로 이동
     }
 
     // 카테고리별 상품 조회

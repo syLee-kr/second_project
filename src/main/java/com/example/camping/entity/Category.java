@@ -23,7 +23,7 @@ public class Category {
     
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cseq;       // 카테고리 고유 ID
+    private Long tseq;       // 카테고리 고유 ID
 
     private String name;   // 카테고리 이름
 

@@ -18,8 +18,8 @@
     </form>
 
     <!-- 수정 폼일 경우 카테고리 번호 hidden으로 추가 -->
-    <form th:action="@{/category/edit/{cseq}(cseq=${category.cseq})}" th:object="${category}" method="post" th:if="${category != null}">
-        <input type="hidden" th:field="*{cseq}">
+    <form th:action="@{/category/edit/{tseq}(tseq=${category.tseq})}" th:object="${category}" method="post" th:if="${category != null}">
+        <input type="hidden" th:field="*{tseq}">
         <label for="name">카테고리 이름:</label>
         <input type="text" id="name" th:field="*{name}" placeholder="카테고리 이름을 수정하세요" required>
         <button type="submit">수정</button>

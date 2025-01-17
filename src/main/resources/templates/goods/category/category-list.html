@@ -27,11 +27,11 @@
             <!-- 카테고리 목록을 출력 -->
             <th:block th:each="category : ${categories}">
                 <tr>
-                    <td th:text="${category.cseq}"></td>
+                    <td th:text="${category.tseq}"></td>
                     <td th:text="${category.name}"></td>
-                    <td><a th:href="@{/category/edit/{cseq}(cseq=${category.cseq})}">수정</a></td>
+                    <td><a th:href="@{/category/edit/{tseq}(tseq=${category.tseq})}">수정</a></td>
                     <td>
-                        <form th:action="@{/category/delete/{cseq}(cseq=${category.cseq})}" method="post">
+                        <form th:action="@{/category/delete/{tseq}(tseq=${category.tseq})}" method="post">
                             <input type="hidden" name="_method" value="delete">
                             <button type="submit">삭제</button>
                         </form>

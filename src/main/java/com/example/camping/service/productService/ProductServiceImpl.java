@@ -26,7 +26,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Products registerProduct(Products product) {
 		// 카테고리가 존재하는지 확인
-		Category category = categoryRepo.findById(product.getCategory().getCseq())
+		Category category = categoryRepo.findById(product.getCategory().getTseq())
 				.orElseThrow(()-> new IllegalArgumentException("존재하지 않는 카테고리 입니다."));
 		
 		product.setCategory(category);
@@ -48,7 +48,15 @@ public class ProductServiceImpl implements ProductService {
 	
 	// 카테고리별 상품 조회
 	@Override
-	public List<Products> getProductsByCategory(String category) {
+	public List<Products> getProductsByCategory(String name) {
+		
+		// 카테고리 이름으로 카테고리 조회
+		Category category = categoryRepo.findByName(name);
+		
+		if (category == null) {
+			throw new IllegalArgumentException("존재하지 않는 카테고리입니다.");
+		}	
+		
 		return productRepo.findByCategory(category);
 	}
 	
@@ -75,5 +83,6 @@ public class ProductServiceImpl implements ProductService {
 		
 		return productRepo.save(currentProduct);
 	}
+
 
 }

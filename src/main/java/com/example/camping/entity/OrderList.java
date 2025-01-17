@@ -47,7 +47,7 @@ public class OrderList {
 	private Date orderDate; // 주문 날짜
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<OrderDetail> orderDetails = new ArrayList<>(); // 주문 상세 목록
+	private final List<OrderDetail> orderDetails = new ArrayList<>(); // 주문 상세 목록
 
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Payment payment; // 결제 정보

@@ -16,10 +16,17 @@ public class CategoryController {
 
     // 카테고리 리스트
     @GetMapping("/list")
-    public String categoryList(Model model) {
-        model.addAttribute("categories", categoryRepo.findAll());
+    public String categoryList(@RequestParam(required = false) String name, Model model) {
+        if (name != null) {
+            // 'name' 파라미터가 있으면 그 이름을 가진 카테고리만 조회
+            model.addAttribute("categories", categoryRepo.findByName(name));
+        } else {
+            // 'name' 파라미터가 없으면 모든 카테고리 조회
+            model.addAttribute("categories", categoryRepo.findAll());
+        }
         return "goods/category/category-list";
     }
+
 
     // 카테고리 추가 폼
     @GetMapping("/add")
@@ -37,26 +44,26 @@ public class CategoryController {
     }
 
     // 카테고리 수정 폼
-    @GetMapping("/edit/{cseq}")
-    public String editCategoryForm(@PathVariable Long cseq, Model model) {
-        Category category = categoryRepo.findById(cseq).orElse(null);
+    @GetMapping("/edit/{tseq}")
+    public String editCategoryForm(@PathVariable Long tseq, Model model) {
+        Category category = categoryRepo.findById(tseq).orElse(null);
         model.addAttribute("category", category);
         return "goods/category/category-form";
     }
 
     // 카테고리 수정 처리
-    @PostMapping("/edit/{cseq}")
-    public String editCategory(@PathVariable Long cseq, @ModelAttribute Category category, Model model) {
-        category.setCseq(cseq);
+    @PostMapping("/edit/{tseq}")
+    public String editCategory(@PathVariable Long tseq, @ModelAttribute Category category, Model model) {
+        category.setTseq(tseq);
         categoryRepo.save(category);
         model.addAttribute("message", "카테고리가 수정되었습니다.");
         return "redirect:/category/list";
     }
 
     // 카테고리 삭제
-    @DeleteMapping("/delete/{cseq}")
-    public String deleteCategory(@PathVariable Long cseq, Model model) {
-        categoryRepo.deleteById(cseq);
+    @DeleteMapping("/delete/{tseq}")
+    public String deleteCategory(@PathVariable Long tseq, Model model) {
+        categoryRepo.deleteById(tseq);
         model.addAttribute("message", "카테고리가 삭제되었습니다.");
         return "redirect:/category/list";
     }
