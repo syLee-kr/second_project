@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>추천 캠핑장</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+<h1 style="text-align: center;">추천 캠핑장 목록</h1>
+
+<!-- 에러 메시지 표시 -->
+<div th:if="${error}" class="error">
+  <p th:text="${error}"></p>
+</div>
+
+<!-- 추천 결과 테이블 -->
+<table th:if="${recommendations}">
+  <thead>
+  <tr>
+    <th>야영장명</th>
+    <th>유사도</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="rec : ${recommendations}">
+    <td th:text="${rec.야영장명}">야영장명</td>
+    <td th:text="${#numbers.formatDecimal(rec.유사도, 2, 'POINT')}">유사도</td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>
