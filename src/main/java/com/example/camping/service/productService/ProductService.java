@@ -23,9 +23,5 @@ public interface ProductService {
 	
 	// 상품 수정처리
 	Products updateProduct(Long pseq, Products product);
-	
-
-	
-	
 
 }

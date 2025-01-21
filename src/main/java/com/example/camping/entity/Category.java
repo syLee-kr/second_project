@@ -26,6 +26,13 @@ public class Category {
     private Long tseq;       // 카테고리 고유 ID
 
     private String name;   // 카테고리 이름
-
+    
+    // 전체 카테고리
+    public static Category getAllCategory() {
+    	Category allCategory = new Category();
+    	allCategory.setTseq(0L);
+    	allCategory.setName("전체");
+    	return allCategory;
+    }
 }
 

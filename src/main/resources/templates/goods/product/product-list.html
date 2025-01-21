@@ -7,6 +7,15 @@
 <body>
 <div class="product-container">
     <h1>상품 목록</h1>
+    
+    <!-- 카테고리 선택 드롭다운 -->
+    <select id="categorySelect">
+        <option value="">카테고리 선택</option>
+        <!-- 카테고리 목록을 동적으로 추가 -->
+        <th:block th:each="category : ${categories}">
+            <option th:value="${category.name}" th:text="${category.name}"></option>
+        </th:block>
+    </select>
 
     <form th:action="@{/goods/delete-products}" method="post">
 	    <div class="product-grid">
@@ -20,6 +29,7 @@
 	            <a th:href="@{'/goods/' + ${product.pseq}}" class="product-link">상품 보기</a>
 	        </div>
 		</div>
+		
         <!-- 상품이 없는 경우 기본 틀 표시 -->
         <div th:if="${#lists.isEmpty(products)}" class="empty-product-grid">
             <div class="empty-product-item">
@@ -38,12 +48,19 @@
                 <p>가격 정보 없음</p>
             </div>
         </div>
-    </div>
+    
 
-    <!-- 상품 등록 버튼은 한 번만 표시 -->
-    <div class="product-register-container">
-        <a href="/goods/product-register" class="product-register-button">상품 등록</a>
-    </div>
+    
+	    <div class="product-register-container">
+	        <a href="/goods/product-register" class="product-register-button">상품 등록</a>
+	    	<button type="submit" class="product-register-button" style="background-color: #f44336; margin-top: 20px;">선택된 상품 삭제</button>
+	    </div>
+    </form>
 </div>
+
+<!-- JavaScript 파일 로드 -->
+<script src="/js/category.js"></script>
+<script src="/js/product-alert.js"></script>
+
 </body>
 </html>

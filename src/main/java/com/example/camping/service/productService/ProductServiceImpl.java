@@ -49,7 +49,10 @@ public class ProductServiceImpl implements ProductService {
 	// 카테고리별 상품 조회
 	@Override
 	public List<Products> getProductsByCategory(String name) {
-		
+		if ("전체".equals(name)) {
+			return productRepo.findAll();
+		}
+	
 		// 카테고리 이름으로 카테고리 조회
 		Category category = categoryRepo.findByName(name);
 		

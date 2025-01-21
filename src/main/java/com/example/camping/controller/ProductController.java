@@ -7,7 +7,6 @@ import com.example.camping.service.productService.ProductService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -125,7 +124,7 @@ public class ProductController {
     }
     
 
- // 상품 삭제
+    // 상품 삭제(상세페이지 - 단일상품삭제)
     @PostMapping("/delete/{pseq}")
     public String deleteProduct(@PathVariable Long pseq, Model model) {
         Products product = productService.getProductById(pseq);
@@ -143,19 +142,36 @@ public class ProductController {
             return "goods/product/product-list"; // 상품 목록 페이지로 리다이렉트
         } else {
             model.addAttribute("message", "상품을 찾을 수 없습니다.");
-            return "goods/product/product-list";
+            return "redirect:/goods/product-list";
         }
     }
+    
+    // 상품 삭제(상품목록 - 여러상품삭제)
+    @PostMapping("/delete-products")
+    public String deleteProducts(@RequestParam ("productIds") List<Long> productIds, Model model) {
+        for (Long pseq : productIds) {
+            // 각 상품 삭제 처리
+            productService.deleteProduct(pseq);
+        }
+        model.addAttribute("message", "선택한 상품이 삭제되었습니다.");
+        return "redirect:/goods/product-list"; // 상품 목록 페이지로 리다이렉트
+    }
+
 
     // 상품 목록
     @GetMapping("/product-list")
-    public String getAllProducts(Model model) {
+    public String getAllProducts(@RequestParam (value ="category", defaultValue ="전체") 
+    								String category, Model model) {
         List<Products> products = productService.getAllProducts();
         // 상품 목록이 없으면 빈 리스트로 
         if (products == null) {
         	products = new ArrayList<>();
         }
+        List<Category> categories = categoryRepo.findAll();
+        
         model.addAttribute("products", products);
+        model.addAttribute("categories", categories);
+        model.addAttribute("selectedCategory", category);
         return "goods/product/product-list";
     }
     
@@ -171,9 +187,12 @@ public class ProductController {
 
     // 카테고리별 상품 조회
     @GetMapping("/category/{category}")
-    public String getProductsByCategory(@PathVariable String category, Model model) {
+    public String getProductsByCategory(@PathVariable ("category") String category, Model model) {
         List<Products> products = productService.getProductsByCategory(category);
+        List<Category> categories = categoryRepo.findAll(); 
         model.addAttribute("products", products);
+        model.addAttribute("categories", categories);
+        model.addAttribute("selectedCategory", category); // 현재 선택된 카테고리
         return "goods/product/product-list";
     }
     

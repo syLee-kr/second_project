@@ -1,6 +1,6 @@
 var productAlert = {
     // 공통 토스트 메시지 표시
-    showToast: function (message, backgroundColor) {
+    showToast: function (message, backgroundColor, redirectUrl) {
         if (message) {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -15,7 +15,6 @@ var productAlert = {
             toast.style.padding = '10px';
             toast.style.borderRadius = '5px';
             toast.style.zIndex = '9999';
-            toast.style.display = 'inline-block';
             toast.style.opacity = '1';
 
             // 페이지에 추가
@@ -26,6 +25,9 @@ var productAlert = {
                 toast.style.opacity = '0';
                 setTimeout(function () {
                     toast.remove();  // DOM에서 제거
+                    if (redirectUrl) {
+                        window.location.href = redirectUrl;  // 리다이렉트
+                    }
                 }, 500);
             }, 2000);
         }
@@ -34,13 +36,13 @@ var productAlert = {
     // 상품 등록 후 알림 메시지
     showProductRegisterSuccess: function () {
         var message = "상품이 성공적으로 등록되었습니다!";
-        this.showToast(message, '#28a745');  // 성공 메시지 (녹색)
+        this.showToast(message, '#28a745', '/product-list');  // 성공 메시지 (녹색) & 리다이렉트
     },
 
     // 상품 삭제 후 알림 메시지
     showProductDeleteSuccess: function () {
         var message = "상품이 성공적으로 삭제되었습니다!";
-        this.showToast(message, '#dc3545');  // 삭제 메시지 (빨간색)
+        this.showToast(message, '#dc3545', '/product-list');  // 삭제 메시지 (빨간색) & 리다이렉트
     },
 
     // 페이지 로드 후 메시지 처리
@@ -57,23 +59,7 @@ var productAlert = {
     }
 };
 
-// 상품 등록 후, 페이지 리다이렉트 시 메시지 설정
-function registerProduct() {
-    // 상품 등록 코드...
-    
-    // 등록 성공 후, URL에 쿼리 파라미터 추가하여 리다이렉트
-    window.location.href = '/product-list?register=success';  // 상품 목록 페이지로 이동
-}
-
-// 상품 삭제 후, 페이지 리다이렉트 시 메시지 설정
-function deleteProduct(productId) {
-    // 상품 삭제 코드...
-
-    // 삭제 성공 후, URL에 쿼리 파라미터 추가하여 리다이렉트
-    window.location.href = '/product-list?delete=success';  // 상품 목록 페이지로 이동
-}
-
 // 페이지 로드 후 메시지 처리
 document.addEventListener('DOMContentLoaded', function () {
-    productAlert.handleMessages();  // 메시지 처리 함수 호출
+    productAlert.handleMessages();  // 페이지가 로드되면 알림 메시지 처리 함수 호출
 });
