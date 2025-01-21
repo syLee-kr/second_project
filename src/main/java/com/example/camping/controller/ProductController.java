@@ -148,13 +148,22 @@ public class ProductController {
     
     // 상품 삭제(상품목록 - 여러상품삭제)
     @PostMapping("/delete-products")
-    public String deleteProducts(@RequestParam ("productIds") List<Long> productIds, Model model) {
+    public String deleteProducts(@RequestParam ("productIds") List<Long> productIds,
+    							@RequestParam(value ="category", defaultValue ="전체") String category,
+    							Model model) {
         for (Long pseq : productIds) {
             // 각 상품 삭제 처리
             productService.deleteProduct(pseq);
         }
-        model.addAttribute("message", "선택한 상품이 삭제되었습니다.");
-        return "redirect:/goods/product-list"; // 상품 목록 페이지로 리다이렉트
+        
+        List<Products> products;
+        if ("전체".equals(category)) {
+            products = productService.getAllProducts();
+        } else {
+            products = productService.getProductsByCategory(category);
+        }
+ 
+        return "redirect:/goods/product-list?category=" + category; // 상품 목록 페이지로 리다이렉트
     }
 
 
@@ -164,7 +173,7 @@ public class ProductController {
     								String category, Model model) {
         List<Products> products;
     
-        if (category.equals("전체")) {
+        if ("전체".equals(category)) {
         	products = productService.getAllProducts();
         } else {
         	products = productService.getProductsByCategory(category);
