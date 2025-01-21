@@ -30,13 +30,15 @@ public class UserController {
 	
 	private void setDefaultValuesForUser(Users user) {
 		if (user.getUserId() == null) user.setUserId("정보 없음");
-		if (user.getName() == null) user.setName("정보 없음");
-		if (user.getEmail() == null) user.setEmail("정보 없음");
-		if (user.getPhone() == null) user.setPhone("정보 없음");
-		if (user.getAddress() == null) user.setAddress("정보 없음");
-		if (user.getBirthday() == null) user.setBirthday(LocalDate.now());
-		if (user.getGender() == null) user.setGender(Users.Gender.MALE);
-	}
+        if (user.getName() == null) user.setName("정보 없음");
+        if (user.getEmail() == null) user.setEmail("정보 없음");
+        if (user.getPhone() == null) user.setPhone("정보 없음");
+        if (user.getCity() == null) user.setCity("정보 없음");
+        if (user.getDistrict() == null) user.setDistrict("정보 없음");
+        if (user.getDetailedAddress() == null) user.setDetailedAddress("정보 없음");
+        if (user.getBirthday() == null) user.setBirthday(LocalDate.now());
+        if (user.getGender() == null) user.setGender(Users.Gender.MALE);
+    }
 		
 	
 	// 프로필 조회
@@ -90,7 +92,9 @@ public class UserController {
 			user.setName(updatedUser.getName());
 			user.setPhone(updatedUser.getPhone());
 			user.setEmail(updatedUser.getEmail());
-			user.setAddress(updatedUser.getAddress());
+			user.setCity(updatedUser.getCity());
+            user.setDistrict(updatedUser.getDistrict());
+            user.setDetailedAddress(updatedUser.getDetailedAddress());
 			user.setBirthday(updatedUser.getBirthday());
 			user.setGender(updatedUser.getGender());
 			

@@ -38,7 +38,14 @@ public class Users {
     private String name;            // 유저 이름
     private String email;           // 유저 이메일
     private String phone;           // 유저 전화번호
-    private String address;         // 유저 주소
+//  private String address;         // 유저 주소
+    
+    //주소관련 필드 세분화했음
+    private String city;           
+    private String district;        
+    private String detailedAddress; 
+    private double latitude;        // 위도
+    private double longitude;		// 경도
 	
 	// 생일
     @DateTimeFormat(pattern = "yyyy-MM-dd")

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>추천 캠핑장</title>
+</head>
+<body>
+    <h1>추천 캠핑장</h1>
+    <ul id="recommendations">
+        <li th:each="recommendation : ${recommendations}" th:text="${recommendation}"></li>
+    </ul>
+    <script src="/js/recommend.js"></script>
+</body>
+</html>
+
