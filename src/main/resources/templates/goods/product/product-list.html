@@ -11,6 +11,7 @@
     <!-- 카테고리 선택 드롭다운 -->
     <select id="categorySelect">
         <option value="">카테고리 선택</option>
+        <option value="전체">전체</option>
         <!-- 카테고리 목록을 동적으로 추가 -->
         <th:block th:each="category : ${categories}">
             <option th:value="${category.name}" th:text="${category.name}"></option>
@@ -57,7 +58,6 @@
 	    </div>
     </form>
 </div>
-
 <!-- JavaScript 파일 로드 -->
 <script src="/js/category.js"></script>
 <script src="/js/product-alert.js"></script>

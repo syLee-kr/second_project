@@ -162,16 +162,20 @@ public class ProductController {
     @GetMapping("/product-list")
     public String getAllProducts(@RequestParam (value ="category", defaultValue ="전체") 
     								String category, Model model) {
-        List<Products> products = productService.getAllProducts();
-        // 상품 목록이 없으면 빈 리스트로 
-        if (products == null) {
-        	products = new ArrayList<>();
-        }
+        List<Products> products;
+    
+        if (category.equals("전체")) {
+        	products = productService.getAllProducts();
+        } else {
+        	products = productService.getProductsByCategory(category);
+        }	
+        
         List<Category> categories = categoryRepo.findAll();
         
         model.addAttribute("products", products);
         model.addAttribute("categories", categories);
         model.addAttribute("selectedCategory", category);
+        
         return "goods/product/product-list";
     }
     
