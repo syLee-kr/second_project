@@ -1,4 +1,3 @@
-<!-- goods/category/category-list.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -31,8 +30,9 @@
                     <td th:text="${category.name}"></td>
                     <td><a th:href="@{/category/edit/{tseq}(tseq=${category.tseq})}">수정</a></td>
                     <td>
+                        <!-- DELETE 요청을 위한 폼 -->
                         <form th:action="@{/category/delete/{tseq}(tseq=${category.tseq})}" method="post">
-                            <input type="hidden" name="_method" value="delete">
+                            <input type="hidden" name="_method" value="delete"> <!-- DELETE 요청을 위해 -->
                             <button type="submit">삭제</button>
                         </form>
                     </td>

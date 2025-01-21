@@ -2,11 +2,16 @@ package com.example.camping.entity;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -55,8 +60,10 @@ public class Products {
 	private String content;
 	
 	//이미지
-	@Column(columnDefinition="varchar2(255) default 'default.jpg' ")
-	private String image;
+	@ElementCollection
+    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(columnDefinition = "varchar2(255)")
+    private List<String> imagePaths = new ArrayList<>();   // 상품 이미지 경로 리스트
 	
 	//사용여부
 	@Column(columnDefinition="char(1) default 'y'")

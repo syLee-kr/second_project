@@ -2,127 +2,38 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>상품 목록</title>
-    <style>
-        /* 기본 스타일 */
-        .product-container {
-            width: 80%;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* 상품을 양옆으로 나란히 배치 */
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .product-item, .empty-product-item {
-            border: 1px solid #ddd;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            background-color: #fff;
-            max-width: 280px;
-            margin: 0 auto;
-        }
-
-        .product-image {
-            width: 100%;
-            height: auto;
-            max-height: 200px;  /* 직사각형 비율을 위해 높이를 제한 */
-            object-fit: cover;
-            margin-bottom: 10px;
-        }
-
-        .product-link {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        .product-link:hover {
-            background-color: #45a049;
-        }
-
-        .empty-product-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .product-register-container {
-            margin-top: 40px;
-            text-align: center;
-        }
-
-        .product-register-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #2196F3;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .product-register-button:hover {
-            background-color: #1976D2;
-        }
-
-        /* "상품 준비 중" 기본 이미지 스타일 */
-        .empty-product-item img {
-            width: 100%;
-            max-height: 150px;
-            object-fit: cover;
-            margin-bottom: 10px;
-        }
-
-        /* 모바일 대응을 위한 반응형 그리드 */
-        @media (max-width: 768px) {
-            .product-grid {
-                grid-template-columns: 1fr 1fr; /* 작은 화면에서는 2개씩 표시 */
-            }
-
-            .empty-product-grid {
-                grid-template-columns: 1fr; /* 상품이 없는 경우 한 줄에 하나씩 */
-            }
-        }
-    </style>
+     <link rel="stylesheet" href="/css/productList.css" />
 </head>
 <body>
 <div class="product-container">
     <h1>상품 목록</h1>
 
-    <div class="product-grid">
-        <!-- 상품 목록 출력 -->
-        <div th:each="product : ${products}" class="product-item">
-            <img th:src="@{${product.image}}" alt="상품 이미지" class="product-image"/>
-            <h2 th:text="${product.name}">상품 이름</h2>
-            <p th:text="${product.price1} + '원'">가격</p>
-            <a th:href="@{'/goods/' + ${product.pseq}}" class="product-link">상품 보기</a>
-        </div>
-
+    <form th:action="@{/goods/delete-products}" method="post">
+	    <div class="product-grid">
+	        <!-- 상품 목록 출력 -->
+	        <div th:each="product : ${products}" class="product-item">
+	        	<input type="checkbox" name="productIds" th:value="${product.pseq}" /> 
+	 			<img th:if="${#lists.isEmpty(product.imagePaths)}" src="/images/defaultImg.jpg" alt="기본 이미지" class="product-image"/>
+	            <img th:unless="${#lists.isEmpty(product.imagePaths)}" th:src="@{${product.imagePaths[0]}}" alt="상품 이미지" class="product-image"/>
+	            <h2 th:text="${product.name}">상품 이름</h2>
+	            <p th:text="${product.price1} + '원'">가격</p>
+	            <a th:href="@{'/goods/' + ${product.pseq}}" class="product-link">상품 보기</a>
+	        </div>
+		</div>
         <!-- 상품이 없는 경우 기본 틀 표시 -->
-        <div th:if="${products.size() == 0}" class="empty-product-grid">
+        <div th:if="${#lists.isEmpty(products)}" class="empty-product-grid">
             <div class="empty-product-item">
-                <img src="/images/placeholder.jpg" alt="기본 이미지" class="product-image"/>
+                <img src="/images/defaultImg.jpg" alt="기본 이미지" class="product-image"/>
                 <h2>상품 준비 중</h2>
                 <p>가격 정보 없음</p>
             </div>
             <div class="empty-product-item">
-                <img src="/images/placeholder.jpg" alt="기본 이미지" class="product-image"/>
+                <img src="/images/defaultImg.jpg" alt="기본 이미지" class="product-image"/>
                 <h2>상품 준비 중</h2>
                 <p>가격 정보 없음</p>
             </div>
             <div class="empty-product-item">
-                <img src="/images/placeholder.jpg" alt="기본 이미지" class="product-image"/>
+                <img src="/images/defaultImg.jpg" alt="기본 이미지" class="product-image"/>
                 <h2>상품 준비 중</h2>
                 <p>가격 정보 없음</p>
             </div>

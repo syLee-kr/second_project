@@ -15,9 +15,9 @@
         <!-- 카테고리 선택 -->
         <div>
             <label for="category">카테고리</label>
-            <select id="category" name="category.id" required>
+            <select id="category" name="category.tseq" required> <!-- 카테고리 ID 사용 -->
                 <option th:each="category : ${categories}" 
-                        th:value="${category.id}" 
+                        th:value="${category.tseq}" 
                         th:text="${category.name}">카테고리</option>
             </select>
         </div>
@@ -29,7 +29,7 @@
 
         <div>
             <label for="content">상품 설명</label>
-            <textarea id="content" name="content" th:value="${product.content}" required></textarea>
+            <textarea id="content" name="content" th:text="${product.content}" required></textarea>
         </div>
 
         <div>

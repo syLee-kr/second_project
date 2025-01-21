@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -38,19 +39,26 @@ public class ProductController {
     public String registerProduct(@ModelAttribute Products product, 
                                   @RequestParam("image") MultipartFile image, Model model) {
         try {
+        	// 조회수
+        	if (product.getCnt() == null) {
+        		product.setCnt(0L);
+        	}
+        	
             // 이미지 파일 업로드 처리
+        	List<String> imagePaths = new ArrayList<>();
             if (!image.isEmpty()) {
                 String imagePath = uploadImage(image);
-                product.setImage(imagePath);  // 상품 객체에 이미지 경로 저장
-            }
+                imagePaths.add(imagePath);
+            }    
+                product.setImagePaths(imagePaths);  // 상품 객체에 이미지 경로 저장
+            
 
             // 상품 등록 처리
             Products saveProduct = productService.registerProduct(product);
-            model.addAttribute("product", saveProduct);
-            return "goods/product/product-list";  // 상품 목록 페이지로 이동
+            
+            return "redirect:/goods/product-list";  // 상품 목록 페이지로 이동
 
         } catch (IOException e) {
-            model.addAttribute("error", "상품등록에 실패했습니다.");
             return "goods/product/product-form";  // 오류 발생 시 다시 폼으로 돌아감
         }
     }
@@ -79,13 +87,18 @@ public class ProductController {
         try {
         	
         	// 기존 상품 조회
-        	
         	Products currentProduct = productService.getProductById(pseq);
         	
             // 이미지 파일 업로드 처리
+        	List<String> imagePaths = new ArrayList<>();
             if (!image.isEmpty()) {
                 String imagePath = uploadImage(image); //새로운 이미지 업로드
-                product.setImage(imagePath);  // 상품 객체에 이미지 경로 저장
+                imagePaths.add(imagePath);
+            } else {
+            	// 이미지가 없으면 기존 이미지 경로 유지할수있도록 처리
+            	if (currentProduct.getImagePaths() != null) {
+            		imagePaths = currentProduct.getImagePaths();
+            	}
             }
             
             // 기존 이미지 삭제 처리
@@ -99,6 +112,8 @@ public class ProductController {
 
             // 상품 수정 처리
             product.setPseq(pseq); // 상품의 ID를 설정
+            product.setImagePaths(imagePaths);  // 상품 객체에 이미지 경로 저장(없으면 빈 리스트)
+            
             Products updatedProduct = productService.updateProduct(pseq, product);
             model.addAttribute("product", updatedProduct);
             return "goods/product/product-list";  // 수정된 상품 목록 페이지로 이동
@@ -110,18 +125,36 @@ public class ProductController {
     }
     
 
-    // 상품 삭제
+ // 상품 삭제
     @DeleteMapping("/delete/{pseq}")
     public String deleteProduct(@PathVariable Long pseq, Model model) {
-        productService.deleteProduct(pseq);
-        model.addAttribute("message", "상품이 삭제되었습니다.");
-        return "goods/product/product-list";
+        Products product = productService.getProductById(pseq);
+        if (product != null) {
+            // 상품에 연관된 이미지 삭제
+            if (product.getImagePaths() != null) {
+            	for (String imagePath : product.getImagePaths()) {
+            		deleteImage(imagePath); // 이미지 삭제
+            	}
+            }
+
+            // 상품 삭제 처리
+            productService.deleteProduct(pseq);
+            model.addAttribute("message", "상품이 삭제되었습니다.");
+            return "goods/product/product-list"; // 상품 목록 페이지로 리다이렉트
+        } else {
+            model.addAttribute("message", "상품을 찾을 수 없습니다.");
+            return "goods/product/product-list";
+        }
     }
 
     // 상품 목록
     @GetMapping("/product-list")
     public String getAllProducts(Model model) {
         List<Products> products = productService.getAllProducts();
+        // 상품 목록이 없으면 빈 리스트로 
+        if (products == null) {
+        	products = new ArrayList<>();
+        }
         model.addAttribute("products", products);
         return "goods/product/product-list";
     }
@@ -187,7 +220,7 @@ public class ProductController {
     // 이미지 삭제 처리
     private void deleteImage(String imagePath) {
         String uploadDir = System.getProperty("user.dir") + File.separator + "productUploadImg";
-        String filePath = uploadDir + File.separator + imagePath.substring(imagePath.lastIndexOf("/") + 1); // 이미지 파일명만 추출하여 경로 합침
+        String filePath = uploadDir + File.separator + imagePath;
 
         // 이미지 파일 삭제 로직 (파일 경로에서 파일을 삭제)
         File file = new File(filePath);

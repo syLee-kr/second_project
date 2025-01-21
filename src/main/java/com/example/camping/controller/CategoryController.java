@@ -16,7 +16,20 @@ public class CategoryController {
 
     // 카테고리 리스트
     @GetMapping("/list")
-    public String categoryList(@RequestParam(required = false) String name, Model model) {
+    public String categoryList(@RequestParam(value ="name", required = false) String name, Model model) {
+        if (name != null) {
+            // 'name' 파라미터가 있으면 그 이름을 가진 카테고리만 조회
+            model.addAttribute("categories", categoryRepo.findByName(name));
+        } else {
+            // 'name' 파라미터가 없으면 모든 카테고리 조회
+            model.addAttribute("categories", categoryRepo.findAll());
+        }
+        return "goods/category/category-list";
+    }
+    
+    // 기본경로 접근시 상품목록으로 반환
+    @GetMapping("") // category 경로
+    public String categoryListall(@RequestParam(value="name", required = false) String name, Model model) {
         if (name != null) {
             // 'name' 파라미터가 있으면 그 이름을 가진 카테고리만 조회
             model.addAttribute("categories", categoryRepo.findByName(name));

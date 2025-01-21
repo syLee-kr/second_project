@@ -7,11 +7,16 @@
 <body>
     <h1>상품 상세 정보</h1>
 
-    <p><strong>상품명:</strong> <span th:text="${product.name}"></span></p>
-    <p><strong>가격:</strong> <span th:text="${product.price}"></span></p>
-    <p><strong>카테고리:</strong> <span th:text="${product.category}"></span></p>
-    <p><strong>설명:</strong> <span th:text="${product.description}"></span></p>
+    <!-- 여러 이미지 출력 -->
+    <div th:each="image : ${product.imagePaths}">
+        <img th:src="@{${image}}" alt="상품 이미지" style="max-width: 500px; max-height: 500px;"/>
+    </div>
 
-    <a href="/products">상품 목록으로 돌아가기</a>
+    <p><strong>상품명:</strong> <span th:text="${product.name}"></span></p>
+    <p><strong>가격:</strong> <span th:text="${product.price1}"></span></p> <!-- price1 사용 -->
+    <p><strong>카테고리:</strong> <span th:text="${product.category.name}"></span></p> <!-- 카테고리 이름 출력 -->
+    <p><strong>설명:</strong> <span th:text="${product.content}"></span></p> <!-- content 사용 -->
+
+    <a href="/goods/product-list">상품 목록으로 돌아가기</a> <!-- 상품 목록으로 돌아가는 링크 -->
 </body>
 </html>
