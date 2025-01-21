@@ -126,7 +126,7 @@ public class ProductController {
     
 
  // 상품 삭제
-    @DeleteMapping("/delete/{pseq}")
+    @PostMapping("/delete/{pseq}")
     public String deleteProduct(@PathVariable Long pseq, Model model) {
         Products product = productService.getProductById(pseq);
         if (product != null) {
