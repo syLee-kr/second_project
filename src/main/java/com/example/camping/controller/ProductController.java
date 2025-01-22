@@ -148,15 +148,48 @@ public class ProductController {
     
     // 상품 삭제(상품목록 - 여러상품삭제)
     @PostMapping("/delete-products")
-    public String deleteProducts(@RequestParam ("productIds") List<Long> productIds,
-    							@RequestParam(value ="category", defaultValue ="전체") String category) {
+    public String deleteProducts(@RequestParam("productIds") List<Long> productIds,
+                                 @RequestParam(value = "category", defaultValue = "전체") String category) {
+        // 상품 삭제 시작
+        log.info("상품 삭제 시작 - 삭제할 상품 ID 목록: {}", productIds);
+        
         for (Long pseq : productIds) {
-            // 각 상품 삭제 처리
-            productService.deleteProduct(pseq);
+            // 각 상품에 대해 처리
+            log.info("처리 중인 상품 ID: {}", pseq);
+
+            // 상품 조회
+            Products product = productService.getProductById(pseq);
+            if (product != null) {
+                log.info("상품 조회 성공 - 상품명: {}", product.getName());
+                
+                // 상품에 연관된 이미지 삭제
+                if (product.getImagePaths() != null && !product.getImagePaths().isEmpty()) {
+                    log.info("상품에 연관된 이미지 경로 있음 - 이미지 삭제 시작");
+                    for (String imagePath : product.getImagePaths()) {
+                        // 이미지 삭제
+                        log.info("삭제 중인 이미지 경로: {}", imagePath);
+                        deleteImage(imagePath); // 이미지 삭제
+                    }
+                    log.info("상품에 연관된 이미지 삭제 완료");
+                } else {
+                    log.info("상품에 연관된 이미지 없음");
+                }
+
+                // 상품 삭제 처리
+                log.info("상품 삭제 시작 - 상품 ID: {}", pseq);
+                productService.deleteProduct(pseq);
+                log.info("상품 삭제 완료 - 상품 ID: {}", pseq);
+            } else {
+                log.warn("상품 조회 실패 - 존재하지 않는 상품 ID: {}", pseq);
+            }
         }
- 
-        return "redirect:/goods/product-list";  // 상품 목록 페이지로 리다이렉트
+        
+        log.info("상품 삭제 완료 - 삭제한 상품 ID 목록: {}", productIds);
+        
+        // 상품 목록 페이지로 리다이렉트
+        return "redirect:/goods/product-list";
     }
+
 
 
     // 상품 목록
@@ -245,8 +278,11 @@ public class ProductController {
     // 이미지 삭제 처리
     private void deleteImage(String imagePath) {
         String uploadDir = System.getProperty("user.dir") + File.separator + "productUploadImg";
-        String filePath = uploadDir + File.separator + imagePath;
-
+       
+        String filePath = uploadDir + File.separator + imagePath.replaceFirst("^/productUploadImg/", "");
+        
+        log.info("이미지 삭제 시도 경로: {}", filePath);  // 실제 경로 확인
+        
         // 이미지 파일 삭제 로직 (파일 경로에서 파일을 삭제)
         File file = new File(filePath);
         if (file.exists()) {

@@ -62,3 +62,10 @@ var productAlert = {
 window.onload = function () {
     productAlert.handleMessagesBeforeLoad();
 };
+
+
+
+/* 이벤트 리스터로 하나의 코드로 만들었을때는 기능들이 충동을 일으켜서 적용이 안되었던거 같음
+그래서 해당 메서드들을 분리해서 적용함.
+*/
+ 
