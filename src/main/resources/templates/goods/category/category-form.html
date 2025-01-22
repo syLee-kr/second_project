@@ -7,25 +7,59 @@
 </head>
 <body>
 
-    <h1>카테고리 정보</h1>
+    <!-- 새 카테고리 추가와 수정 카테고리 구분 -->
+    <h1 th:text="${category.tseq == null || category.tseq == 0 ? '새 카테고리 추가' : '카테고리 수정'}"></h1>
 
-    <!-- 카테고리 추가 폼 -->
-    <form th:action="@{/category/add}" th:object="${category}" method="post">
+    <!-- 카테고리 추가 및 수정 폼 -->
+    <form th:action="${category.tseq == null || category.tseq == 0 ? '/category/add' : '/category/edit/' + category.tseq}" 
+          th:object="${category}" method="post">
+        
+        <!-- 카테고리 이름 입력 -->
         <label for="name">카테고리 이름:</label>
         <input type="text" id="name" th:field="*{name}" placeholder="카테고리 이름을 입력하세요" required>
-        <button type="submit">저장</button>
-    </form>
 
-    <!-- 수정 폼일 경우 카테고리 번호 hidden으로 추가 -->
-    <form th:action="@{/category/edit/{tseq}(tseq=${category.tseq})}" th:object="${category}" method="post" th:if="${category != null}">
-        <input type="hidden" th:field="*{tseq}">
-        <label for="name">카테고리 이름:</label>
-        <input type="text" id="name" th:field="*{name}" placeholder="카테고리 이름을 수정하세요" required>
-        <button type="submit">수정</button>
-    </form>
+        <!-- 수정일 경우 카테고리 번호 입력 필드가 나타나도록 하여 수정용으로 전송 -->
+        <input type="hidden" th:if="${category.tseq != null && category.tseq != 0}" th:field="*{tseq}"/>
 
-    <!-- 메시지 출력 -->
-    <div th:if="${message}" th:text="${message}"></div>
+        <!-- 제출 버튼 (저장/수정) -->
+        <button type="submit" th:text="${category.tseq == null || category.tseq == 0 ? '저장' : '수정'}"></button>
+    </form>
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- tseq == 0 을 이용해서 수정과 추가 구분하는 방법 
+
+0을 tseq로 설정함으로써 기존의 유효한 tseq 값과 새 카테고리를 구분.
+이렇게 하면, tseq가 null이 아니라 0일 경우에는 "새 카테고리 추가"로 간주되고, 
+tseq가 실제 값(예: 1, 2, ...)이 있으면 기존 카테고리의 "수정" 폼으로 처리.
+구체적인 동작 방식:
+
+1)새 카테고리 추가: 새 카테고리를 추가할 때는 tseq 값을 0으로 설정하여, 
+	이 값이 0일 때 추가 폼을 렌더링하도록 하고, 그 후 새 카테고리가 생성.
+2)기존 카테고리 수정: 기존 카테고리를 수정할 때는 해당 카테고리의 tseq 값을 그대로 사용하여, 
+	tseq가 0이 아닌 값으로 존재할 때 수정 폼이 렌더링.
+
+%간단히 말하면:
+
+tseq == 0: 새 카테고리 추가 폼
+tseq != 0: 기존 카테고리 수정 폼
+
+-->

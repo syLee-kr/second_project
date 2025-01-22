@@ -22,5 +22,40 @@ public class CategoryServiceImpl implements CategoryService {
 		categories.add(0, allCategory); // '전체' 카테고리를 리스트 첫번째로 추가
 		return categories;
 	}
+	
+	// 카테고리 이름으로 조회
+	@Override
+	public Category getCategoriesByName(String name) {
+		return categoryRepo.findByName(name);
+	}
+	
+	// 카테고리 추가
+	@Override
+	public void addCategory(Category category) {
+		categoryRepo.save(category);
+		
+	}
+
+	// 카테고리 ID 조회	
+	@Override
+	public Category getCategoryById(Long tseq) {
+		
+		return categoryRepo.findById(tseq).orElse(null);
+	}
+	
+	// 카데고리 수정
+	@Override
+	public void updateCategory(Long tseq, Category category) {
+		category.setTseq(tseq);
+		categoryRepo.save(category);
+		
+	}
+	
+	// 카테고리 삭제
+	@Override
+	public void deleteCategory(Long tseq) {
+		categoryRepo.deleteById(tseq);
+		
+	}
 
 }
