@@ -5,11 +5,19 @@ function handleCategorySelect() {
     if (categorySelect) {
         categorySelect.addEventListener('change', function () {
             const selectedCategory = categorySelect.value;
-
+			
+			// "전체"를 선택한 경우, 모든 상품을 표시하도록 페이지 리로드
             if (selectedCategory == "전체") {
                 window.location.href = '/goods/product-list';
-            } else {
-                window.location.href = `/goods/product-list?category=${selectedCategory}`;
+			
+			// "카테고리 선택" 상태일 경우 아무 동작도 하지 않음
+			} else if (selectedCategory === '') {
+			    // "카테고리 선택" 상태에서는 아무 동작도 하지 않음
+			    return;
+				
+			} else {
+			// 특정 카테고리를 선택한 경우, 해당 카테고리 상품만 필터링해서 보기
+            window.location.href = `/goods/product-list?category=${selectedCategory}`;
             }
         });
     }

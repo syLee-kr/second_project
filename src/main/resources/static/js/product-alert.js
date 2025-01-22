@@ -11,26 +11,25 @@ var productAlert = {
         }
     },
 
-    // 상품 등록 처리
-    handleRegisterMessage: function () {
-        const registerButton = document.querySelector('.product-register-button');
-        if (registerButton) {
-            registerButton.addEventListener('click', function (event) {
-                const form = document.querySelector('form');
-                // 예시로 상품 이름이 필수로 입력되었는지 확인 (필수 항목 체크)
-                const productName = form.querySelector('input[name="productName"]').value;
+	// 상품 등록 처리
+	handleRegisterMessage: function () {
+	    const registerButton = document.querySelector('.product-submit-button');
+	    const form = document.querySelector('form');  // 폼을 가져옴
+	    if (registerButton && form) {
+	        form.addEventListener('submit', function (event) {
+	            const productName = form.querySelector('input[name="name"]').value;  // 상품명 가져오기
 
-                if (!productName) {
-                    // 상품 이름이 비어 있으면 실패 메시지
-                    productAlert.showAlert("상품 등록에 실패했습니다. 상품 이름을 입력하세요.");
-                    event.preventDefault();  // 폼 제출 막기
-                } else {
-                    // 상품 등록 성공 메시지
-                    productAlert.showAlert("상품이 성공적으로 등록되었습니다!", '/goods/product-list');
-                }
-            });
-        }
-    },
+	            if (!productName) {
+	                // 상품 이름이 비어 있으면 실패 메시지
+	                productAlert.showAlert("상품 등록에 실패했습니다. 상품 이름을 입력하세요.");
+	                event.preventDefault();  // 폼 제출 막기
+	            } else {
+	                // 상품 등록 성공 메시지
+	                productAlert.showAlert("상품이 성공적으로 등록되었습니다!", '/goods/product-list');
+	            }
+	        });
+	    }
+	},
 
     // 상품 삭제 처리
     handleDeleteMessage: function () {

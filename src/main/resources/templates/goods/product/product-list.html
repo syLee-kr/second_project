@@ -10,8 +10,8 @@
     
     <!-- 카테고리 선택 드롭다운 -->
     <select id="categorySelect">
-        <option value="">카테고리 선택</option>
-        <option value="전체">전체</option>
+          <option value="" th:selected="${selectedCategory == ''}">카테고리 선택</option>
+        <option value="전체" th:selected="${selectedCategory == '전체'}">전체</option>
         <!-- 카테고리 목록을 동적으로 추가 -->
         <th:block th:each="category : ${categories}">
             <option th:value="${category.name}" th:text="${category.name}"
@@ -46,7 +46,7 @@
         <!-- 상품 등록과 삭제 버튼 -->
         <div class="product-register-container">
             <a href="/goods/product-register" class="product-register-button">상품 등록</a>
-            <button type="submit" class="product-delete-button" style="background-color: #f44336; margin-top: 20px;">상품 삭제</button>
+            <button type="submit" class="product-delete-button">상품 삭제</button>
         </div>
     </form>
 </div>
