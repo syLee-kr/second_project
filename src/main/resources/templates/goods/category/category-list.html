@@ -8,10 +8,7 @@
 <body>
 
     <h1>카테고리 목록</h1>
-    <div>
-        <a href="/category/add">새 카테고리 추가</a>
-    </div>
-
+    
     <!-- 카테고리 목록 테이블 -->
     <table border="1">
         <thead>
@@ -40,6 +37,12 @@
             </th:block>
         </tbody>
     </table>
+    
+    <div>
+    	<form action ="/category/add" method="get">
+    		<button type="submit" class="btn">새 카테고리 추가</button>
+    	</form>
+    </div>
 
     <!-- 메시지 출력 -->
     <div th:if="${message}" th:text="${message}"></div>

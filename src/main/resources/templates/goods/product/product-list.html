@@ -14,7 +14,8 @@
         <option value="전체">전체</option>
         <!-- 카테고리 목록을 동적으로 추가 -->
         <th:block th:each="category : ${categories}">
-            <option th:value="${category.name}" th:text="${category.name}"></option>
+            <option th:value="${category.name}" th:text="${category.name}"
+            		th:selected="${category.name == selectedCategory}"></option>
         </th:block>
     </select>
 
@@ -38,26 +39,18 @@
                 <h2>상품 준비 중</h2>
                 <p>가격 정보 없음</p>
             </div>
-            <div class="empty-product-item">
-                <img src="/images/defaultImg.jpg" alt="기본 이미지" class="product-image"/>
-                <h2>상품 준비 중</h2>
-                <p>가격 정보 없음</p>
-            </div>
-            <div class="empty-product-item">
-                <img src="/images/defaultImg.jpg" alt="기본 이미지" class="product-image"/>
-                <h2>상품 준비 중</h2>
-                <p>가격 정보 없음</p>
-            </div>
         </div>
     
 
     
-	    <div class="product-register-container">
-	        <a href="/goods/product-register" class="product-register-button">상품 등록</a>
-	    	<button type="submit" class="product-register-button" style="background-color: #f44336; margin-top: 20px;">선택된 상품 삭제</button>
-	    </div>
+        <!-- 상품 등록과 삭제 버튼 -->
+        <div class="product-register-container">
+            <a href="/goods/product-register" class="product-register-button">상품 등록</a>
+            <button type="submit" class="product-delete-button" style="background-color: #f44336; margin-top: 20px;">상품 삭제</button>
+        </div>
     </form>
 </div>
+
 <!-- JavaScript 파일 로드 -->
 <script src="/js/category.js"></script>
 <script src="/js/product-alert.js"></script>

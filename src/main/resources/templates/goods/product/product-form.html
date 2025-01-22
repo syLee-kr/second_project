@@ -6,6 +6,7 @@
 </head>
 <body>
     <h1>상품 등록</h1>
+   
     <form th:action="@{/goods/product-register}" method="post" enctype="multipart/form-data">
         <div>
             <label for="name">상품명</label>
@@ -20,6 +21,7 @@
                         th:value="${category.tseq}" 
                         th:text="${category.name}">카테고리</option>
             </select>
+             <button type="button" id="addCategoryBtn">추가</button>
         </div>
 
         <div>
@@ -39,5 +41,7 @@
 
         <button type="submit">등록</button>
     </form>
+    <script src="/js/product-alert.js"></script>
+    <script src="/js/category.js" defer></script>
 </body>
 </html>

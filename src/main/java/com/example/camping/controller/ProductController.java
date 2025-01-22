@@ -71,7 +71,7 @@ public class ProductController {
             model.addAttribute("categories", categoryRepo.findAll()); // 카테고리 목록
             return "goods/product/product-edit-form"; // 상품 수정 폼
         } else {
-            model.addAttribute("message", "상품을 찾을 수 없습니다.");
+            
             return "goods/product/product-list"; // 상품 목록 페이지로 리다이렉트
         }
     }
@@ -118,7 +118,7 @@ public class ProductController {
             return "goods/product/product-list";  // 수정된 상품 목록 페이지로 이동
 
         } catch (IOException e) {
-            model.addAttribute("error", "상품수정에 실패했습니다.");
+            
             return "goods/product/product-edit-form";  // 오류 발생 시 수정 폼으로 돌아감
         }
     }
@@ -138,10 +138,10 @@ public class ProductController {
 
             // 상품 삭제 처리
             productService.deleteProduct(pseq);
-            model.addAttribute("message", "상품이 삭제되었습니다.");
+            
             return "goods/product/product-list"; // 상품 목록 페이지로 리다이렉트
         } else {
-            model.addAttribute("message", "상품을 찾을 수 없습니다.");
+            
             return "redirect:/goods/product-list";
         }
     }
@@ -149,21 +149,13 @@ public class ProductController {
     // 상품 삭제(상품목록 - 여러상품삭제)
     @PostMapping("/delete-products")
     public String deleteProducts(@RequestParam ("productIds") List<Long> productIds,
-    							@RequestParam(value ="category", defaultValue ="전체") String category,
-    							Model model) {
+    							@RequestParam(value ="category", defaultValue ="전체") String category) {
         for (Long pseq : productIds) {
             // 각 상품 삭제 처리
             productService.deleteProduct(pseq);
         }
-        
-        List<Products> products;
-        if ("전체".equals(category)) {
-            products = productService.getAllProducts();
-        } else {
-            products = productService.getProductsByCategory(category);
-        }
  
-        return "redirect:/goods/product-list?category=" + category; // 상품 목록 페이지로 리다이렉트
+        return "redirect:/goods/product-list";  // 상품 목록 페이지로 리다이렉트
     }
 
 
@@ -217,7 +209,7 @@ public class ProductController {
     		model.addAttribute("product", product);
     		 return "goods/product/product-detail"; // 상품 상세 페이지로 이동
     	} else {
-    		model.addAttribute("message", "해당 상품이 없습니다.");
+    		
     		return "goods/product/product-list"; // 상품 목록으로 이동
     	}
     }
