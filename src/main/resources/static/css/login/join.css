@@ -1,0 +1,306 @@
+@font-face {
+    font-family: 'NotoSerifKR';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NotoSerifKR.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'NotoSerifKR', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #e6f3f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px; /* 작은 화면에서도 여유 공간 확보 */
+}
+
+/* 컨테이너 스타일 */
+.container {
+    width: 100%;
+    max-width: 500px;
+    background-color: #fff;
+    border: 1px solid #dbdbdb;
+    border-radius: 15px;
+    padding: 30px 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* 폼 컨테이너 */
+.form-container {
+    width: 100%;
+}
+
+/* 폼 요소 스타일 */
+.form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-container h1 a {
+    font-family: 'NotoSerifKR', cursive;
+    font-size: 2.5rem;
+    color: #262626;
+    text-decoration: none;
+}
+
+/* 이메일 섹션: 가로 정렬 */
+.email {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: nowrap; /* 기본적으로 줄 바꿈 없이 가로로 정렬 */
+    align-items: stretch; /* 입력 필드들의 높이를 동일하게 맞춤 */
+}
+
+.email input[type="text"],
+.email select,
+.email input[type="text"][id="customDomain"] {
+    padding: 12px 10px;
+    border: 1px solid #dbdbdb;
+    border-radius: 10px;
+    background-color: #fafafa;
+    font-size: 16px;
+    height: 48px; /* 높이를 동일하게 설정 */
+    flex: 1; /* 유연한 너비 조정 */
+}
+
+/* 이메일 아이디 입력 필드에 더 많은 공간 할당 */
+.email input[type="text"]#emailPrefix {
+    flex: 2;
+}
+
+/* 도메인 선택 필드의 최대 너비 설정 */
+.email select#emailDomain {
+    flex: 1;
+    max-width: 200px;
+}
+
+/* 커스텀 도메인 입력 필드 */
+.email input[type="text"][id="customDomain"] {
+    flex: 1;
+    max-width: 200px;
+    display: none; /* 초기에는 숨김 */
+}
+
+/* 커스텀 도메인 입력 시 조정 */
+.email.show-custom {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch; /* 높이를 동일하게 맞춤 */
+}
+
+.email.show-custom input[type="text"][id="customDomain"] {
+    display: block;
+}
+
+/* 체크 결과 스타일 */
+.check-result {
+    font-size: 14px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* 일반 입력 필드 스타일 */
+.form-container input[type="text"],
+.form-container input[type="password"] {
+    width: 100%;
+    padding: 12px 10px;
+    border: 1px solid #dbdbdb;
+    border-radius: 10px;
+    background-color: #fafafa;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.form-container input[type="text"]:focus,
+.form-container input[type="password"]:focus {
+    background-color: #fff;
+    border-color: #a8a8a8;
+    outline: none;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 15px 0;
+    background-color: #67d3d3;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    background-color: #5cbcbc;
+}
+
+.submit-btn:disabled {
+    background-color: #b2dffc;
+    cursor: default;
+}
+
+/* 약관 컨테이너 */
+.terms-container {
+    margin-top: 30px;
+}
+
+.terms-container h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.terms-content {
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #dbdbdb;
+    border-radius: 10px;
+    background-color: #fafafa;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.agreement {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 16px;
+}
+
+.agreement input[type="checkbox"] {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.agreement label {
+    cursor: pointer;
+}
+
+/* 모달 스타일 */
+#errorModal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: rgba(0, 0, 0, 0.8);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 300px;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.close-button {
+    color: #aaa;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #fff;
+    text-decoration: none;
+}
+
+#errorMessageText {
+    color: #f3655a;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 800px) {
+    .email {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .email input[type="text"]#emailPrefix,
+    .email select#emailDomain,
+    .email input[type="text"][id="customDomain"] {
+        flex: 1 1 48%; /* 두 개씩 한 줄에 배치 */
+        max-width: none; /* max-width 제거 */
+    }
+
+    .email input[type="text"][id="customDomain"] {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .container {
+        padding: 20px 15px;
+    }
+
+    .form-container h1 a {
+        font-size: 2rem;
+    }
+
+    .submit-btn {
+        font-size: 16px;
+        padding: 12px 0;
+    }
+
+    .terms-container h2 {
+        font-size: 1rem;
+    }
+
+    .terms-content {
+        font-size: 13px;
+    }
+
+    .agreement {
+        font-size: 14px;
+    }
+
+    .modal-content {
+        width: 90%;
+        max-width: 280px;
+    }
+
+    .close-button {
+        font-size: 20px;
+    }
+
+    /* 이메일 섹션 조정 */
+    .email {
+        flex-direction: column;
+    }
+
+    .email select,
+    .email input[type="text"][id="customDomain"] {
+        max-width: 100%;
+    }
+}

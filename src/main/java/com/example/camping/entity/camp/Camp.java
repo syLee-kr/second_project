@@ -3,37 +3,88 @@ package com.example.camping.entity.camp;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "camp")
 @Data
 public class Camp {
 
     @Id
-    private String id; // MongoDB의 _id 필드와 매핑
+    private String id;
 
-    private Integer number; // 번호
-    private String name; // 야영장명
-    private String businessType; // 사업주체_구분
-    private String province; // 도
-    private String city; // 시군구
-    private String address; // 주소
-    private Integer generalCamping; // 주요시설 일반야영장
-    private Integer carCamping; // 주요시설 자동차야영장
-    private Integer glamping; // 주요시설 글램핑
-    private Integer caravan; // 주요시설 카라반
-    private Integer privateCaravan; // 주요시설 개인 카라반
-    private Integer dumpStation; // 주요시설 덤프스테이션
-    private String firePit; // 화로대
-    private String facilities; // 부대시설
-    private String nearbyFacilities; // 주변이용가능시설
-    private Integer fireExtinguisherCount; // 소화기 개수
-    private Integer fireWaterCount; // 방화수 개수
-    private Integer fireCompanyCount; // 방화사 개수
-    private Integer fireDetectorCount; // 화재감지기 개수
-    private String themeEnvironment; // 테마환경
-    private String equipmentRental; // 캠핑장비대여
-    private String petAllowed; // 반려동물출입
-    private String contact; // 연락처
-    private Double latitude; // 위도
-    private Double longitude; // 경도
+    @Field("번호")
+    private Integer number;
+
+    @Field("야영장명")
+    private String name;
+
+    @Field("사업주체_구분")
+    private String businessType;
+
+    @Field("도")
+    private String province;
+
+    @Field("시군구")
+    private String city;
+
+    @Field("주소")
+    private String address;
+
+    @Field("주요시설 일반야영장")
+    private Integer generalCamping;
+
+    @Field("주요시설 자동차야영장")
+    private Integer carCamping;
+
+    @Field("주요시설 글램핑")
+    private Integer glamping;
+
+    @Field("주요시설 카라반")
+    private Integer caravan;
+
+    @Field("주요시설 개인 카라반")
+    private Integer privateCaravan;
+
+    @Field("주요시설 덤프스테이션")
+    private Integer dumpStation;
+
+    @Field("화로대")
+    private String firePit;
+
+    @Field("부대시설")
+    private String facilities;
+
+    @Field("주변이용가능시설")
+    private String nearbyFacilities;
+
+    @Field("소화기 개수")
+    private Integer fireExtinguisherCount;
+
+    @Field("방화수 개수")
+    private Integer fireWaterCount;
+
+    @Field("방화사 개수")
+    private Integer fireCompanyCount;
+
+    @Field("화재감지기 개수")
+    private Integer fireDetectorCount;
+
+    @Field("테마환경")
+    private String themeEnvironment;
+
+    @Field("캠핑장비대여")
+    private String equipmentRental;
+
+    @Field("반려동물출입")
+    private String petAllowed;
+
+    @Field("연락처")
+    private String contact;
+
+    @Field("위도")
+    private Double latitude;
+
+    @Field("경도")
+    private Double longitude;
 }
+

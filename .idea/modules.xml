@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/camping.iml" filepath="$PROJECT_DIR$/camping.iml" />
+      <module fileurl="file://$PROJECT_DIR$/camp/camp.iml" filepath="$PROJECT_DIR$/camp/camp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/camping.main.iml" filepath="$PROJECT_DIR$/.idea/modules/camping.main.iml" />
     </modules>
   </component>
 </project>

@@ -1,0 +1,230 @@
+@font-face {
+    font-family: 'NotoSerifKR';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NotoSerifKR.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #e6f3f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* 메인 컨테이너 */
+.main {
+    width: 100%;
+    max-width: 800px; /* 최대 너비를 400px로 증가 */
+    padding: 20px;
+    border-radius: 15px; /* 모서리를 조금 더 둥글게 */
+}
+
+/* 서브 메인 컨테이너 (로그인 박스) */
+.subMain {
+    background-color: #fff;
+    border: 1px solid #dbdbdb;
+    border-radius: 15px; /* 모서리를 조금 더 둥글게 */
+    padding: 50px 40px 30px; /* 패딩을 늘려 공간 확보 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* 로고 */
+.subMain h1 {
+    text-align: center;
+    margin-bottom: 60px; /* 마진을 늘려 로고와 입력 필드 사이 공간 확보 */
+}
+
+.subMain h1 a {
+    font-family: 'NotoSerifKR', cursive;
+    font-size: 6rem; /* 폰트 크기를 키움 */
+    color: #262626;
+    text-decoration: none;
+}
+
+/* 입력 필드 스타일 */
+.subMain input[type="text"],
+.subMain input[type="password"] {
+    width: 100%;
+    padding: 20px 10px; /* 패딩을 늘려 입력 필드 높이 증가 */
+    border: 1px solid #dbdbdb;
+    border-radius: 10px; /* 모서리를 더 둥글게 */
+    background-color: #fafafa;
+    margin-bottom: 40px; /* 입력 필드 간 간격을 넓힘 */
+    font-size: 32px; /* 폰트 크기를 키움 */
+}
+
+.subMain input[type="text"]:focus,
+.subMain input[type="password"]:focus {
+    background-color: #fff;
+    border-color: #a8a8a8;
+    outline: none;
+}
+
+/* 체크박스 및 링크 */
+.form-cbox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 0; /* 마진을 늘려 공간 확보 */
+}
+
+.cbox {
+    display: flex;
+    align-items: center;
+    font-size: 30px; /* 폰트 크기를 약간 증가 */
+    color: #8e8e8e;
+}
+
+.cbox input[type="checkbox"] {
+    transform: scale(1.5); /* 체크박스 크기를 1.5배로 확대 */
+    margin-right: 15px; /* 체크박스와 텍스트 간 간격 증가 */
+    /* 필요 시 추가 정렬 조정 */
+    vertical-align: middle;
+}
+
+.find a {
+    font-size: 30px; /* 폰트 크기를 약간 증가 */
+    color: #00376b;
+    text-decoration: none;
+}
+
+.find a:hover {
+    text-decoration: underline;
+}
+
+/* 로그인 버튼 */
+.login button {
+    width: 100%;
+    padding: 10px 0; /* 패딩을 늘려 버튼 높이 증가 */
+    background-color: #67d3d3;
+    border: none;
+    border-radius: 10px; /* 모서리를 더 둥글게 */
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 40px; /* 폰트 크기를 키움 */
+    margin-top: 10px; /* 버튼 위에 여백 추가 */
+}
+
+.login button:disabled {
+    background-color: #b2dffc;
+    cursor: default;
+}
+
+/* 구분선 */
+.horizon {
+    text-align: center;
+    font-size: 30px; /* 폰트 크기를 약간 증가 */
+    color: #8e8e8e;
+    margin: 20px 0; /* 마진을 늘려 공간 확보 */
+    position: relative;
+}
+
+.horizon::before,
+.horizon::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 45%; /* 선의 길이를 늘림 */
+    height: 1px;
+    background-color: #dbdbdb;
+}
+
+.horizon::before {
+    left: 0;
+}
+
+.horizon::after {
+    right: 0;
+}
+
+/* 소셜 로그인 버튼 */
+.login-another {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 세로 정렬 추가 */
+    gap: 15px; /* 간격을 늘림 */
+    margin-bottom: 20px; /* 아래에 여백 추가 */
+}
+
+.login-another a img {
+    width: 60%; /* 아이콘 크기 고정 */
+    height: auto;
+    cursor: pointer;
+    display: block; /* 블록 요소로 변경하여 정렬 개선 */
+    margin: 0 auto; /* 이미지 자체를 중앙 정렬 */
+}
+
+/* 회원가입 링크 */
+.join {
+    text-align: center;
+    margin-top: 10px; /* 마진을 줄여 전체 레이아웃 균형 맞춤 */
+    font-size: 30px; /* 폰트 크기를 약간 증가 */
+    color: #8e8e8e;
+}
+
+.join a {
+    color: #0095f6;
+    text-decoration: none;
+}
+
+.join a:hover {
+    text-decoration: underline;
+}
+
+/* 모달 스타일 */
+.modal {
+    display: none; /* 기본적으로 숨김 */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 20% auto; /* 마진을 줄여 모달이 더 위로 올라오게 함 */
+    padding: 25px;
+    border: 1px solid #888;
+    width: 85%;
+    max-width: 350px;
+    border-radius: 6px; /* 모서리를 더 둥글게 */
+    text-align: center;
+}
+
+.modal-content p {
+    font-size: 30px; /* 폰트 크기를 키움 */
+    color: #333;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 400px) {
+    .subMain {
+        padding: 40px 25px 20px; /* 패딩을 약간 줄여 작은 화면에서도 여유 확보 */
+    }
+
+    .subMain h1 a {
+        font-size: 2.5rem; /* 폰트 크기를 약간 줄임 */
+    }
+
+    .login-another a img {
+        width: 28px; /* 아이콘 크기를 약간 줄임 */
+        height: 28px;
+    }
+
+    .modal-content {
+        margin: 25% auto; /* 마진을 약간 증가 */
+    }
+}

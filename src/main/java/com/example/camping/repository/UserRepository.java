@@ -17,16 +17,12 @@ public interface UserRepository extends JpaRepository<Users, String> {
     Optional<Users> findId(String userId);
 
     //  닉네임 중복 체크
-    @Query("SELECT u FROM Users u WHERE u.nickname = :nickname")
     Boolean existsByNickname(String nickname);
 
     // 사용자 로그인 처리 (아이디 + 비밀번호)
     @Query("SELECT u FROM Users u WHERE u.userId = :userId AND u.password = :password")
     Optional<Users> findIdPassword(String userId, String password);
 
-    // 이메일로 사용자 찾기
-    @Query("SELECT u FROM Users u WHERE u.email = :email")
-    Optional<Users> findEmail(String email);
 
 
     //  관리자용

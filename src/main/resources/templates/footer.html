@@ -1,0 +1,32 @@
+<div th:fragment="footer"  class="bottom-nav">
+    <a href="/camp">
+        <img src="/images/camp-icon.png" alt="캠핑">
+        <span>캠핑</span>
+    </a>
+    <a href="/post">
+        <img src="/images/post-icon.png" alt="게시글">
+        <span>게시글</span>
+    </a>
+    <a href="/shop">
+        <img src="/images/shop-icon.png" alt="상점">
+        <span>상점</span>
+    </a>
+    <a href="/profile">
+        <img src="/images/profile-icon.png" alt="프로필">
+        <span>프로필</span>
+    </a>
+    <a href="/setting">
+        <img src="/images/settings-icon.png" alt="설정">
+        <span>설정</span>
+    </a>
+    <a href="/logout" th:if="${session.user}">
+        <img src="/images/logout-icon.png" alt="로그아웃">
+        <span>로그아웃</span>
+    </a>
+
+    <!-- 세션에 user가 없으면 로그인 링크 표시 -->
+    <a href="/login" th:unless="${session.user}">
+        <img src="/images/login-icon.png" alt="로그인">
+        <span>로그인</span>
+    </a>
+</div>

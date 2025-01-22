@@ -28,4 +28,8 @@ public class CampRatingService {
     public List<CampRating> getUserRatings(String userId) {
         return campR.findByUserId(userId);
     }
+
+    public void save(CampRating campRating) {
+        campR.save(campRating);
+    }
 }

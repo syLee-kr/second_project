@@ -4,6 +4,7 @@ import com.example.camping.entity.Users;
 import com.example.camping.service.UserServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@NoArgsConstructor
 public class LoginController {
 
+    @Autowired
     private UserServiceImpl userService;
 
     @GetMapping("/login")
@@ -33,7 +34,7 @@ public class LoginController {
                               HttpSession session) {
         try {
             Users user = userService.login(userId, password);
-            session.setAttribute("loggedInUser", user);
+            session.setAttribute("user", user);
             return "redirect:/camp";
         } catch (RuntimeException e) {
             return "redirect:/login?error=" + e.getMessage();  // 로그인 실패 시 에러 메시지 전달
@@ -78,8 +79,9 @@ public class LoginController {
         }
     }
 
-   /* @PostMapping("find")
-    public String find(){
-
-    }*/
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // 세션 무효화 (로그아웃 처리)
+        return "redirect:/login?logout=true"; // 로그아웃 후 로그인 페이지로 리디렉션
+    }
 }
