@@ -10,6 +10,6 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     Cart findByUser(Users user);
     
     // 장바구니 조회
-	Cart findByVseq(Long vseq);
+    Cart findByCartId(Long cartId);
 }
 

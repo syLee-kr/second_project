@@ -23,7 +23,9 @@
                     <tr>
                         <td th:text="${item.product.name}">상품명</td>
                         <td>
-                            <form th:action="@{/cart/update/{cartItemId}(cartItemId=${item.vseq})}" method="post">
+                            <form th:action="@{/cart/update/{cartItemId}(cartItemId=${item.cartItemId})}" method="post">
+                                <!-- cartId 포함 -->
+                                <input type="hidden" name="cartId" th:value="${cart.cartId}" />
                                 <input type="number" name="quantity" th:value="${item.quantity}" min="1" />
                                 <button type="submit">수정</button>
                             </form>
@@ -31,7 +33,9 @@
                         <td th:text="${item.product.price1}">가격</td>
                         <td th:text="${item.totalPrice}">총액</td>
                         <td>
-                            <form th:action="@{/cart/remove/{cartItemId}(cartItemId=${item.vseq})}" method="post">
+                            <form th:action="@{/cart/remove/{cartItemId}(cartItemId=${item.cartItemId})}" method="post">
+                                <!-- cartId 포함 -->
+                                <input type="hidden" name="cartId" th:value="${cart.cartId}" />
                                 <button type="submit">삭제</button>
                             </form>
                         </td>

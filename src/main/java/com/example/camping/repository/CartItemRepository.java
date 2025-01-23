@@ -12,8 +12,8 @@ import java.util.List;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     
-    // 특정 장바구니에 포함된 상품 항목들을 조회
-    List<CartItem> findByCart(Cart cart);
+    // 장바구니 목록 조회
+	List<CartItem> findByCart_CartId(Long cartId);
 
     // 특정 상품이 장바구니에 이미 존재하는지 체크 (상품 + 장바구니 기준)
     CartItem findByCartAndProduct(Cart cart, Products product);
@@ -29,6 +29,5 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     // 장바구니 항목 ID로 조회
     CartItem findByCartItemId(Long cartItemId); 
 
-    // 장바구니 목록 조회 (vseq 기준)
-    List<CartItem> findByCartVseq(Long vseq);
+
 }

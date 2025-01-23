@@ -47,7 +47,7 @@ public class CartController {
             }
             
             // 장바구니 항목 조회
-            List<CartItem> items = cartService.getCartItems(cart.getVseq());
+            List<CartItem> items = cartService.getCartItems(cart.getCartId());
             model.addAttribute("cart", cart);
             model.addAttribute("items", items);
 
@@ -60,15 +60,15 @@ public class CartController {
 
     // 장바구니에 상품 추가
     @PostMapping("/add")
-    public String addItemToCart(@RequestParam ("vseq") Long vseq, 
+    public String addItemToCart(@RequestParam ("cartId") Long CartId, 
     							@RequestParam ("gseq") Long gseq, 
     							@RequestParam Integer quantity) {
         // 장바구니와 상품을 가져오기
-        Cart cart = cartService.getCartByVseq(vseq);  // 장바구니 조회
+        Cart cart = cartService.getCartByCartId(CartId);  // 장바구니 조회
         Products product = productService.getProductById(gseq);  // 상품 조회
         
         if (cart != null && product != null) {
-        	log.info("장바구니에 상품 추가 - 장바구니 vseq: {}, 상품 gseq: {}, 수량: {}", vseq, gseq, quantity);
+        	log.info("장바구니에 상품 추가 - 장바구니 cartId: {}, 상품 gseq: {}, 수량: {}", CartId, gseq, quantity);
         	
         	// 상품 수량에 따른 총 가격 계산
             BigDecimal totalPrice = product.getPrice1().multiply(BigDecimal.valueOf(quantity));
@@ -84,7 +84,7 @@ public class CartController {
             cartService.addItemToCart(cartItem);
             log.info("상품이 장바구니에 성공적으로 추가되었습니다.");
         } else {
-            log.error("장바구니 또는 상품을 찾을 수 없습니다. 장바구니 vseq: {}, 상품 gseq: {}", vseq, gseq);
+            log.error("장바구니 또는 상품을 찾을 수 없습니다. 장바구니 cartId: {}, 상품 gseq: {}", CartId, gseq);
         }
         
         return "redirect:/cart/view";  // 장바구니 화면으로 리다이렉트
@@ -97,7 +97,7 @@ public class CartController {
     	log.info("장바구니 항목 수량 수정 - cartItemId: {}, 새로운 수량: {}", cartItemId, quantity);
     	
     	// 장바구니 항목 조회
-        CartItem cartItem = cartService.getCartItemById(cartItemId);  
+        CartItem cartItem = cartService.getCartItemByCartItemId(cartItemId);  
 
         if (cartItem == null) {
         	log.error("수량 수정 실패 - cartItemId: {}에 해당하는 장바구니 항목이 존재하지 않습니다.", cartItemId);

@@ -21,10 +21,10 @@ public class CartItem { // 장바구니에 담긴 개별 상품 항목을 나타
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long vseq;  // 장바구니 항목 ID
+    private Long cartItemId;  // 장바구니 항목 ID
 
     @ManyToOne
-    @JoinColumn(name = "cart_id")
+    @JoinColumn(name = "cart_id") 
     private Cart cart;  // 장바구니에 속한 항목
 
     @ManyToOne

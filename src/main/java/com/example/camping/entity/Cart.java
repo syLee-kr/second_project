@@ -22,7 +22,7 @@ public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long vseq;  // 장바구니 ID
+    private Long cartId;  // 장바구니 ID
 
     @ManyToOne
     @JoinColumn(name = "user_id")

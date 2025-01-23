@@ -17,13 +17,13 @@ public interface CartService {
 	Cart createCartForUser(Users adminUser);
 	
 	// 장바구니 목록 조회
-	List<CartItem> getCartItems(Long vseq);
+	List<CartItem> getCartItems(Long cartId);
 	
 	// 장바구니 수량 수정
 	void updateCartItemQuantity(Long cartItemId, Integer quantity);
 	
 	// 장바구니 조회
-	Cart getCartByVseq(Long vseq);
+	Cart getCartByCartId(Long cartId);
 	
 	// 장바구니 상품 추가
 	void addItemToCart(CartItem cartItem);
@@ -32,11 +32,6 @@ public interface CartService {
 	void removeItemFromCart(Long cartItemId);
 	
 	// 장바구니 상품 조회
-	CartItem getCartItemById(Long cartItemId);
-	
-	// 장바구니에서 장바구니 상품 조회
-	Cart getCartByCartItemId(Long cartItemId);
+	CartItem getCartItemByCartItemId(Long cartItemId);
 
-  
-	
 }

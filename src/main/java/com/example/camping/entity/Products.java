@@ -74,8 +74,8 @@ public class Products {
     private Long cnt; // 조회수
     
     // 재고
-    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
-    private Integer stock;
+    @Column(nullable = false)
+    private Integer stock = 0;
 	
 	
 }

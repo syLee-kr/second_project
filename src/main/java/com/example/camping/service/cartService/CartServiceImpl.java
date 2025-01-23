@@ -34,7 +34,7 @@ public class CartServiceImpl implements CartService {
             throw new IllegalArgumentException("해당 장바구니가 존재하지 않습니다.");
         }
         
-        log.info("장바구니 조회 성공 - 사용자: {}, 장바구니 vseq: {}", user.getUserId(), cart.getVseq());
+        log.info("장바구니 조회 성공 - 사용자: {}, 장바구니 cartId: {}", user.getUserId(), cart.getCartId());
         return cart;
     }
 
@@ -47,20 +47,20 @@ public class CartServiceImpl implements CartService {
         newCart.setUser(adminUser);
         
         Cart savedCart = cartRepo.save(newCart);
-        log.info("새 장바구니 생성 성공 - 장바구니 vseq: {}", savedCart.getVseq());
+        log.info("새 장바구니 생성 성공 - 장바구니 cartId: {}", savedCart.getCartId());
         
         return savedCart;
     }
 
     // 장바구니 목록 조회
     @Override
-    public List<CartItem> getCartItems(Long vseq) {
-        log.info("장바구니 항목 조회 - 장바구니 vseq: {}", vseq);
+    public List<CartItem> getCartItems(Long cartId) {
+        log.info("장바구니 항목 조회 - 장바구니 cartId: {}", cartId);
         
-        List<CartItem> cartItems = cartItemRepo.findByCartVseq(vseq);
+        List<CartItem> cartItems = cartItemRepo.findByCart_CartId(cartId);
         
         if (cartItems.isEmpty()) {
-            log.warn("장바구니 항목이 없습니다. vseq: {}", vseq);
+            log.warn("장바구니 항목이 없습니다. cartId: {}", cartId);
         } else {
             log.info("장바구니 항목 조회 성공 - 항목 수: {}", cartItems.size());
         }
@@ -94,17 +94,17 @@ public class CartServiceImpl implements CartService {
 
     // 장바구니 조회
     @Override
-    public Cart getCartByVseq(Long vseq) {
-        log.info("장바구니 조회 - vseq: {}", vseq);
+    public Cart getCartByCartId(Long cartId) {
+        log.info("장바구니 조회 - cartId: {}", cartId);
         
-        Cart cart = cartRepo.findByVseq(vseq);
+        Cart cart = cartRepo.findByCartId(cartId);
         
         if (cart == null) {
-            log.error("해당 장바구니가 존재하지 않습니다. vseq: {}", vseq);
+            log.error("해당 장바구니가 존재하지 않습니다. cartId: {}", cartId);
             throw new IllegalArgumentException("해당 장바구니가 존재하지 않습니다.");
         }
         
-        log.info("장바구니 조회 성공 - vseq: {}", vseq);
+        log.info("장바구니 조회 성공 - cartId: {}", cartId);
         return cart;
     }
 
@@ -130,7 +130,7 @@ public class CartServiceImpl implements CartService {
 
     // 장바구니의 상품 조회
     @Override
-    public CartItem getCartItemById(Long cartItemId) {
+    public CartItem getCartItemByCartItemId(Long cartItemId) {
         log.info("장바구니 상품 조회 - cartItemId: {}", cartItemId);
         
         CartItem cartItem = cartItemRepo.findByCartItemId(cartItemId);
@@ -144,19 +144,5 @@ public class CartServiceImpl implements CartService {
         return cartItem;
     }
 
-    // 장바구니 상펨에 해당하는 장바구니 조회
-    @Override
-    public Cart getCartByCartItemId(Long cartItemId) {
-        log.info("장바구니 상펨에 해당하는 장바구니 조회 - cartItemId: {}", cartItemId);
-        
-        CartItem cartItem = cartItemRepo.findByCartItemId(cartItemId);
-        
-        if (cartItem == null) {
-            log.error("해당 장바구니 상품이 존재하지 않습니다. cartItemId: {}", cartItemId);
-            throw new IllegalArgumentException("해당 장바구니 상품이 존재하지 않습니다.");
-        }
-        
-        log.info("장바구니 상펨에 해당하는 장바구니 조회 성공 - cartItemId: {}", cartItemId);
-        return cartItem.getCart();
-    }
+
 }
