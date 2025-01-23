@@ -15,9 +15,10 @@ public class CategoryServiceImpl implements CategoryService {
 	
 	private CategoryRepository categoryRepo;
 	
+	// 카테고리 목록 조회
 	@Override
 	public List<Category> getCategories() {
-		List<Category> categories = categoryRepo.findAll();
+		List<Category> categories = categoryRepo.findAllSorted();
 		Category allCategory = Category.getAllCategory(); // '전체' 카테고리 생성
 		categories.add(0, allCategory); // '전체' 카테고리를 리스트 첫번째로 추가
 		return categories;

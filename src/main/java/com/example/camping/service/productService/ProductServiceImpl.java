@@ -35,8 +35,8 @@ public class ProductServiceImpl implements ProductService {
 	}
 	// 상품 삭제
 	@Override
-	public void deleteProduct(Long pseq) {
-		productRepo.deleteById(pseq);
+	public void deleteProduct(Long gseq) {
+		productRepo.deleteById(gseq);
 		
 	}
 	// 상품 전체 조회
@@ -63,22 +63,25 @@ public class ProductServiceImpl implements ProductService {
 		return productRepo.findByCategory(category);
 	}
 	
+	// 카테고리 목록을 정렬하여 반환하는 메서드
+	public List<Category> getCategoriesSorted() {
+		return categoryRepo.findAllSorted(); 
+	}
+	
 	// 상품 상세보기 
 	@Override
-	public Products getProductById(Long pseq) {
+	public Products getProductById(Long gseq) {
 		 
-		return productRepo.findById(pseq).orElse(null);
+		return productRepo.findById(gseq).orElse(null);
 	}
 	
 	// 상품 수정 처리
 	@Override
-	public Products updateProduct(Long pseq, Products product) {
-		Products currentProduct = productRepo.findById(pseq).orElseThrow(()-> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+	public Products updateProduct(Long gseq, Products product) {
+		Products currentProduct = productRepo.findById(gseq).orElseThrow(()-> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 		
 		currentProduct.setName(product.getName());  // 이름 수정
 		currentProduct.setPrice1(product.getPrice1());  // 가격 수정
-		currentProduct.setPrice2(product.getPrice2());  // 할인 가격 수정
-		currentProduct.setDiscount(product.getDiscount());  // 할인율 수정
 		currentProduct.setIsVisible(product.getIsVisible());  // 노출 여부 수정
 		currentProduct.setIsBest(product.getIsBest());  // 베스트 상품 여부 수정
 		currentProduct.setCategory(product.getCategory());  // 카테고리 수정

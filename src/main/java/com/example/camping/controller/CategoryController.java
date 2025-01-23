@@ -1,7 +1,6 @@
 package com.example.camping.controller;
 
 import com.example.camping.entity.Category;
-import com.example.camping.repository.CategoryRepository;
 import com.example.camping.service.categoryService.CategoryService;
 
 import lombok.AllArgsConstructor;

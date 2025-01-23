@@ -5,6 +5,7 @@ import com.example.camping.entity.Products;
 import com.example.camping.repository.CategoryRepository;
 import com.example.camping.service.productService.ProductService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -30,7 +31,7 @@ public class ProductController {
     @GetMapping("/product-register")
     public String registerProductForm(Model model) {
     	model.addAttribute("product", new Products());
-    	model.addAttribute("categories", categoryRepo.findAll()); // 카테고리 목록 추가
+    	model.addAttribute("categories", categoryRepo.findAllSorted()); // 카테고리 목록 추가
     	return "goods/product/product-form";
     }
     // 상품 등록 처리
@@ -63,12 +64,12 @@ public class ProductController {
     }
     
     // 상품 수정 페이지
-    @GetMapping("/product-edit/{pseq}")
-    public String editProductForm(@PathVariable Long pseq, Model model) {
-        Products product = productService.getProductById(pseq);
+    @GetMapping("/product-edit/{gseq}")
+    public String editProductForm(@PathVariable Long gseq, Model model) {
+        Products product = productService.getProductById(gseq);
         if (product != null) {
             model.addAttribute("product", product);
-            model.addAttribute("categories", categoryRepo.findAll()); // 카테고리 목록
+            model.addAttribute("categories", categoryRepo.findAllSorted()); // 카테고리 목록
             return "goods/product/product-edit-form"; // 상품 수정 폼
         } else {
             
@@ -77,8 +78,8 @@ public class ProductController {
     }
     
     // 상품 수정 처리
-    @PostMapping("/product-edit/{pseq}")
-    public String updateProduct(@PathVariable Long pseq, 
+    @PostMapping("/product-edit/{gseq}")
+    public String updateProduct(@PathVariable Long gseq, 
                                 @ModelAttribute Products product, 
                                 @RequestParam("image") MultipartFile image,
                                 @RequestParam(value = "deleteImage", required = false) List<String> deleteImages,
@@ -86,7 +87,7 @@ public class ProductController {
         try {
         	
         	// 기존 상품 조회
-        	Products currentProduct = productService.getProductById(pseq);
+        	Products currentProduct = productService.getProductById(gseq);
         	
             // 이미지 파일 업로드 처리
         	List<String> imagePaths = new ArrayList<>();
@@ -110,10 +111,10 @@ public class ProductController {
             
 
             // 상품 수정 처리
-            product.setPseq(pseq); // 상품의 ID를 설정
+            product.setGseq(gseq); // 상품의 ID를 설정
             product.setImagePaths(imagePaths);  // 상품 객체에 이미지 경로 저장(없으면 빈 리스트)
             
-            Products updatedProduct = productService.updateProduct(pseq, product);
+            Products updatedProduct = productService.updateProduct(gseq, product);
             model.addAttribute("product", updatedProduct);
             return "goods/product/product-list";  // 수정된 상품 목록 페이지로 이동
 
@@ -125,9 +126,9 @@ public class ProductController {
     
 
     // 상품 삭제(상세페이지 - 단일상품삭제)
-    @PostMapping("/delete/{pseq}")
-    public String deleteProduct(@PathVariable Long pseq, Model model) {
-        Products product = productService.getProductById(pseq);
+    @PostMapping("/delete/{gseq}")
+    public String deleteProduct(@PathVariable Long gseq, Model model) {
+        Products product = productService.getProductById(gseq);
         if (product != null) {
             // 상품에 연관된 이미지 삭제
             if (product.getImagePaths() != null) {
@@ -137,7 +138,7 @@ public class ProductController {
             }
 
             // 상품 삭제 처리
-            productService.deleteProduct(pseq);
+            productService.deleteProduct(gseq);
             
             return "goods/product/product-list"; // 상품 목록 페이지로 리다이렉트
         } else {
@@ -153,12 +154,12 @@ public class ProductController {
         // 상품 삭제 시작
         log.info("상품 삭제 시작 - 삭제할 상품 ID 목록: {}", productIds);
         
-        for (Long pseq : productIds) {
+        for (Long gseq : productIds) {
             // 각 상품에 대해 처리
-            log.info("처리 중인 상품 ID: {}", pseq);
+            log.info("처리 중인 상품 ID: {}", gseq);
 
             // 상품 조회
-            Products product = productService.getProductById(pseq);
+            Products product = productService.getProductById(gseq);
             if (product != null) {
                 log.info("상품 조회 성공 - 상품명: {}", product.getName());
                 
@@ -176,11 +177,11 @@ public class ProductController {
                 }
 
                 // 상품 삭제 처리
-                log.info("상품 삭제 시작 - 상품 ID: {}", pseq);
-                productService.deleteProduct(pseq);
-                log.info("상품 삭제 완료 - 상품 ID: {}", pseq);
+                log.info("상품 삭제 시작 - 상품 ID: {}", gseq);
+                productService.deleteProduct(gseq);
+                log.info("상품 삭제 완료 - 상품 ID: {}", gseq);
             } else {
-                log.warn("상품 조회 실패 - 존재하지 않는 상품 ID: {}", pseq);
+                log.warn("상품 조회 실패 - 존재하지 않는 상품 ID: {}", gseq);
             }
         }
         
@@ -204,7 +205,7 @@ public class ProductController {
         	products = productService.getProductsByCategory(category);
         }	
         
-        List<Category> categories = categoryRepo.findAll();
+        List<Category> categories = categoryRepo.findAllSorted();
         
         model.addAttribute("products", products);
         model.addAttribute("categories", categories);
@@ -217,7 +218,7 @@ public class ProductController {
     @GetMapping("")  // /goods 경로
     public String getGoodsList(Model model) {
         List<Products> products = productService.getAllProducts();
-        List<Category> categories = categoryRepo.findAll();
+        List<Category> categories = categoryRepo.findAllSorted();
         model.addAttribute("products", products);
         model.addAttribute("categories", categories);
         return "goods/product/product-list";  // 상품 목록 페이지로 이동
@@ -227,7 +228,7 @@ public class ProductController {
     @GetMapping("/category/{category}")
     public String getProductsByCategory(@PathVariable ("category") String category, Model model) {
         List<Products> products = productService.getProductsByCategory(category);
-        List<Category> categories = categoryRepo.findAll(); 
+        List<Category> categories = categoryRepo.findAllSorted(); 
         model.addAttribute("products", products);
         model.addAttribute("categories", categories);
         model.addAttribute("selectedCategory", category); // 현재 선택된 카테고리
@@ -235,13 +236,16 @@ public class ProductController {
     }
     
     // 상품 상세보기
-    @GetMapping("/{pseq}")
-    public String productDetail(@PathVariable ("pseq") Long pseq, Model model) {
-    	Products product = productService.getProductById(pseq);
+    @GetMapping("/{gseq}")
+    public String productDetail(@PathVariable ("gseq") Long gseq, Model model) {
+    	Products product = productService.getProductById(gseq);
     	
     	if (product != null) {
+            // 조회수 증가
+            product.setCnt(product.getCnt() + 1);
+            productService.updateProduct(gseq, product);  // 조회수 업데이트
     		model.addAttribute("product", product);
-    		 return "goods/product/product-detail"; // 상품 상세 페이지로 이동
+    		return "goods/product/product-detail"; // 상품 상세 페이지로 이동
     	} else {
     		
     		return "goods/product/product-list"; // 상품 목록으로 이동
@@ -295,4 +299,23 @@ public class ProductController {
             log.warn("이미지 파일 없음, 경로: {}", filePath);
         }
     }
+    
+    /*
+    // 세션에 장바구니 정보를 저장
+    @PostMapping("/add-to-cart/{gseq}")
+    public String addToCart(@PathVariable("gseq") Long gseq, HttpSession session) {
+        Products product = productService.getProductById(gseq);
+        if (product != null) {
+            // 세션에서 장바구니 가져오기
+            List<Products> cart = (List<Products>) session.getAttribute("cart");
+            if (cart == null) {
+                cart = new ArrayList<>();
+            }
+            cart.add(product); // 장바구니에 상품 추가
+            session.setAttribute("cart", cart); // 세션에 장바구니 저장
+        }
+        return "redirect:/goods/product-list"; // 장바구니 추가 후 상품 목록으로 리다이렉트
+    }*/
+    
+
 }

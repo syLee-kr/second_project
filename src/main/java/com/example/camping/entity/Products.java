@@ -34,13 +34,11 @@ public class Products {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long pseq; // 상품 고유 ID
+	private Long gseq; // 상품 고유 ID
 
 	private String name; // 상품 이름
 
 	private BigDecimal price1; // 기본 가격
-	private BigDecimal price2; // 할인 전 가격
-	private BigDecimal discount; // 할인율 (예: 0.1 = 10% 할인)
 
 	private Boolean isVisible; // 노출 여부
 	private Boolean isBest; // 베스트 상품 여부
@@ -49,13 +47,6 @@ public class Products {
 	@JoinColumn(name = "category_id")
 	private Category category; // 카테고리
 
-	// 할인 적용 후 가격 계산
-	public BigDecimal getPrice3() {
-	    if (price1 == null || discount == null) {
-	        return BigDecimal.ZERO;
-	    }
-	    return price1.subtract(price1.multiply(discount));
-	}
 	// 상품 설명
 	private String content;
 	
@@ -81,7 +72,10 @@ public class Products {
 	// 조회수
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private Long cnt; // 조회수
-	
+    
+    // 재고
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer stock;
 	
 	
 }
