@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>게시글 작성</title>
+</head>
+<body>
+<h1>게시글 작성</h1>
+<form th:action="@{/post/write}" method="post" enctype="multipart/form-data">
+  <!-- CSRF 토큰 추가 (스프링 시큐리티를 사용하지 않는 경우 생략 가능) -->
+  <!-- <input type="hidden" name="csrfToken" th:value="${csrfToken}" /> -->
+
+  <!-- 작성자 ID 필드 제거 -->
+  <div>
+    <label for="title">제목</label>
+    <input type="text" name="title" id="title" required/>
+  </div>
+  <div>
+    <label for="content">본문</label>
+    <textarea name="content" id="content" required></textarea>
+  </div>
+  <div>
+    <label for="images">첨부 이미지</label>
+    <input type="file" name="images" id="images" multiple/>
+    <p>여러 이미지를 선택하려면 Ctrl 키를 누른 상태에서 클릭하세요.</p>
+  </div>
+  <button type="submit">작성</button>
+</form>
+</body>
+</html>

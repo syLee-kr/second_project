@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>아이디 및 비밀번호 찾기</title>
+    <link rel="stylesheet" type="text/css" href="css/login/find.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">아이디 및 비밀번호 찾기</h1>
+
+    <div class="tab-content" id="findAccountTabContent">
+        <!-- 아이디 찾기 탭 -->
+        <div class="tab-pane fade show active" id="findId" role="tabpanel" aria-labelledby="findId-tab">
+            <form th:action="@{/findId}" method="post" class="mt-3">
+
+                <div class="form-group">
+                    <label for="phone">전화번호</label>
+                    <input type="text" class="form-control" id="phone" name="phone" required
+                           placeholder="예: 010-1234-5678"
+                           pattern="^010-\d{4}-\d{4}$"
+                           title="전화번호 형식: 010-1234-5678"/>
+                </div>
+                <button type="submit" class="btn btn-primary">아이디 찾기</button>
+            </form>
+
+            <!-- 아이디를 화면에 직접 표시 -->
+            <div th:if="${foundUserId}" class="alert alert-success mt-3">
+                <strong>귀하의 아이디는 </strong><span th:text="${foundUserId}"></span><strong> 입니다.</strong>
+            </div>
+
+            <!-- 오류 메시지 표시 -->
+            <div th:if="${findIdError}" class="alert alert-danger mt-3">
+                <p th:text="${findIdError}"></p>
+            </div>
+        </div>
+
+        <!-- 비밀번호 찾기 탭 -->
+        <div class="tab-pane fade" id="findPassword" role="tabpanel" aria-labelledby="findPassword-tab">
+            <form th:action="@{/findPassword}" method="post" class="mt-3">
+
+                <div class="form-group">
+                    <label for="passwordEmail">이메일</label>
+                    <input type="email" class="form-control" id="passwordEmail" name="email" required
+                           placeholder="예: user@example.com"
+                           pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                           title="유효한 이메일 형식을 입력하세요."/>
+                </div>
+                <button type="submit" class="btn-primary">비밀번호 재설정 링크 전송</button>
+            </form>
+
+            <!-- 비밀번호 재설정 링크 전송 성공 메시지 -->
+            <div th:if="${findPasswordMessage}" class="alert alert-success">
+                <p th:text="${findPasswordMessage}"></p>
+            </div>
+
+            <!-- 오류 메시지 표시 -->
+            <div th:if="${findPasswordError}" class="alert alert-danger">
+                <p th:text="${findPasswordError}"></p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

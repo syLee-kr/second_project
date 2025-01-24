@@ -23,8 +23,12 @@ public class Users {
     @Id
     @Column(name = "USER_ID", nullable = false) //  DB 컬럼 이름 설정, 해당 필드는 비어 있을 수 없음.
     private String userId;  //  email 형식
+
+    @Column(nullable = false)
     private String password;
     private String nickname;
+
+    @Column(nullable = false, unique = true)
     private String phone;
     private String address;
 
@@ -39,4 +43,10 @@ public class Users {
     @Enumerated(EnumType.STRING)    //  enum의 값을 DB에 저장
     @Builder.Default    //  기본값을 user로 저장하기 위해 설정
     private Role role = Role.USER;
+
+    @Column(name = "RESET_TOKEN") // 컬럼 이름 명시
+    private String resetToken;
+
+    @Column(name = "RESET_TOKEN_EXPIRY") // 컬럼 이름 명시
+    private OffsetDateTime resetTokenExpiry;
 }

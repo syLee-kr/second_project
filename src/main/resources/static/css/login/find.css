@@ -1,0 +1,223 @@
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Pretendard-Regular', sans-serif;
+    background-color: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #2c3e50;
+}
+
+/* 메인 컨테이너 */
+.container {
+    width: 60%;
+    padding: 30px 40px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* 제목 */
+.container h1 {
+    margin-bottom: 40px;
+    text-align: center;
+    font-size: 2.8rem;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* 탭 메뉴 스타일 */
+.nav-tabs {
+    display: flex;
+    border-bottom: 2px solid #bdc3c7;
+    margin-bottom: 30px;
+    justify-content: center;
+}
+
+.nav-tabs .nav-item {
+    list-style: none;
+    margin: 0 15px;
+}
+
+.nav-tabs .nav-link {
+    font-size: 1.6rem;
+    color: #2c3e50;
+    padding: 10px 25px;
+    border: 1px solid transparent;
+    border-radius: 8px 8px 0 0;
+    background-color: #ecf0f1;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.2s;
+    text-align: center;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #ffffff;
+    color: #27ae60;
+    border-color: #bdc3c7 #bdc3c7 #ffffff;
+    border-bottom: none;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: #dfe6e9;
+    transform: translateY(-2px);
+}
+
+/* 탭 콘텐츠 스타일 */
+.tab-content {
+    padding: 20px 0;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 1.6rem;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 18px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    background-color: #ecf0f1;
+    font-size: 1.6rem;
+    transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus {
+    background-color: #ffffff;
+    border-color: #27ae60;
+    box-shadow: 0 0 5px rgba(39, 174, 96, 0.3);
+    outline: none;
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 14px 0;
+    background-color: #27ae60;
+    border: none;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 1.6rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+    background-color: #2ecc71;
+    transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* 알림 메시지 스타일 */
+.alert {
+    padding: 18px 20px;
+    border-radius: 6px;
+    margin-top: 20px;
+    font-size: 1.6rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 10% auto;
+    padding: 30px;
+    border: none;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    text-align: center;
+    animation: slideIn 0.3s;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content p {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.modal-close {
+    background-color: #27ae60;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.6rem;
+    transition: background-color 0.3s;
+}
+
+.modal-close:hover {
+    background-color: #2ecc71;
+}

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <link rel="stylesheet" type="text/css" href="/css/login/join.css">
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <!-- 회원정보 입력 -->
+    <div class="form-container">
+        <form th:action="@{/join}" method="post" onsubmit="return validateForm()">
+
+            <h1><a href="/login">CampHub</a></h1>
+            <div class="email">
+                <input type="text" id="emailPrefix" placeholder="이메일 아이디" required>
+                <select id="emailDomain" required>
+                    <option value="" disabled selected>도메인 선택</option>
+                    <option value="@gmail.com">@gmail.com</option>
+                    <option value="@naver.com">@naver.com</option>
+                    <option value="@daum.net">@daum.net</option>
+                    <option value="@hotmail.com">@hotmail.com</option>
+                    <option value="@nate.com">@nate.com</option>
+                    <option value="custom">직접 입력</option>
+                </select>
+                <input type="text" id="customDomain" placeholder="도메인 직접 입력" style="display: none;">
+            </div>
+            <div id="checkResult" class="check-result"></div>
+            <input type="hidden" id="userId" name="userId">
+
+            <input type="text" id="nickname" name="nickname" placeholder="닉네임" required>
+            <div id="checkNickname" class="check-result"></div>
+            <input type="password" id="pwd" name="password" placeholder="비밀번호" required>
+            <input type="password" id="pwd2" name="confirmPassword" placeholder="비밀번호 확인" required>
+
+            <!-- 주소 입력 필드 -->
+            <input type="text" id="address" name="address" placeholder="주소 입력" required>
+            <input type="text" id="phone" name="phone" placeholder="연락처 입력" required>
+            <div class="terms-container">
+                <h2>회원가입 약관</h2>
+                <div id="termsContent" class="terms-content"></div>
+                <div class="agreement">
+                    <input type="checkbox" id="agreeTerms" required>
+                    <label for="agreeTerms">약관에 동의합니다.</label>
+                </div>
+            </div>
+            <button type="submit" class="submit-btn">가입하기</button>
+        </form>
+    </div>
+
+</div>
+
+<!-- 모달 스타일 -->
+<style>
+    /* 모달 배경 */
+    #errorModal {
+        display: none; /* 기본적으로 숨김 */
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto; /* 필요한 경우 스크롤 */
+        background-color: rgba(0,0,0,0.4);
+    }
+    /* 모달 내부 내용 박스 */
+    .modal-content {
+        background-color: rgba(0, 0, 0, 0.8); /* 반투명 배경 */
+        margin: 15% auto; /* 화면 중앙 */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 400px; /* 모달 최대 너비 */
+        border-radius: 10px; /* 모서리 둥글게 처리 */
+        position: relative;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+    }
+
+    /* 닫기 버튼 스타일 */
+    .close-button {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .close-button:hover,
+    .close-button:focus {
+        color: black;
+        text-decoration: none;
+    }
+
+    /* 에러 메시지 텍스트 스타일 */
+    #errorMessageText {
+        color: #f3655a; /* 에러 메시지 색상 */
+        font-size: 16px;
+        text-align: center;
+    }
+</style>
+
+<!-- 에러 모달 -->
+<div id="errorModal">
+    <div class="modal-content">
+        <span class="close-button" id="closeModal">&times;</span>
+        <p id="errorMessageText" th:text="${error}"></p>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const emailPrefixElement = document.getElementById('emailPrefix');
+        const emailDomainElement = document.getElementById('emailDomain');
+        const customDomainElement = document.getElementById('customDomain');
+        const userIdElement = document.getElementById('userId');
+        const checkResultElement = document.getElementById('checkResult');
+
+        const nicknameElement = document.getElementById('nickname');
+        const checkNicknameElement = document.getElementById('checkNickname');
+
+        // 이메일 입력 및 도메인 선택에 따라 userId 업데이트
+        function updateUserId() {
+            const prefix = emailPrefixElement.value.trim();
+            const domain = emailDomainElement.value === "custom"
+                ? customDomainElement.value.trim()
+                : emailDomainElement.value;
+            userIdElement.value = prefix && domain ? prefix + domain : '';
+            checkUserIdAvailability();
+        }
+
+        emailPrefixElement.addEventListener('input', updateUserId);
+
+        emailDomainElement.addEventListener('change', function () {
+            if (emailDomainElement.value === "custom") {
+                emailDomainElement.style.display = "none";
+                customDomainElement.style.display = "block";
+                customDomainElement.setAttribute("required", "required");
+            } else {
+                emailDomainElement.style.display = "inline-block";
+                customDomainElement.style.display = "none";
+                customDomainElement.removeAttribute("required");
+                customDomainElement.value = "";
+            }
+            updateUserId();
+        });
+
+        customDomainElement.addEventListener('input', updateUserId);
+
+        // 실시간 이메일 중복 확인
+        async function checkUserIdAvailability() {
+            const userId = userIdElement.value.trim();
+            if (!userId) {
+                checkResultElement.textContent = "이메일 아이디와 도메인을 입력해주세요.";
+                checkResultElement.style.color = "red";
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/check-email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId: userId })
+                });
+
+                if (response.ok) {
+                    const successData = await response.json();
+                    checkResultElement.textContent = successData.message;
+                    checkResultElement.style.color = "green";
+                } else {
+                    const errorData = await response.json();
+                    checkResultElement.textContent = errorData.detail;
+                    checkResultElement.style.color = "red";
+                }
+            } catch (error) {
+                console.error("중복 확인 요청 오류:", error);
+                checkResultElement.textContent = "중복 확인 중 문제가 발생했습니다.";
+                checkResultElement.style.color = "red";
+            }
+        }
+
+        // 닉네임 중복 확인
+        async function checkNicknameAvailability() {
+            const nickname = nicknameElement.value.trim();
+            if (!nickname) {
+                checkNicknameElement.textContent = "닉네임을 입력해주세요.";
+                checkNicknameElement.style.color = "red";
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/check-nickname", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nickname: nickname })
+                });
+
+                if (response.ok) {
+                    const successData = await response.json();
+                    checkNicknameElement.textContent = successData.message;
+                    checkNicknameElement.style.color = "green";
+                } else {
+                    const errorData = await response.json();
+                    checkNicknameElement.textContent = errorData.detail;
+                    checkNicknameElement.style.color = "red";
+                }
+            } catch (error) {
+                console.error("중복 확인 요청 오류:", error);
+                checkNicknameElement.textContent = "중복 확인 중 문제가 발생했습니다.";
+                checkNicknameElement.style.color = "red";
+            }
+        }
+
+        // 닉네임 입력 시 중복 확인 (blur 이벤트 또는 input 이벤트 사용 가능)
+        nicknameElement.addEventListener('blur', checkNicknameAvailability);
+        // nicknameElement.addEventListener('input', checkNicknameAvailability); // 실시간 확인 원할 시 주석 해제
+
+        // 약관 내용을 동적으로 로드
+        fetch('/text/termsAndConditions.txt')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('약관을 불러오는 데 실패했습니다.');
+                }
+                return response.text();
+            })
+            .then(text => {
+                document.getElementById('termsContent').innerText = text;
+            })
+            .catch(error => {
+                console.error('약관 로드 오류:', error);
+                document.getElementById('termsContent').innerText = '약관을 불러오는 데 실패했습니다.';
+            });
+
+        // 에러 모달 표시
+        const errorModal = document.getElementById('errorModal');
+        const errorMessageText = document.getElementById('errorMessageText');
+        const closeModalBtn = document.getElementById('closeModal');
+
+        // 닫기 버튼 클릭 시 모달 닫기
+        closeModalBtn.addEventListener('click', function() {
+            errorModal.style.display = 'none';
+        });
+
+        // 클릭 시 모달 외부 클릭으로 닫기
+        window.addEventListener('click', function(event) {
+            if (event.target === errorModal) {
+                errorModal.style.display = 'none';
+            }
+        });
+    });
+
+    // 폼 검증 함수
+    function validateForm() {
+        const password = document.getElementById('pwd').value;
+        const confirmPassword = document.getElementById('pwd2').value;
+        const agreeTerms = document.getElementById('agreeTerms').checked;
+
+        if (password !== confirmPassword) {
+            alert("비밀번호가 일치하지 않습니다.");
+            return false;
+        }
+
+        if (!agreeTerms) {
+            alert("약관에 동의하셔야 합니다.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+</body>
+</html>

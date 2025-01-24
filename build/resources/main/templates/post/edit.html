@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>게시글 수정</title>
+</head>
+<body>
+<h1>게시글 수정</h1>
+<form th:action="@{/post/edit/{id}(id=${post.id})}" method="post" enctype="multipart/form-data">
+  <!-- CSRF 토큰 추가 (스프링 시큐리티를 사용하지 않는 경우 생략 가능) -->
+  <!-- <input type="hidden" name="csrfToken" th:value="${csrfToken}" /> -->
+
+  <div>
+    <label for="title">제목</label>
+    <input type="text" name="title" id="title"
+           th:value="${post.title}" required/>
+  </div>
+  <div>
+    <label for="content">본문</label>
+    <textarea name="content" id="content" required th:text="${post.content}"></textarea>
+  </div>
+  <div>
+    <label for="images">첨부 이미지 변경</label>
+    <input type="file" name="images" id="images" multiple/>
+    <p>이미지를 추가로 선택하려면 Ctrl 키를 누른 상태에서 클릭하세요.</p>
+    <div th:if="${post.images != null}">
+      <p>현재 이미지:</p>
+      <div th:each="image : ${post.images}">
+        <img th:src="@{/post/download/image/{imageId}(imageId=${image.id})}" alt="첨부이미지" width="100"/>
+      </div>
+    </div>
+  </div>
+  <button type="submit">수정</button>
+</form>
+</body>
+</html>

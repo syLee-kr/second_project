@@ -30,4 +30,8 @@ public interface UserRepository extends JpaRepository<Users, String> {
     @Query("SELECT u FROM Users u")
     List<Users> findAll();
 
+    @Query("SELECT u FROM Users u WHERE u.phone = :phone")
+    Users findByPhone(String phone);
+
+    Optional<Users> findByResetToken(String resetToken);
 }

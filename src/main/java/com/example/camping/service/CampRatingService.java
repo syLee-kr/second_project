@@ -32,4 +32,28 @@ public class CampRatingService {
     public void save(CampRating campRating) {
         campR.save(campRating);
     }
+
+    /**
+     * 평점 + 리뷰 저장 (오버로드)
+     */
+    public void saveRating(String userId, String campId, Integer rating, String review) {
+        CampRating campRating = new CampRating();
+        campRating.setUserId(userId);
+        campRating.setCampId(campId);
+        campRating.setRating(rating);
+        campRating.setReview(review);
+        campRating.setRatingDate(OffsetDateTime.now());
+        campR.save(campRating);
+    }
+
+    public List<CampRating> findByUserId(String userId) {
+        return campR.findByUserId(userId);
+    }
+
+    /**
+     * 캠핑장별 리뷰 조회
+     */
+    public List<CampRating> getRatingsByCampId(String campId) {
+        return campR.findByCampId(campId);
+    }
 }

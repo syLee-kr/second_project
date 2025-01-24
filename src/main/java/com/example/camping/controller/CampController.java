@@ -15,14 +15,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.OffsetDateTime;
+import java.util.*;
 
 @Controller
 @RequestMapping("/camp")
@@ -36,6 +34,9 @@ public class CampController {
     @Autowired
     private RestTemplate restTemplate;
 
+    /**
+     * 캠핑장 검색 목록 페이지
+     */
     @GetMapping
     public String camp(
             @RequestParam(value = "searchType", required = false) String searchType,
@@ -44,20 +45,18 @@ public class CampController {
             HttpSession session,
             Model model
     ) {
-        // 페이지 크기
         int pageSize = 20;
 
-        // 검색 결과
         List<Camp> camps;
         long totalCount;
 
+        // 검색
         if (searchType != null && searchKeyword != null && !searchKeyword.isEmpty()) {
-            // 예: searchType="address", searchKeyword="서울"
             camps = campService.searchCamps(searchType, searchKeyword, page, pageSize);
             totalCount = campService.countSearchCamps(searchType, searchKeyword);
         } else {
-            // 검색 조건이 없으면 빈 리스트로
-            camps = List.of();
+            // 검색 조건이 없으면 빈 리스트
+            camps = Collections.emptyList();
             totalCount = 0;
         }
 
@@ -69,23 +68,6 @@ public class CampController {
         int endPage = startPage + blockSize - 1;
         if (endPage > totalPages) {
             endPage = totalPages;
-        }
-
-        Users user = (Users) session.getAttribute("user");
-        if (user != null) {
-            String userId = user.getUserId();
-            if (userId != null) {
-                List<CampRating> userRatings = campRatingService.getUserRatings(userId);
-                int ratingCount = userRatings.size();
-                if (ratingCount < 10) {
-                    // 10개 미만이면 10개 랜덤
-                    List<Camp> randomCamps = campService.getRandomCamps(10);
-                    model.addAttribute("randomCamps", randomCamps);
-                }
-            }
-        } else {
-            // user가 null인 경우
-            model.addAttribute("randomCamps", null);
         }
 
         // 추천 키워드 목록
@@ -105,60 +87,148 @@ public class CampController {
     }
 
     /**
-     * 평점 등록
+     * 캠핑장 상세 페이지
      */
-    @PostMapping("/rate")
-    public String rateCamp(
-            @RequestParam("campId") String campId,
-            @RequestParam("rating") Integer rating,
-            HttpSession session
-    ) {
-        String userId = (String) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/login";
+    @GetMapping("/detail")
+    public String campDetail(@RequestParam("id") String campId,
+                             Model model,
+                             HttpSession session) {
+        // 캠핑장 정보
+        System.out.println(campId);
+        Camp camp = campService.findById(campId);
+        System.out.println(camp);
+        if (camp == null) {
+            return "redirect:/camp?error=NotFound";
         }
 
-        campRatingService.saveRating(userId, campId, rating);
-        return "redirect:/camp";
+        // 해당 캠핑장에 대한 모든 리뷰
+        List<CampRating> ratings = campRatingService.getRatingsByCampId(campId);
+
+        model.addAttribute("camp", camp);
+        model.addAttribute("ratings", ratings);
+
+        return "camp/campDetail"; // Thymeleaf 템플릿
     }
 
     /**
-     * 10개 랜덤 캠핑장 순위 등록
+     * 상세 페이지에서 평점/리뷰 등록
      */
-    @PostMapping("/recommend")
-    public String submitRecommendForm(
-            @RequestParam("campId") List<String> campIds,
-            @RequestParam("score") List<Integer> scores,
+    @PostMapping("/detail/rate")
+    public String rateCampDetail(
+            @RequestParam("campId") String campId,
+            @RequestParam("rating") Integer rating,
+            @RequestParam("review") String review,
             HttpSession session
     ) {
-        // 세션에서 "user" 객체를 가져와 userId 추출
+        Users user = (Users) session.getAttribute("user");
+        if (user == null) {
+            // 로그인 안 된 경우
+            return "redirect:/login";
+        }
+
+        // 평점 저장
+        campRatingService.saveRating(user.getUserId(), campId, rating, review);
+
+        return "redirect:/camp/detail?id=" + campId;
+    }
+
+    /**
+     * "내 맞춤 추천 받기" 버튼 클릭 시
+     * 1) 먼저 사용자 평점 10개 미만이면 선호도 조사 페이지로 유도
+     * 2) 10개 이상이면 Python 서버로부터 추천을 받아서 결과 출력 (Ajax 또는 페이지에서 직접 처리)
+     */
+    @PostMapping("/pythonRecommend")
+    @ResponseBody
+    public Map<String, Object> getPythonRecommendAjax(HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        if (user == null) {
+            return Collections.singletonMap("error", "로그인이 필요합니다.");
+        }
+
+        String userId = user.getUserId();
+        int userRatingCount = campRatingService.getUserRatings(userId).size();
+
+        // 평점 10개 미만이면 => (10 - 현재개수)개만큼 랜덤 캠프 조사
+        if (userRatingCount < 10) {
+            int needed = 10 - userRatingCount;
+            Map<String, Object> response = new HashMap<>();
+            response.put("needPreference", true);
+            response.put("neededCount", needed);
+            return response;
+        }
+
+        // 여기부터는 평점 10개 이상이므로 Python 추천 로직 수행
+        int topN = 30; // 추천 개수
+        Map<String, Object> requestPayload = new HashMap<>();
+        requestPayload.put("userId", userId);
+        requestPayload.put("topN", topN);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestPayload, headers);
+
+        String fastApiUrl = "http://127.0.0.1:8000/recommend";
+        try {
+            ResponseEntity<Map> responseEntity = restTemplate.postForEntity(fastApiUrl, request, Map.class);
+            if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
+                List<Map<String, Object>> recommendations = (List<Map<String, Object>>) responseEntity.getBody().get("recommend");
+                return Collections.singletonMap("recommend", recommendations);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Collections.singletonMap("recommend", Collections.emptyList());
+    }
+
+    /**
+     * [신규] 선호도 조사 페이지 (평점 10개 미만 유저가 필요한 만큼만 랜덤 캠프 조사)
+     */
+    @GetMapping("/preference")
+    public String preferenceForm(@RequestParam("count") int count,
+                                 Model model,
+                                 HttpSession session) {
+        // count개 랜덤 캠프 추출
+        List<Camp> randomCamps = campService.getRandomCamps(count);
+        model.addAttribute("randomCamps", randomCamps);
+        return "camp/preferenceForm";
+    }
+
+    /**
+     * [신규] 선호도 조사 폼 제출
+     */
+    @PostMapping("/preference")
+    public String preferenceSubmit(
+            @RequestParam("campId") List<String> campIds,
+            @RequestParam("score") List<Integer> scores,
+            @RequestParam("review") List<String> reviews,
+            HttpSession session
+    ) {
         Users user = (Users) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
         }
-        String userId = user.getUserId();
-        if (userId == null) {
-            return "redirect:/login";
-        }
 
-        // campIds와 scores의 크기가 같은지 확인
-        if (campIds.size() != scores.size()) {
-            // 로그 추가 또는 에러 처리
+        if (campIds.size() != scores.size() || campIds.size() != reviews.size()) {
             return "redirect:/camp?error=InvalidSubmission";
         }
 
         for (int i = 0; i < campIds.size(); i++) {
             String cId = campIds.get(i);
             int score = scores.get(i);
-            campRatingService.saveRating(userId, cId, score);
+            String rv = reviews.get(i);
+
+            campRatingService.saveRating(user.getUserId(), cId, score, rv);
         }
 
+        // 선호도 조사 후 다시 pythonRecommend 로직으로 가면
+        // 이제 평점이 10개 이상이 되었을 것이므로 Python 추천 가능
         return "redirect:/camp";
     }
 
-
     /**
-     * (ADMIN 전용) 추천 키워드 추가
+     * (ADMIN 전용) 추천 키워드 추가/삭제 로직 (기존 로직 유지 가정)
      */
     @PostMapping("/addKeyword")
     public String addKeyword(
@@ -176,9 +246,6 @@ public class CampController {
         return "redirect:/camp";
     }
 
-    /**
-     * (ADMIN 전용) 추천 키워드 삭제
-     */
     @PostMapping("/removeKeyword")
     public String removeKeyword(
             @RequestParam("id") String id,
@@ -191,38 +258,5 @@ public class CampController {
 
         recommendedKeywordService.deleteById(id);
         return "redirect:/camp";
-    }
-
-    @PostMapping("/pythonRecommend")
-    @ResponseBody
-    public Map<String, Object> getPythonRecommendAjax(HttpSession session) {
-        Users user = (Users) session.getAttribute("user");
-        String userId = (user != null) ? user.getUserId() : "defaultUser";
-        int topN = 30; // 추천 개수
-
-        Map<String, Object> requestPayload = new HashMap<>();
-        requestPayload.put("userId", userId);
-        requestPayload.put("topN", topN);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestPayload, headers);
-
-        String fastApiUrl = "http://127.0.0.1:8000/recommend";
-
-        try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(fastApiUrl, request, Map.class);
-
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                List<Map<String, Object>> recommendations = (List<Map<String, Object>>) response.getBody().get("recommend");
-                return Collections.singletonMap("recommend", recommendations);
-            } else {
-                return Collections.singletonMap("recommend", Collections.emptyList());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Collections.singletonMap("recommend", Collections.emptyList());
-        }
     }
 }

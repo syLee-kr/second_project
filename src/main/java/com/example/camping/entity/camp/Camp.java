@@ -1,5 +1,6 @@
 package com.example.camping.entity.camp;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
@@ -10,7 +11,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class Camp {
 
     @Id
-    private String id;
+    @Field("_id")
+    private ObjectId id;
+
+    public String getIdHex() {
+        return id != null ? id.toHexString() : null;
+    }
 
     @Field("번호")
     private Integer number;

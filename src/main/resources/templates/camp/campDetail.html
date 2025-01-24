@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>캠핑장 상세</title>
+    <!-- 다음 지도 API (Kakao Developers에서 발급받은 앱 키를 사용하세요) -->
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_DAUM_MAP_APPKEY"></script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        function initMap(latitude, longitude) {
+            // 지도 표시할 div
+            var container = document.getElementById('map');
+            var options = {
+                center: new kakao.maps.LatLng(latitude, longitude),
+                level: 3
+            };
+            var map = new kakao.maps.Map(container, options);
+
+            // 마커 생성
+            var markerPosition  = new kakao.maps.LatLng(latitude, longitude);
+            var marker = new kakao.maps.Marker({
+                position: markerPosition
+            });
+            marker.setMap(map);
+        }
+        /*]]>*/
+    </script>
+</head>
+<body onload="initMap([[${camp.latitude}]], [[${camp.longitude}]])">
+
+<h1 th:text="${camp.name}">캠핑장 상세 정보</h1>
+
+<div>
+    <strong>주소:</strong> <span th:text="${camp.address}">주소</span><br/>
+    <strong>테마환경:</strong> <span th:text="${camp.themeEnvironment}"></span><br/>
+    <strong>글램핑 개수:</strong> <span th:text="${camp.glamping}"></span><br/>
+    <strong>카라반 개수:</strong> <span th:text="${camp.caravan}"></span><br/>
+    <!-- 필요 시 더 많은 필드 표시 -->
+</div>
+
+<!-- 지도 표시 영역 -->
+<div id="map" style="width:600px;height:400px;"></div>
+
+<hr/>
+
+<!-- 평점/리뷰 작성 폼 -->
+<h2>리뷰 남기기</h2>
+<form th:action="@{/camp/detail/rate}" method="post">
+    <input type="hidden" name="campId" th:value="${camp.id}" />
+    <div>
+        <label>평점 (1~10):
+            <input type="number" name="rating" min="1" max="10" required />
+        </label>
+    </div>
+    <div>
+        <label>리뷰:
+            <textarea name="review" rows="4" cols="50"></textarea>
+        </label>
+    </div>
+    <button type="submit">등록</button>
+</form>
+
+<hr/>
+
+<!-- 기존 리뷰 목록 -->
+<h2>등록된 리뷰</h2>
+<div th:if="${#lists.isEmpty(ratings)}">
+    <p>아직 등록된 리뷰가 없습니다.</p>
+</div>
+<div th:each="r : ${ratings}">
+    <p>
+        <strong th:text="${r.userId}">userId</strong>
+        <span> - 평점: </span><span th:text="${r.rating}">10</span>
+    </p>
+    <p th:text="${r.review}">리뷰 내용</p>
+    <hr/>
+</div>
+<div th:replace="~{footer :: footer}"></div>
+</body>
+</html>

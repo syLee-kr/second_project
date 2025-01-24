@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>게시판 목록</title>
+</head>
+<body>
+<h1>게시글 목록</h1>
+
+<form th:action="@{/post}" method="get">
+    <input type="text" name="searchUserId" placeholder="작성자 검색"
+           th:value="${searchUserId}" />
+    <input type="text" name="searchTitle" placeholder="제목 검색"
+           th:value="${searchTitle}" />
+    <button type="submit">검색</button>
+</form>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>첨부 이미지</th>
+        <th>제목</th>
+        <th>본문 요약</th>
+        <th>작성자</th>
+        <th>조회수</th>
+        <th>좋아요</th>
+        <th th:if="${session.role} == 'ADMIN'">신고 횟수</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post : ${postPage.content}">
+        <td th:text="${post.id}"></td>
+        <td>
+            <!-- 첫 번째 이미지만 표시 -->
+            <img th:if="${#lists.size(post.images) > 0}"
+                 th:src="@{/post/download/image/{imageId}(imageId=${post.images.get(0).id})}"
+                 alt="첨부이미지" width="50"/>
+        </td>
+        <td>
+            <a th:href="@{/post/{id}(id=${post.id})}"
+               th:text="${post.title}">제목</a>
+        </td>
+        <td th:text="${post.shortContent}"></td>
+        <td th:text="${post.userId}"></td>
+        <td th:text="${post.viewCount}"></td>
+        <td th:text="${post.likeCount}"></td>
+        <td th:if="${session.role} == 'ADMIN'"
+            th:text="${post.reportCount}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<div>
+    <!-- 페이지 네비게이션 -->
+    <a th:if="${startPage > 0}"
+       th:href="@{/post(page=${startPage-1}, searchUserId=${searchUserId}, searchTitle=${searchTitle})}">
+        이전
+    </a>
+    <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
+        <a th:if="${p != currentPage}"
+           th:href="@{/post(page=${p}, searchUserId=${searchUserId}, searchTitle=${searchTitle})}"
+           th:text="${p+1}"></a>
+        <span th:if="${p == currentPage}"
+              th:text="${p+1}"></span>
+    </span>
+    <a th:if="${endPage < totalPages - 1}"
+       th:href="@{/post(page=${endPage+1}, searchUserId=${searchUserId}, searchTitle=${searchTitle})}">
+        다음
+    </a>
+</div>
+
+<div>
+    <a th:href="@{/post/write}">글쓰기</a>
+</div>
+</body>
+</html>

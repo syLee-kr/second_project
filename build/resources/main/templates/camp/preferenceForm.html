@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>선호도 조사</title>
+  <link rel="stylesheet" th:href="@{/css/footer.css}">
+</head>
+<body>
+<h1>선호도 조사</h1>
+<p>아직 10개 미만의 평점을 등록하셨습니다. 부족한 만큼 선호도를 입력해주세요.</p>
+
+<form th:action="@{/camp/preference}" method="post">
+  <ul>
+    <li th:each="camp : ${randomCamps}">
+      <input type="hidden" name="campId" th:value="${camp.id}" />
+      <p>
+        <strong th:text="${camp.name}">캠핑장명</strong><br/>
+        <span th:text="${camp.address}">주소</span><br/>
+      </p>
+      <label>선호도(1~10):
+        <input type="number" name="score" min="1" max="10" required />
+      </label>
+      <br/>
+      <label>간단 리뷰:
+        <input type="text" name="review" />
+      </label>
+      <hr/>
+    </li>
+  </ul>
+  <button type="submit">제출</button>
+</form>
+<div th:replace="~{footer :: footer}"></div>
+</body>
+</html>
