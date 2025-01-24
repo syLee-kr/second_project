@@ -33,6 +33,8 @@ public interface CartService {
 	
 	// 장바구니 상품 조회
 	CartItem getCartItemByCartItemId(Long cartItemId);
+
+	
 	
 
 }

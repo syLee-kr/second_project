@@ -17,12 +17,13 @@
     <p><strong>카테고리:</strong> <span th:text="${product.category.name}"></span></p> <!-- 카테고리 이름 출력 -->
     <p><strong>설명:</strong> <span th:text="${product.content}"></span></p> <!-- content 사용 -->
     
-    <form th:action="@{/cart/add}" method="post">
-        <input type="hidden" name="gseq" th:value="${product.gseq}"/> <!-- 상품 ID -->
-        <label for="quantity">수량:</label>
-        <input type="number" id="quantity" name="quantity" min="1" value="1" />
-        <button type="submit">장바구니에 담기</button>
-    </form>
+	<form th:action="@{/cart/add}" method="post">
+	    <input type="hidden" name="gseq" th:value="${product.gseq}"/> <!-- 상품 ID -->
+	    <label for="quantity">수량:</label>
+	    <input type="number" id="quantity" name="quantity" min="1" value="1" />
+	    <input type="hidden" name="cartId" th:value="${cartId}" /> <!-- cartId는 장바구니 ID로 전달 -->
+	    <button type="submit">장바구니에 담기</button>
+	</form>
 
     <a th:href="@{/goods/product-list}">상품 목록</a>
 </body>

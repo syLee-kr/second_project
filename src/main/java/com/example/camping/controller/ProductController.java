@@ -2,8 +2,12 @@ package com.example.camping.controller;
 
 import com.example.camping.entity.Category;
 import com.example.camping.entity.Products;
+import com.example.camping.entity.Users;
 import com.example.camping.repository.CategoryRepository;
+import com.example.camping.repository.UserRepository;
+import com.example.camping.service.cartService.CartService;
 import com.example.camping.service.productService.ProductService;
+import com.example.camping.service.userService.UserService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
@@ -26,6 +30,9 @@ public class ProductController {
 
     private ProductService productService;
     private CategoryRepository categoryRepo;
+    private CartService cartService;
+    private UserRepository userRepo;
+    private UserService userService;
         
     // 상품 등록 폼
     @GetMapping("/product-register")
@@ -237,14 +244,21 @@ public class ProductController {
     
     // 상품 상세보기
     @GetMapping("/{gseq}")
-    public String productDetail(@PathVariable ("gseq") Long gseq, Model model) {
+    public String productDetail(@PathVariable (name= "gseq") Long gseq, 
+       							@RequestParam (name= "userId", required = false) String userId,
+    							Model model) {
+    	Users user = userRepo.findByUserId(userId);
+    	
     	Products product = productService.getProductById(gseq);
     	
     	if (product != null) {
+    		
             // 조회수 증가
             product.setCnt(product.getCnt() + 1);
             productService.updateProduct(gseq, product);  // 조회수 업데이트
-    		model.addAttribute("product", product);
+    		
+            model.addAttribute("product", product);
+    		
     		return "goods/product/product-detail"; // 상품 상세 페이지로 이동
     	} else {
     		

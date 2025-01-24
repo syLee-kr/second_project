@@ -49,6 +49,12 @@
             <button type="submit" class="product-delete-button">상품 삭제</button>
         </div>
     </form>
+    
+    <!-- 장바구니로 이동하는 버튼 추가 -->
+    <a th:href="@{/cart/view?cartId=${cartId}}" class="go-to-cart-button">
+        장바구니로 이동
+    </a>
+    
 </div>
 
 <!-- JavaScript 파일 로드 -->

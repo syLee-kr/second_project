@@ -28,7 +28,7 @@ public class CartServiceImpl implements CartService {
     // 장바구니 조회
     @Override
     public Cart getCartByUser(Users user) {
-        log.info("장바구니 조회 - 사용자: {}", user.getUserId());
+        log.info("장바구니 조회 시작 - 사용자: {}", user.getUserId());
         
         Cart cart = cartRepo.findByUser(user);
         
@@ -44,12 +44,13 @@ public class CartServiceImpl implements CartService {
     // 새 장바구니 생성
     @Override
     public Cart createCartForUser(Users user) {
-        log.info("새 장바구니 생성 - 사용자: {}", user.getUserId());
+        log.info("새 장바구니 생성 시작 - 사용자: {}", user.getUserId());
         
         Cart cart = new Cart();
         cart.setUser(user);
         cartRepo.save(cart);
-        log.info("새 장바구니 생성 성공 - 장바구니 cartId: {}", cart.getCartId());
+        
+        log.info("새 장바구니 생성 성공 - 사용자: {}, 장바구니 cartId: {}", user.getUserId(), cart.getCartId());
         
         return cart;
     }
@@ -57,7 +58,7 @@ public class CartServiceImpl implements CartService {
     // 장바구니 목록 조회
     @Override
     public List<CartItem> getCartItems(Long cartId) {
-        log.info("장바구니 항목 조회 - 장바구니 cartId: {}", cartId);
+        log.info("장바구니 항목 조회 시작 - 장바구니 cartId: {}", cartId);
         
         List<CartItem> cartItems = cartItemRepo.findByCart_CartId(cartId);
         
@@ -73,7 +74,7 @@ public class CartServiceImpl implements CartService {
     // 장바구니 상품의 수량 수정
     @Override
     public void updateCartItemQuantity(Long cartItemId, Integer quantity) {
-        log.info("장바구니 상품 수량 수정 - cartItemId: {}, 새로운 수량: {}", cartItemId, quantity);
+        log.info("장바구니 상품 수량 수정 시작 - cartItemId: {}, 새로운 수량: {}", cartItemId, quantity);
         
         CartItem cartItem = cartItemRepo.findByCartItemId(cartItemId);
         
@@ -97,7 +98,7 @@ public class CartServiceImpl implements CartService {
     // 장바구니 조회
     @Override
     public Cart getCartByCartId(Long cartId) {
-        log.info("장바구니 조회 - cartId: {}", cartId);
+        log.info("장바구니 조회 시작 - cartId: {}", cartId);
         
         Cart cart = cartRepo.findByCartId(cartId);
         
@@ -114,17 +115,17 @@ public class CartServiceImpl implements CartService {
     @Transactional
     @Override
     public void addItemToCart(CartItem cartItem) {
-        log.info("장바구니 상품 추가 - cartItemId: {}", cartItem.getCart());
+        log.info("장바구니 상품 추가 시작 - cartId: {}, 상품Id: {}", cartItem.getCart().getCartId(), cartItem.getProduct().getGseq());
         
         CartItem savedCartItem = cartItemRepo.save(cartItem);
         
-        log.info("장바구니 상품 추가 성공 - cartItemId: {}", savedCartItem.getCart());
+        log.info("장바구니 상품 추가 성공 - cartId: {}, 상품Id: {}", savedCartItem.getCart().getCartId(), savedCartItem.getProduct().getGseq());
     }
 
     // 장바구니 상품 삭제
     @Override
     public void removeItemFromCart(Long cartItemId) {
-        log.info("장바구니 상품 삭제 - cartItemId: {}", cartItemId);
+        log.info("장바구니 상품 삭제 시작 - cartItemId: {}", cartItemId);
         
         cartItemRepo.deleteById(cartItemId);
         
@@ -134,7 +135,7 @@ public class CartServiceImpl implements CartService {
     // 장바구니의 상품 조회
     @Override
     public CartItem getCartItemByCartItemId(Long cartItemId) {
-        log.info("장바구니 상품 조회 - cartItemId: {}", cartItemId);
+        log.info("장바구니 상품 조회 시작 - cartItemId: {}", cartItemId);
         
         CartItem cartItem = cartItemRepo.findByCartItemId(cartItemId);
         
@@ -146,6 +147,4 @@ public class CartServiceImpl implements CartService {
         log.info("장바구니 상품 조회 성공 - cartItemId: {}", cartItemId);
         return cartItem;
     }
-
-
 }
