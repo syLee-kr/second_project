@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,21 +7,32 @@
 </head>
 <body>
     <h1>Profile</h1>
-    <div>
-        <p>userId: {{users.userId}}</p>
-        <p>Name: {{users.name}}</p>
-        <p>Email: {{users.email}}</p>
-        <p>Phone: {{users.phone}}</p>
-        <p>Address: {{users.address}}</p>
-        <p>Birthday: {{users.birthday}}</p>
-        <p>Gender: {{users.gender}}</p>
-        
-        <a href="/users/edit">Edit Profile</a>
-        <a href="/change-password">Change Password</a>
-        
+    <div th:if="${user != null}">
+        <p th:text="'사용자 ID: ' + ${user.userId}"></p>
+	    <p th:text="'이름: ' + ${user.name}"></p>
+	    <p th:text="'이메일: ' + ${user.email}"></p>
+	    <p th:text="'전화번호: ' + ${user.phone}"></p>
+	    <p th:text="'주소: ' + ${user.city} + ' ' + ${user.district} + ' ' + ${user.detailedAddress}"></p>
+	    <p th:text="'생일: ' + ${user.birthday}"></p>
+	    <p th:text="'성별: ' + ${user.gender}"></p>
+
+        <a href="/users/edit">프로필 수정</a>
+        <a href="/change-password">비밀번호 변경</a>
+
+        <!-- 캠핑장 찾기 버튼 추가 -->
+        <a th:if="${user != null}" th:href="@{/recommend}">
+    		가까운 캠핑장 찾기
+		</a>
+
+
         <form th:action="@{/logout}" method="POST">
-            <button type="submit">Logout</button>
+            <button type="submit">로그아웃</button>
         </form>
+    </div>
+
+    <div th:unless="${user != null}">
+        <p>사용자 정보를 불러올 수 없습니다.</p>
+        <a href="/login">로그인 페이지로 이동</a>
     </div>
 </body>
 </html>

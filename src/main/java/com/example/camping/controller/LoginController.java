@@ -39,7 +39,7 @@ public class LoginController {
             session.setAttribute("user", user);
             log.info("로그인 성공: {}", user.getUserId());
            
-            return "users/profile/profile-form"; // 로그인 후 프로필 화면으로 이동
+            return "redirect:/users/profile"; // 로그인 후 프로필 화면으로 이동
         } else {
             // 로그인 실패 시
             model.addAttribute("error", "로그인 실패, 아이디와 비밀번호를 확인해주세요.");

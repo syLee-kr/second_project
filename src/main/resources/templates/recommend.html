@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>추천 캠핑장</title>
+    <meta charset="UTF-8">
+    <title>가까운 캠핑장</title>
+    <script src="/static/js/recommend.js"></script>
 </head>
-<body>
-    <h1>추천 캠핑장</h1>
+<body data-user-id="${userId}">
+    <h1>가까운 캠핑장 추천</h1>
+
     <ul id="recommendations">
-        <li th:each="recommendation : ${recommendations}" th:text="${recommendation}"></li>
+        <!-- 추천결과 동적으로 표시. -->
     </ul>
-    <script src="/js/recommend.js"></script>
+
+    <p id="error-message" style="color: red;"></p>
+
+    <a href="/profile/profile-form">프로필로 돌아가기</a>
 </body>
 </html>
-
