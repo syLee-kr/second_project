@@ -1,175 +1,314 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>캠핑장 목록</title>
+  <meta charset="UTF-8" />
+  <title>캠핑장 검색</title>
   <link rel="stylesheet" type="text/css" href="/css/camp/camp.css">
   <link rel="stylesheet" th:href="@{/css/footer.css}">
-  <script>
-    function openModal() {
-      document.getElementById('recommendModal').classList.add('open');
-    }
-    function closeModal() {
-      document.getElementById('recommendModal').classList.remove('open');
-    }
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', () => {
+      // 모달 열기 함수
+      function openModal() {
+        document.getElementById('recommendModal').classList.add('open');
+      }
+
+      // 모달 닫기 함수
+      function closeModal() {
+        document.getElementById('recommendModal').classList.remove('open');
+        resetModal();
+      }
+
+      function resetModal() {
+        const modal = document.getElementById('recommendModal');
+        // 모든 score selects 초기화
+        modal.querySelectorAll('.score-select').forEach(select => {
+          select.value = '';
+        });
+
+        // 모든 캠핑장 세부 정보 닫기
+        modal.querySelectorAll('.camp-details').forEach(detail => {
+          detail.style.display = 'none';
+        });
+
+        // 모든 헤더 초기화
+        modal.querySelectorAll('.camp-header').forEach(header => {
+          header.classList.remove('active');
+          header.setAttribute('aria-expanded', 'false');
+          header.querySelector('.toggle-icon').textContent = '+';
+        });
+      }
+
+      // 캠핑장 헤더에 이벤트 리스너 추가 (이벤트 위임 사용)
+      const modal = document.getElementById('recommendModal');
+      if (modal) {
+        // 클릭 이벤트 처리
+        modal.addEventListener('click', (event) => {
+          const header = event.target.closest('.camp-header');
+          if (header) {
+            console.log('캠핑장 헤더 클릭됨:', header);
+            const campItem = header.closest('.camp-item');
+            const details = campItem.querySelector('.camp-details');
+            console.log('해당 캠핑장 세부 정보:', details);
+            const isExpanded = header.getAttribute('aria-expanded') === 'true';
+
+            // 모든 camp-details 닫기 및 헤더 초기화
+            modal.querySelectorAll('.camp-details').forEach(detail => {
+              detail.style.display = 'none';
+            });
+            modal.querySelectorAll('.camp-header').forEach(hdr => {
+              hdr.classList.remove('active');
+              hdr.setAttribute('aria-expanded', 'false');
+              hdr.querySelector('.toggle-icon').textContent = '+';
+            });
+
+            if (!isExpanded) {
+              // 클릭된 camp-details 열기
+              details.style.display = 'block';
+              header.classList.add('active');
+              header.setAttribute('aria-expanded', 'true');
+              header.querySelector('.toggle-icon').textContent = '−';
+            }
+          }
+        });
+
+        // 키보드 접근성 추가 (Enter, Space)
+        modal.addEventListener('keydown', (event) => {
+          const header = event.target.closest('.camp-header');
+          if (header && (event.key === 'Enter' || event.key === ' ')) {
+            console.log('캠핑장 헤더 키보드 이벤트:', header);
+            const campItem = header.closest('.camp-item');
+            const details = campItem.querySelector('.camp-details');
+            console.log('해당 캠핑장 세부 정보:', details);
+            const isExpanded = header.getAttribute('aria-expanded') === 'true';
+
+            // 모든 camp-details 닫기 및 헤더 초기화
+            modal.querySelectorAll('.camp-details').forEach(detail => {
+              detail.style.display = 'none';
+            });
+            modal.querySelectorAll('.camp-header').forEach(hdr => {
+              hdr.classList.remove('active');
+              hdr.setAttribute('aria-expanded', 'false');
+              hdr.querySelector('.toggle-icon').textContent = '+';
+            });
+
+            if (!isExpanded) {
+              // 키보드로 클릭된 camp-details 열기
+              details.style.display = 'block';
+              header.classList.add('active');
+              header.setAttribute('aria-expanded', 'true');
+              header.querySelector('.toggle-icon').textContent = '−';
+            }
+
+            event.preventDefault();
+          }
+        });
+      }
+
+      // 사용자 ID를 JavaScript 변수로 전달
+      // user != null 이면 userId, 아니면 "defaultUser" 사용
+      var userIdFromServer = /*[[${user != null}]]*/ ? '[[${user.userId}]]' : 'defaultUser';
+
+      // 추천 버튼 클릭 시 AJAX 요청
+      // (단 하나의 이벤트 리스너만 사용)
+      document.querySelector('form[action="/camp/pythonRecommend"]').addEventListener('submit', function(event) {
+        event.preventDefault(); // 기본 폼 제출 방지
+
+        fetch('/camp/pythonRecommend', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: userIdFromServer, // 실제 사용자 ID
+            topN: 30
+          })
+        })
+                .then(response => response.json())
+                .then(data => {
+                  displayRecommendations(data.recommend);
+                })
+                .catch(error => {
+                  console.error('Error fetching recommendations:', error);
+                });
+      });
+
+      // 추천 결과를 표시하는 함수
+      function displayRecommendations(recommendations) {
+        const recommendSection = document.querySelector('.recommendations');
+        if (!recommendSection) {
+          // 추천 섹션이 없으면 생성
+          const newSection = document.createElement('div');
+          newSection.classList.add('recommendations');
+          newSection.innerHTML = '<h2>내 맞춤 추천 캠핑장</h2><ul></ul>';
+          document.body.insertBefore(newSection, document.querySelector('.modal-overlay'));
+        }
+
+        const recommendationsList = document.querySelector('.recommendations ul');
+        recommendationsList.innerHTML = ''; // 기존 추천 목록 초기화
+
+        if (recommendations && recommendations.length > 0) {
+          recommendations.forEach(rec => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `<strong>${rec.야영장명}</strong> - 예상 평점: ${rec.predicted_rating}`;
+            recommendationsList.appendChild(listItem);
+          });
+        } else {
+          recommendationsList.innerHTML = '<li>추천 캠핑장이 없습니다.</li>';
+        }
+
+        // 추천 섹션 표시
+        document.querySelector('.recommendations').style.display = 'block';
+      }
+
+      // 전역 함수로 할당하여 HTML에서 접근 가능하게 함
+      window.openModal = openModal;
+      window.closeModal = closeModal;
+    });
+    /*]]>*/
   </script>
 </head>
 <body>
-<h1>캠핑장 검색</h1>
 
-<!-- (1) 검색 폼 -->
-<form th:action="@{/camp}" method="get">
-  <select name="searchType">
-    <option value="address" th:selected="${param.searchType == 'address'}">주소</option>
-    <option value="themeEnvironment" th:selected="${param.searchType == 'themeEnvironment'}">테마환경</option>
-    <option value="glamping" th:selected="${param.searchType == 'glamping'}">주요시설 글램핑</option>
-    <!-- etc... 필요한 필드 추가 -->
-  </select>
-  <input type="text" name="searchKeyword" th:value="${param.searchKeyword}" />
-  <button type="submit">검색</button>
-</form>
-
-<hr/>
-
-<!-- (2) 관리자 전용: 추천 키워드 등록 -->
-<div th:if="${session.role == 'ADMIN'}">
-  <h3>추천 키워드 등록</h3>
-  <form th:action="@{/camp/addKeyword}" method="post">
-    <label>컬럼명:</label>
-    <select name="columnName">
+<!-- 중앙 검색영역 -->
+<div class="search-container">
+  <h1>캠핑장 검색</h1>
+  <form th:action="@{/camp}" method="get" class="search-box">
+    <select name="searchType">
       <option value="address">주소</option>
       <option value="themeEnvironment">테마환경</option>
-      <option value="glamping">주요시설 글램핑</option>
-      <option value="carCamping">주요시설 자동차야영장</option>
-      <!-- etc... -->
+      <option value="glamping">글램핑</option>
+      <!-- 필요 시 추가 -->
     </select>
-    <label>키워드:</label>
-    <input type="text" name="keyword" placeholder="ex) 낚시" />
-    <label>라벨(#포함 권장):</label>
-    <input type="text" name="label" placeholder="#낚시" />
-    <button type="submit">추가</button>
+    <input type="text" name="searchKeyword" placeholder="검색어 입력" />
+    <button type="submit">검색</button>
   </form>
 </div>
 
-<!-- (3) 추천 키워드 목록 (모든 사용자) -->
-<div th:if="${recommendedKeywords != null and recommendedKeywords.size() > 0}">
-  <h3>추천 키워드</h3>
-  <ul>
-    <li th:each="rk : ${recommendedKeywords}">
-      <!-- 예: #낚시 -->
-      <a th:text="${rk.label}"
-         th:href="@{/camp(searchType=${rk.columnName}, searchKeyword=${rk.keyword})}">#낚시</a>
+<!-- 검색 결과 카드 목록 -->
+<div class="results">
+  <!-- 검색된 결과 수나 페이징 등 표시할 수 있음 -->
+  <p>총 <span th:text="${totalCount}">0</span>개의 캠핑장을 찾았습니다.</p>
 
-      <!-- 관리자만 삭제 버튼 노출 -->
-      <form th:if="${session.role == 'ADMIN'}" th:action="@{/camp/removeKeyword}" method="post" style="display:inline;">
-        <input type="hidden" name="id" th:value="${rk.id}" />
-        <button type="submit">삭제</button>
-      </form>
-    </li>
-  </ul>
-</div>
-
-<hr/>
-
-<!-- (4) 검색 결과 -->
-<div>
-  <h2>검색 결과</h2>
-  <p>총 개수: <span th:text="${totalCount}">0</span></p>
-
-  <div th:if="${totalCount == 0}">
-    <p>검색 결과가 없습니다.</p>
+  <!-- 카드 형식으로 반복 -->
+  <div class="result-card"
+       th:each="camp : ${camps}"
+       th:onclick="'location.href=\'/camp/detail?id=' + camp.id + '\''">
+    <h2 th:text="${camp.name}">캠핑장명</h2>
+    <p th:text="${camp.address}">주소</p>
+    <p th:text="${camp.themeEnvironment}">여행 테마</p>
+    <p th:text="'글램핑: ' + ${camp.glamping} + '개'"></p>
+    <!-- 필요하면 더 많은 정보 표시 -->
   </div>
 
-  <div th:if="${totalCount > 0}">
-    <table border="1">
-      <tr>
-        <th>야영장명</th>
-        <th>주소</th>
-        <th>테마환경</th>
-        <th>글램핑(개수)</th>
-      </tr>
-      <tr th:each="camp : ${camps}">
-        <td th:text="${camp.name}">CampName</td>
-        <td th:text="${camp.address}">Address</td>
-        <td th:text="${camp.themeEnvironment}">Theme</td>
-        <td th:text="${camp.glamping}">GlampingCount</td>
-      </tr>
-    </table>
-
-    <!-- 블록 페이징 -->
-    <div>
-      <span th:if="${startPage > 1}">
-        <a th:href="@{/camp(page=${startPage - 1},
-                            searchType=${param.searchType},
-                            searchKeyword=${param.searchKeyword})}">&laquo;이전</a>
-      </span>
-
-      <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
-        <a th:if="${p != currentPage}"
-           th:href="@{/camp(page=${p},
-                           searchType=${param.searchType},
-                           searchKeyword=${param.searchKeyword})}"
-           th:text="${p}"></a>
-        <span th:if="${p == currentPage}" th:text="${p}">1</span>
-        <span> </span>
-      </span>
-
-      <span th:if="${endPage < totalPages}">
-        <a th:href="@{/camp(page=${endPage + 1},
-                            searchType=${param.searchType},
-                            searchKeyword=${param.searchKeyword})}">다음&raquo;</a>
-      </span>
-    </div>
+  <!-- 페이징 (원한다면 카드 아래에 배치) -->
+  <div class="pagination-block">
+    <span th:if="${startPage > 1}">
+      <a th:href="@{/camp(page=${startPage - 1},
+                          searchType=${param.searchType},
+                          searchKeyword=${param.searchKeyword})}">&laquo;이전</a>
+    </span>
+    <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
+      <a th:if="${p != currentPage}"
+         th:href="@{/camp(page=${p},
+                         searchType=${param.searchType},
+                         searchKeyword=${param.searchKeyword})}"
+         th:text="${p}"></a>
+      <span th:if="${p == currentPage}" th:text="${p}" class="current"></span>
+    </span>
+    <span th:if="${endPage < totalPages}">
+      <a th:href="@{/camp(page=${endPage + 1},
+                          searchType=${param.searchType},
+                          searchKeyword=${param.searchKeyword})}">다음&raquo;</a>
+    </span>
   </div>
 </div>
 
 <hr/>
 
-<!-- (5) 평점 10개 미만 -->
+<!-- 평점 10개 미만 -->
 <div th:if="${randomCamps != null}">
   <h2>아직 10개 미만의 평점을 등록하셨네요!</h2>
   <p>아래 버튼을 눌러 <strong>10개 랜덤 캠핑장</strong>에 대해 1등(10점) ~ 10등(1점) 순위를 매겨주세요.</p>
   <button type="button" onclick="openModal()">추천 점수 등록하기</button>
 </div>
 <div th:if="${randomCamps == null}">
-  <p>로그인이 필요하거나 이미 평점을 10개 이상 등록하셨습니다.</p>
+  <p>로그인이 필요합니다.</p>
 </div>
 
-<!-- (6) 파이썬 추천 호출 버튼(예시) -->
-<form th:action="@{/camp/recommend}" method="post">
+<!-- 파이썬 추천 호출 버튼 -->
+<form th:action="@{/camp/pythonRecommend}" method="post">
   <button type="submit">내 맞춤추천 받기 (Python 서버)</button>
 </form>
 
-<!-- (7) 모달창 -->
+<!-- 추천 결과 섹션 (비동기적 접근 시 추가) -->
+<div class="recommendations" style="display: none;">
+  <h2>내 맞춤 추천 캠핑장</h2>
+  <ul></ul>
+</div>
+
+<!-- 모달창 -->
 <div id="recommendModal" class="modal-overlay" th:if="${randomCamps != null}">
   <div class="modal-content">
-    <span class="close-button" onclick="closeModal()">&times;</span>
-    <h2>10개 캠핑장 순위 입력</h2>
-    <p>1등=10점, 2등=9점, ... 10등=1점</p>
+    <button class="close-button" onclick="closeModal()">&times;</button>
+    <h2>캠핑장 선호도 조사</h2>
+
     <form th:action="@{/camp/recommend}" method="post">
-      <table border="1">
-        <tr>
-          <th>야영장명</th>
-          <th>주소</th>
-          <th>순위</th>
-        </tr>
-        <tr th:each="camp : ${randomCamps}">
-          <td th:text="${camp.name}">CampName</td>
-          <td th:text="${camp.address}">Address</td>
-          <td>
-            <input type="hidden" name="campId" th:value="${camp.id}" />
-            <select name="rank">
-              <option th:each="r : ${#numbers.sequence(1,10)}"
-                      th:value="${r}"
-                      th:text="${r}"></option>
-            </select>
-          </td>
-        </tr>
-      </table>
-      <button type="submit">순위 제출</button>
+      <div class="camp-list">
+        <ul>
+          <li th:each="camp : ${randomCamps}">
+            <div class="camp-item">
+              <div class="camp-header" data-camp-id="${camp.id}" tabindex="0" role="button" aria-expanded="false">
+                <h3 th:text="${camp.name}">캠핑장명</h3>
+                <span class="toggle-icon">+</span>
+              </div>
+              <!-- 캠핑장 세부 정보 -->
+              <strong>주소:</strong> <span th:text="${camp.address}">주소</span>
+              <div class="camp-details" data-camp-id="${camp.id}" style="display: none;">
+                <p th:if="${camp.glamping != null and camp.glamping > 0}">
+                  <strong>글램핑 개수:</strong> <span th:text="${camp.glamping}">글램핑 개수</span>
+                </p>
+
+                <p th:if="${camp.caravan != null and camp.caravan > 0}">
+                  <strong>카라반 개수:</strong> <span th:text="${camp.caravan}">카라반 개수</span>
+                </p>
+                <p th:if="${camp.facilities != null}">
+                  <strong>부대 시설:</strong> <span th:text="${camp.facilities}">부대시설</span>
+                </p>
+                <p th:if="${camp.nearbyFacilities != null}">
+                  <strong>주변 이용 가능 시설:</strong> <span th:text="${camp.nearbyFacilities}">주변시설</span>
+                </p>
+                <p th:if="${camp.themeEnvironment != null}">
+                  <strong>테마 환경:</strong> <span th:text="${camp.themeEnvironment}">테마환경</span>
+                </p>
+                <p th:if="${camp.petAllowed != null}">
+                  <strong>반려동물 출입:</strong> <span th:text="${camp.petAllowed}">반려동물출입</span>
+                </p>
+                <p th:if="${camp.equipmentRental != null}">
+                  <strong>장비 대여:</strong> <span th:text="${camp.equipmentRental}">장비대여</span>
+                </p>
+              </div>
+              <div class="rank-select-container">
+                <label for="score-${camp.id}">점수:</label>
+                <select name="score" id="score-${camp.id}" class="score-select" required>
+                  <option value="">선택</option>
+                  <option th:each="s : ${#numbers.sequence(1,10)}"
+                          th:value="${s}"
+                          th:text="${s}"></option>
+                </select>
+                <input type="hidden" name="campId" th:value="${camp.id}" />
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <button type="submit">선호도 제출</button>
     </form>
   </div>
 </div>
 
+<!-- Footer -->
 <div th:replace="~{footer :: footer}"></div>
+
 </body>
 </html>

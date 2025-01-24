@@ -1,213 +1,311 @@
-/* 전역 스타일 초기화 */
-* {
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+body {
+    font-family: 'Pretendard-Regular', sans-serif;
+    background-color: #f8f9fa;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
-/* 전체 배경 & 폰트 설정 */
-html, body {
-    width: 100%;
-    min-height: 100vh;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: #f2f4f8; /* 부드러운 회색톤 배경 */
-    color: #333;
+/* 검색 박스 스타일 */
+.search-container {
+    text-align: center;
+    padding: 40px 20px;
 }
 
-/* 컨테이너 기본 스타일 */
-body > div {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
-/* 헤더, 제목 스타일 */
-h1, h2, h3 {
-    margin-bottom: 1rem;
-    font-weight: 600;
-    color: #333;
-}
-h1 {
-    font-size: 2rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-h2 {
-    font-size: 1.5rem;
-    margin-top: 2rem;
-}
-h3 {
-    font-size: 1.2rem;
-    margin-top: 1.5rem;
-}
-
-/* 폼 스타일 */
-form {
+.search-box {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-form select,
-form input[type="text"],
-form input[type="number"],
-form button,
-form input[type="submit"] {
-    font-family: inherit;
-    font-size: 1rem;
-    padding: 0.5rem 0.8rem;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-}
-
-/* 버튼 스타일 공통 */
-button,
-input[type="submit"] {
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.2s ease-in-out;
-}
-button:hover,
-input[type="submit"]:hover {
-    background-color: #9dd0ff; /* 파스텔 블루 효과 */
-    color: #fff;
-}
-
-/* 검색 버튼, 추천 버튼 등 */
-button[type="submit"],
-button[type="button"],
-input[type="submit"] {
-    background-color: #b2ddff;
-}
-
-/* 테이블 스타일 */
-table {
-    width: 100%;
-    border-collapse: separate; /* 둥근 모서리를 위해 separate 사용 */
-    border-spacing: 0;
-    margin-bottom: 1.5rem;
-    background-color: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    border-radius: 6px;
-    overflow: hidden; /* border-radius 반영 위해 */
-}
-
-/* 테이블 헤더 */
-table thead tr {
-    background-color: #dceafe; /* 파스텔 블루톤 */
-    text-align: left;
-    font-weight: 600;
-}
-
-/* 테이블 셀 */
-table th,
-table td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #eee;
-    vertical-align: middle;
-}
-
-table tr:last-child td {
-    border-bottom: none;
-}
-
-/* 테이블 행 호버 효과 */
-table tbody tr:hover {
-    background-color: #f9fbff;
-}
-
-/* 페이징 영역 */
-div > span a {
-    margin: 0 4px;
-    text-decoration: none;
-    color: #007acc; /* 파란색 계열 */
-    font-weight: 500;
-}
-div > span a:hover {
-    text-decoration: underline;
-}
-div > span span {
-    margin: 0 4px;
-    font-weight: 600;
-}
-div > span {
-    margin-right: 8px;
-}
-
-/* 평점 등록 섹션의 안내 문구 */
-p {
-    line-height: 1.5;
-    margin-bottom: 1rem;
-}
-
-/* 알림 메세지 */
-/*p[th\\:text] {*/
-/*    font-size: 1rem;*/
-/*    color: #555;*/
-/*}*/
-/* 간단한 모달 스타일 예시 */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(0,0,0,0.4);
-    z-index: 9999;
     justify-content: center;
     align-items: center;
+    gap: 10px;
 }
-.modal-overlay.open {
-    display: flex;
+
+.search-box input, .search-box select, .search-box button {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    font-size: 16px;
 }
-.modal-content {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 8px;
-    width: 80%;
-    max-width: 600px;
-    position: relative;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-.close-button {
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    font-size: 1.2rem;
+
+.search-box button {
+    background-color: #ff5a5f;
+    color: white;
+    font-weight: bold;
+    border: none;
     cursor: pointer;
 }
-/* 파이썬 추천 호출 버튼(예시)와 같은 추가 버튼 */
-form button[type="submit"] {
-    margin-top: 1rem;
-    background-color: #fae3b3; /* 파스텔 오렌지톤 */
+
+/* 캠핑장 검색 결과 카드 */
+.results {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
 }
-form button[type="submit"]:hover {
-    background-color: #f8cf8a;
+
+.result-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.result-card:hover {
+    transform: translateY(-5px);
+}
+
+.result-card h2 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 10px;
+}
+/* 모달 오버레이 스타일 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1000;
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 모달 콘텐츠 스타일 */
+.modal-content {
+
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px 20px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    position: relative;
+    text-align: left;
+    font-family: 'Pretendard-Regular', sans-serif;
+}
+
+/* 스크롤바 숨기기 */
+.modal-content::-webkit-scrollbar {
+    display: none;
+}
+.modal-content {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+/* 닫기 버튼 스타일 */
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.2s ease;
+}
+
+.close-button:hover {
+    color: #000;
+}
+
+/* 제목 스타일 */
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.8rem;
+}
+
+/* 캠핑장 리스트 스타일 */
+.camp-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.camp-item {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 15px 0;
+}
+
+.camp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px 0;
+}
+
+.camp-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #2c3e50;
+}
+
+.toggle-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.camp-header[aria-expanded="true"] .toggle-icon {
+    transform: rotate(45deg);
+}
+
+/* 캠핑장 세부 정보 스타일 */
+.camp-details {
+    padding: 10px 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin-top: 10px;
+    animation: fadeIn 0.3s ease;
+}
+
+.camp-details p {
+    margin: 8px 0;
+    color: #555;
+    line-height: 1.5;
+}
+
+.camp-details strong {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* 순위 선택 컨테이너 스타일 */
+.rank-select-container {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.rank-select-container label {
+    margin-right: 10px;
+    font-weight: 600;
     color: #333;
 }
 
-/* 반응형: 768px 이하일 때 테이블 -> 수평 스크롤 가능 */
-@media (max-width: 768px) {
-    table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-    table thead,
-    table tbody,
-    table th,
-    table td,
-    table tr {
-        display: table-row; /* 크롬 등에서는 block으로 깨질 수 있으므로 조정 */
-        white-space: nowrap;
-    }
+.rank-select {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    appearance: none;
+    background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><path fill="%23999" d="M6 8l-5-5h10z"/></svg>') no-repeat right 10px center;
+    background-size: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
 
-    form {
-        flex-direction: column;
-        align-items: stretch;
-    }
+.rank-select:focus {
+    border-color: #3498db;
+    outline: none;
+}
 
-    button,
-    input[type="submit"] {
-        align-self: flex-start;
-    }
+.rank-select option {
+    padding: 10px;
+}
+
+/* 제출 버튼 스타일 */
+.modal-content form button[type="submit"] {
+    display: block;
+    margin: 25px auto 0;
+    padding: 10px 25px;
+    background: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.modal-content form button[type="submit"]:hover {
+    background: #2980b9;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.close-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ff5a5f;
+}
+
+/* 캠핑장 리스트 스타일 */
+.camp-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.camp-item {
+    background: #f1f1f1;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.camp-header {
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggle-icon {
+    font-size: 22px;
+    color: #ff5a5f;
+}
+
+.camp-details {
+    display: none;
+    padding-top: 10px;
+}
+
+/* 버튼 스타일 */
+button {
+    background-color: #ff5a5f;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #ff3035;
 }

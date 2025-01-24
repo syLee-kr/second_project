@@ -3,7 +3,6 @@ package com.example.camping.controller;
 import com.example.camping.entity.Users;
 import com.example.camping.entity.camp.Camp;
 import com.example.camping.entity.camp.CampRating;
-import com.example.camping.entity.dto.RecommendResponse;
 import com.example.camping.entity.dto.RecommendedKeyword;
 import com.example.camping.service.CampRatingService;
 import com.example.camping.service.CampService;
@@ -11,16 +10,16 @@ import com.example.camping.service.RecommendedKeywordService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +32,9 @@ public class CampController {
     private final CampService campService;
     private final CampRatingService campRatingService;
     private final RecommendedKeywordService recommendedKeywordService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping
     public String camp(
@@ -69,16 +71,21 @@ public class CampController {
             endPage = totalPages;
         }
 
-        // 평점 등록 유도
-        String userId = (String) session.getAttribute("userId");
-        if (userId != null) {
-            List<CampRating> userRatings = campRatingService.getUserRatings(userId);
-            int ratingCount = userRatings.size();
-            if (ratingCount < 10) {
-                // 10개 미만이면 10개 랜덤
-                List<Camp> randomCamps = campService.getRandomCamps(10);
-                model.addAttribute("randomCamps", randomCamps);
+        Users user = (Users) session.getAttribute("user");
+        if (user != null) {
+            String userId = user.getUserId();
+            if (userId != null) {
+                List<CampRating> userRatings = campRatingService.getUserRatings(userId);
+                int ratingCount = userRatings.size();
+                if (ratingCount < 10) {
+                    // 10개 미만이면 10개 랜덤
+                    List<Camp> randomCamps = campService.getRandomCamps(10);
+                    model.addAttribute("randomCamps", randomCamps);
+                }
             }
+        } else {
+            // user가 null인 경우
+            model.addAttribute("randomCamps", null);
         }
 
         // 추천 키워드 목록
@@ -121,23 +128,34 @@ public class CampController {
     @PostMapping("/recommend")
     public String submitRecommendForm(
             @RequestParam("campId") List<String> campIds,
-            @RequestParam("rank") List<Integer> ranks,
+            @RequestParam("score") List<Integer> scores,
             HttpSession session
     ) {
-        String userId = (String) session.getAttribute("userId");
+        // 세션에서 "user" 객체를 가져와 userId 추출
+        Users user = (Users) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        String userId = user.getUserId();
         if (userId == null) {
             return "redirect:/login";
         }
 
+        // campIds와 scores의 크기가 같은지 확인
+        if (campIds.size() != scores.size()) {
+            // 로그 추가 또는 에러 처리
+            return "redirect:/camp?error=InvalidSubmission";
+        }
+
         for (int i = 0; i < campIds.size(); i++) {
             String cId = campIds.get(i);
-            int rank = ranks.get(i);
-            double ratingScore = 11 - rank;
-            campRatingService.saveRating(userId, cId, (int) ratingScore);
+            int score = scores.get(i);
+            campRatingService.saveRating(userId, cId, score);
         }
 
         return "redirect:/camp";
     }
+
 
     /**
      * (ADMIN 전용) 추천 키워드 추가
@@ -173,5 +191,38 @@ public class CampController {
 
         recommendedKeywordService.deleteById(id);
         return "redirect:/camp";
+    }
+
+    @PostMapping("/pythonRecommend")
+    @ResponseBody
+    public Map<String, Object> getPythonRecommendAjax(HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        String userId = (user != null) ? user.getUserId() : "defaultUser";
+        int topN = 30; // 추천 개수
+
+        Map<String, Object> requestPayload = new HashMap<>();
+        requestPayload.put("userId", userId);
+        requestPayload.put("topN", topN);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestPayload, headers);
+
+        String fastApiUrl = "http://127.0.0.1:8000/recommend";
+
+        try {
+            ResponseEntity<Map> response = restTemplate.postForEntity(fastApiUrl, request, Map.class);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                List<Map<String, Object>> recommendations = (List<Map<String, Object>>) response.getBody().get("recommend");
+                return Collections.singletonMap("recommend", recommendations);
+            } else {
+                return Collections.singletonMap("recommend", Collections.emptyList());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.singletonMap("recommend", Collections.emptyList());
+        }
     }
 }

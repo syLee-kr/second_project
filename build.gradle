@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'eclipse'  // 이클립스 플러그인 추가
     id 'org.springframework.boot' version '3.4.1'
     id 'io.spring.dependency-management' version '1.1.7'
 }
@@ -36,7 +37,6 @@ dependencies {
     implementation 'org.mindrot:jbcrypt:0.4'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    implementation 'org.projectlombok:lombok'
 
     implementation 'com.oracle.database.jdbc:ojdbc8:19.8.0.0'
     implementation group: 'org.hibernate.orm', name: 'hibernate-community-dialects', version: '7.0.0.Beta3'
