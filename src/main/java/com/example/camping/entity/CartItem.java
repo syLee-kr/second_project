@@ -24,11 +24,11 @@ public class CartItem { // 장바구니에 담긴 개별 상품 항목을 나타
     private Long cartItemId;  // 장바구니 항목 ID
 
     @ManyToOne
-    @JoinColumn(name = "cart_id") 
+    @JoinColumn(name = "cart_id", nullable = false) 
     private Cart cart;  // 장바구니에 속한 항목
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Products product;  // 장바구니에 담긴 상품
 
     private Integer quantity;  // 상품 수량

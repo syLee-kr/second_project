@@ -4,6 +4,7 @@ import com.example.camping.entity.Cart;
 import com.example.camping.entity.CartItem;
 import com.example.camping.entity.Products;
 import com.example.camping.entity.Users;
+import com.example.camping.repository.UserRepository;
 import com.example.camping.service.cartService.CartService;
 import com.example.camping.service.productService.ProductService;
 import com.example.camping.service.userService.UserService;
@@ -25,28 +26,24 @@ import java.util.List;
 public class CartController {
 
     private final CartService cartService;
-    private final UserService userService;
     private final ProductService productService;
+    private final UserRepository userRepo;
+    private final UserService userService;
 
     // 장바구니 조회
     @GetMapping("/view")
-    public String viewCart(Model model) {
+    public String viewCart(Model model, String userId) {
         // 관리자 계정 가져오기 (DB에서)
-        Users adminUser = userService.getAdminUser();
+        Users user = userRepo.findByUserId(userId);
 
-        if (adminUser != null) {
-            log.info("관리자 {}의 장바구니 조회", adminUser.getUserId());
+        if (user != null) {
+            log.info("관리자 {}의 장바구니 조회", user.getUserId());
             
-            // 장바구니 조회
-            Cart cart = cartService.getCartByUser(adminUser);
-            
-            if (cart == null) {
-                // 장바구니가 없는 경우 새로 생성
-            	log.info("관리자 {}의 장바구니가 존재하지 않아 새로 생성합니다.", adminUser.getUserId());
-                cart = cartService.createCartForUser(adminUser);
-            }
-            
+            // 유저의 장바구니 확인 및 생성
+            user = userService.ensureCartForUser(user);
+
             // 장바구니 항목 조회
+            Cart cart = cartService.getCartByUser(user);
             List<CartItem> items = cartService.getCartItems(cart.getCartId());
             model.addAttribute("cart", cart);
             model.addAttribute("items", items);
@@ -54,47 +51,62 @@ public class CartController {
             return "goods/cart/cart-view";
         } else {
             log.warn("관리자 계정이 존재하지 않습니다. 장바구니 기능이 제한될 수 있습니다.");
-            return "redirect:/cart/cart-view"; // 기본 장바구니 페이지 그대로 반환
+            return "redirect:/cart/view"; // 기본 장바구니 페이지 그대로 반환
         }
     }
 
     // 장바구니에 상품 추가
     @PostMapping("/add")
-    public String addItemToCart(@RequestParam ("cartId") Long CartId, 
-    							@RequestParam ("gseq") Long gseq, 
-    							@RequestParam Integer quantity) {
+    public String addItemToCart(@RequestParam ("cartId") Long cartId, 
+                                 @RequestParam ("gseq") Long gseq, 
+                                 @RequestParam Integer quantity,
+                                 @RequestParam ("returnUrl") String returnUrl) {
+        log.info("장바구니에 상품 추가 요청 - cartId: {}, gseq: {}, quantity: {}", cartId, gseq, quantity);
+
         // 장바구니와 상품을 가져오기
-        Cart cart = cartService.getCartByCartId(CartId);  // 장바구니 조회
+        Cart cart = cartService.getCartByCartId(cartId);  // 장바구니 조회
         Products product = productService.getProductById(gseq);  // 상품 조회
         
-        if (cart != null && product != null) {
-        	log.info("장바구니에 상품 추가 - 장바구니 cartId: {}, 상품 gseq: {}, 수량: {}", CartId, gseq, quantity);
-        	
-        	// 상품 수량에 따른 총 가격 계산
-            BigDecimal totalPrice = product.getPrice1().multiply(BigDecimal.valueOf(quantity));
-            
-            // CartItem 생성
-            CartItem cartItem = new CartItem();
-            cartItem.setCart(cart);  // 장바구니와 연결
-            cartItem.setProduct(product);  // 상품과 연결
-            cartItem.setQuantity(quantity);  // 수량 설정
-            cartItem.setTotalPrice(totalPrice);  // 총 가격 설정
-            
-            // 장바구니에 상품 추가
-            cartService.addItemToCart(cartItem);
-            log.info("상품이 장바구니에 성공적으로 추가되었습니다.");
-        } else {
-            log.error("장바구니 또는 상품을 찾을 수 없습니다. 장바구니 cartId: {}, 상품 gseq: {}", CartId, gseq);
+        // 장바구니 또는 상품이 없으면 예외 처리
+        if (cart == null || product == null) {
+            log.error("장바구니 또는 상품이 존재하지 않습니다. cartId: {}, gseq: {}", cartId, gseq);
+            throw new IllegalArgumentException("장바구니나 상품이 유효하지 않습니다.");
+        }
+        if (cartId == null) {
+        	log.error("cartId가 누락되었습니다.");
+        	throw new IllegalArgumentException("cartId가 누락되었습니다.");
         }
         
-        return "redirect:/cart/view";  // 장바구니 화면으로 리다이렉트
+        // 수량 검증
+        if (quantity <= 0) {
+            log.error("수량이 0 이하로 설정되었습니다. 수량은 1 이상이어야 합니다.");
+            throw new IllegalArgumentException("수량은 1 이상이어야 합니다.");
+        }
+
+        // 상품 수량에 따른 총 가격 계산
+        BigDecimal totalPrice = product.getPrice1().multiply(BigDecimal.valueOf(quantity));
+        
+        // CartItem 생성
+        CartItem cartItem = new CartItem();
+        cartItem.setCart(cart);  // 장바구니와 연결
+        cartItem.setProduct(product);  // 상품과 연결
+        cartItem.setQuantity(quantity);  // 수량 설정
+        cartItem.setTotalPrice(totalPrice);  // 총 가격 설정
+        
+        // 장바구니에 상품 추가
+        cartService.addItemToCart(cartItem);
+        log.info("상품이 장바구니에 성공적으로 추가되었습니다.");
+        
+        return "redirect:" + returnUrl; 
     }
+
 
     // 장바구니 항목 수량 수정
     @PostMapping("/update/{cartItemId}")
-    public String updateCartItem(@PathVariable Long cartItemId, 
+    public String updateCartItem(@PathVariable ("cartItemId")Long cartItemId,
+    							 @RequestParam ("cartId")Long cartId,
     							 @RequestParam Integer quantity) {
-    	log.info("장바구니 항목 수량 수정 - cartItemId: {}, 새로운 수량: {}", cartItemId, quantity);
+    	log.info("장바구니 항목 수량 수정 - cartItemId: {}, cartId: {}, 새로운 수량: {}", cartItemId, cartId, quantity);
     	
     	// 장바구니 항목 조회
         CartItem cartItem = cartService.getCartItemByCartItemId(cartItemId);  
@@ -126,7 +138,7 @@ public class CartController {
 
     // 장바구니 항목 삭제
     @PostMapping("/remove/{cartItemId}")
-    public String removeItemFromCart(@PathVariable Long cartItemId) {
+    public String removeItemFromCart(@PathVariable ("cartItemId")Long cartItemId) {
         log.info("장바구니 항목 삭제 - cartItemId: {}", cartItemId);
 
         cartService.removeItemFromCart(cartItemId);

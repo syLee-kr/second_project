@@ -4,7 +4,9 @@ import com.example.camping.entity.Cart;
 import com.example.camping.entity.CartItem;
 import com.example.camping.entity.Users;
 import com.example.camping.repository.CartRepository;
+import com.example.camping.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +23,7 @@ public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepo;
     private final CartItemRepository cartItemRepo;
+    private final UserRepository userRepo;
 
     // 장바구니 조회
     @Override
@@ -40,16 +43,15 @@ public class CartServiceImpl implements CartService {
 
     // 새 장바구니 생성
     @Override
-    public Cart createCartForUser(Users adminUser) {
-        log.info("새 장바구니 생성 - 관리자: {}", adminUser.getUserId());
+    public Cart createCartForUser(Users user) {
+        log.info("새 장바구니 생성 - 사용자: {}", user.getUserId());
         
-        Cart newCart = new Cart();
-        newCart.setUser(adminUser);
+        Cart cart = new Cart();
+        cart.setUser(user);
+        cartRepo.save(cart);
+        log.info("새 장바구니 생성 성공 - 장바구니 cartId: {}", cart.getCartId());
         
-        Cart savedCart = cartRepo.save(newCart);
-        log.info("새 장바구니 생성 성공 - 장바구니 cartId: {}", savedCart.getCartId());
-        
-        return savedCart;
+        return cart;
     }
 
     // 장바구니 목록 조회
@@ -109,6 +111,7 @@ public class CartServiceImpl implements CartService {
     }
 
     // 장바구니 상품 추가
+    @Transactional
     @Override
     public void addItemToCart(CartItem cartItem) {
         log.info("장바구니 상품 추가 - cartItemId: {}", cartItem.getCart());

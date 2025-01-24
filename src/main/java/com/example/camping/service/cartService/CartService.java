@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 public interface CartService {
     
     // 유저에 대한 장바구니 조회
-    Cart getCartByUser(Users adminUser);
+    Cart getCartByUser(Users user);
     
     // 장바구니 생성
-	Cart createCartForUser(Users adminUser);
+	Cart createCartForUser(Users user);
 	
 	// 장바구니 목록 조회
 	List<CartItem> getCartItems(Long cartId);
@@ -33,5 +33,6 @@ public interface CartService {
 	
 	// 장바구니 상품 조회
 	CartItem getCartItemByCartItemId(Long cartItemId);
+	
 
 }
