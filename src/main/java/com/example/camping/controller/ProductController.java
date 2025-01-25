@@ -30,9 +30,8 @@ public class ProductController {
 
     private ProductService productService;
     private CategoryRepository categoryRepo;
-    private CartService cartService;
     private UserRepository userRepo;
-    private UserService userService;
+
         
     // 상품 등록 폼
     @GetMapping("/product-register")
@@ -72,7 +71,7 @@ public class ProductController {
     
     // 상품 수정 페이지
     @GetMapping("/product-edit/{gseq}")
-    public String editProductForm(@PathVariable Long gseq, Model model) {
+    public String editProductForm(@PathVariable String gseq, Model model) {
         Products product = productService.getProductById(gseq);
         if (product != null) {
             model.addAttribute("product", product);
@@ -86,7 +85,7 @@ public class ProductController {
     
     // 상품 수정 처리
     @PostMapping("/product-edit/{gseq}")
-    public String updateProduct(@PathVariable Long gseq, 
+    public String updateProduct(@PathVariable String gseq, 
                                 @ModelAttribute Products product, 
                                 @RequestParam("image") MultipartFile image,
                                 @RequestParam(value = "deleteImage", required = false) List<String> deleteImages,
@@ -134,7 +133,7 @@ public class ProductController {
 
     // 상품 삭제(상세페이지 - 단일상품삭제)
     @PostMapping("/delete/{gseq}")
-    public String deleteProduct(@PathVariable Long gseq, Model model) {
+    public String deleteProduct(@PathVariable String gseq, Model model) {
         Products product = productService.getProductById(gseq);
         if (product != null) {
             // 상품에 연관된 이미지 삭제
@@ -156,12 +155,12 @@ public class ProductController {
     
     // 상품 삭제(상품목록 - 여러상품삭제)
     @PostMapping("/delete-products")
-    public String deleteProducts(@RequestParam("productIds") List<Long> productIds,
+    public String deleteProducts(@RequestParam("productIds") List<String> productIds,
                                  @RequestParam(value = "category", defaultValue = "전체") String category) {
         // 상품 삭제 시작
         log.info("상품 삭제 시작 - 삭제할 상품 ID 목록: {}", productIds);
         
-        for (Long gseq : productIds) {
+        for (String gseq : productIds) {
             // 각 상품에 대해 처리
             log.info("처리 중인 상품 ID: {}", gseq);
 
@@ -244,7 +243,7 @@ public class ProductController {
     
     // 상품 상세보기
     @GetMapping("/{gseq}")
-    public String productDetail(@PathVariable (name= "gseq") Long gseq, 
+    public String productDetail(@PathVariable (name= "gseq") String gseq, 
        							@RequestParam (name= "userId", required = false) String userId,
     							Model model) {
     	Users user = userRepo.findByUserId(userId);
@@ -313,23 +312,5 @@ public class ProductController {
             log.warn("이미지 파일 없음, 경로: {}", filePath);
         }
     }
-    
-    /*
-    // 세션에 장바구니 정보를 저장
-    @PostMapping("/add-to-cart/{gseq}")
-    public String addToCart(@PathVariable("gseq") Long gseq, HttpSession session) {
-        Products product = productService.getProductById(gseq);
-        if (product != null) {
-            // 세션에서 장바구니 가져오기
-            List<Products> cart = (List<Products>) session.getAttribute("cart");
-            if (cart == null) {
-                cart = new ArrayList<>();
-            }
-            cart.add(product); // 장바구니에 상품 추가
-            session.setAttribute("cart", cart); // 세션에 장바구니 저장
-        }
-        return "redirect:/goods/product-list"; // 장바구니 추가 후 상품 목록으로 리다이렉트
-    }*/
-    
 
 }

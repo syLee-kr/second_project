@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 수정</title>
+</head>
+<body>
+    <header>
+        <h3>[프로필 수정]</h3>
+    </header>
+
+    <main>
+        <div class="container">
+            <form th:action="@{/users/update}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">이름:</label>
+                    <input type="text" id="name" name="name" th:value="${user.name}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">이메일:</label>
+                    <input type="email" id="email" name="email" th:value="${user.email}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">전화번호:</label>
+                    <input type="text" id="phone" name="phone" th:value="${user.phone}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">주소:</label>
+                    <input type="text" id="address" name="address" th:value="${user.address}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthday">생일:</label>
+                    <input type="date" id="birthday" name="birthday" th:value="${user.birthday}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">성별:</label>
+                    <select name="gender" id="gender">
+                        <option value="MALE" th:selected="${user.gender == 'MALE'}">남성</option>
+                        <option value="FEMALE" th:selected="${user.gender == 'FEMALE'}">여성</option>
+                    </select>
+                </div>
+	            <div class="form-group">
+	                    <button type="submit">프로필 수정</button>
+	            </div>
+            </form>
+            <div class="form-group">
+            	<a th:href="@{/users/profile}">내 프로필</a>
+            </div>
+            
+            <form th:action="@{/logout}" method="POST">
+    			<button type="submit" class="logout-button">로그아웃</button>
+			</form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2025 YourCompany. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

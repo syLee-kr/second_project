@@ -1,9 +1,8 @@
 package com.example.camping.service.cartService;
 
-import com.example.camping.entity.Cart;
+import com.example.camping.CodeGenerator;
 import com.example.camping.entity.CartItem;
 import com.example.camping.entity.Users;
-import com.example.camping.repository.CartRepository;
 import com.example.camping.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import com.example.camping.repository.CartItemRepository;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -21,46 +19,16 @@ import java.util.List;
 @AllArgsConstructor
 public class CartServiceImpl implements CartService {
 
-    private final CartRepository cartRepo;
+ 
     private final CartItemRepository cartItemRepo;
     private final UserRepository userRepo;
 
     // 장바구니 조회
     @Override
-    public Cart getCartByUser(Users user) {
-        log.info("장바구니 조회 시작 - 사용자: {}", user.getUserId());
-        
-        Cart cart = cartRepo.findByUser(user);
-        
-        if (cart == null) {
-            log.error("해당 사용자 {}의 장바구니가 존재하지 않습니다.", user.getUserId());
-            throw new IllegalArgumentException("해당 장바구니가 존재하지 않습니다.");
-        }
-        
-        log.info("장바구니 조회 성공 - 사용자: {}, 장바구니 cartId: {}", user.getUserId(), cart.getCartId());
-        return cart;
-    }
-
-    // 새 장바구니 생성
-    @Override
-    public Cart createCartForUser(Users user) {
-        log.info("새 장바구니 생성 시작 - 사용자: {}", user.getUserId());
-        
-        Cart cart = new Cart();
-        cart.setUser(user);
-        cartRepo.save(cart);
-        
-        log.info("새 장바구니 생성 성공 - 사용자: {}, 장바구니 cartId: {}", user.getUserId(), cart.getCartId());
-        
-        return cart;
-    }
-
-    // 장바구니 목록 조회
-    @Override
-    public List<CartItem> getCartItems(Long cartId) {
+    public List<CartItem> getCartItems(String cartId) {
         log.info("장바구니 항목 조회 시작 - 장바구니 cartId: {}", cartId);
         
-        List<CartItem> cartItems = cartItemRepo.findByCart_CartId(cartId);
+        List<CartItem> cartItems = cartItemRepo.findByCartId(cartId);
         
         if (cartItems.isEmpty()) {
             log.warn("장바구니 항목이 없습니다. cartId: {}", cartId);
@@ -73,7 +41,7 @@ public class CartServiceImpl implements CartService {
 
     // 장바구니 상품의 수량 수정
     @Override
-    public void updateCartItemQuantity(Long cartItemId, Integer quantity) {
+    public void updateCartItemQuantity(String cartItemId, Integer quantity) {
         log.info("장바구니 상품 수량 수정 시작 - cartItemId: {}, 새로운 수량: {}", cartItemId, quantity);
         
         CartItem cartItem = cartItemRepo.findByCartItemId(cartItemId);
@@ -89,42 +57,24 @@ public class CartServiceImpl implements CartService {
         }
 
         cartItem.setQuantity(quantity);
-        cartItem.setTotalPrice(cartItem.getProduct().getPrice1().multiply(BigDecimal.valueOf(quantity)));
-        
         cartItemRepo.save(cartItem);
         log.info("장바구니 상품 수량 수정 성공 - cartItemId: {}, 새로운 수량: {}", cartItemId, quantity);
-    }
-
-    // 장바구니 조회
-    @Override
-    public Cart getCartByCartId(Long cartId) {
-        log.info("장바구니 조회 시작 - cartId: {}", cartId);
-        
-        Cart cart = cartRepo.findByCartId(cartId);
-        
-        if (cart == null) {
-            log.error("해당 장바구니가 존재하지 않습니다. cartId: {}", cartId);
-            throw new IllegalArgumentException("해당 장바구니가 존재하지 않습니다.");
-        }
-        
-        log.info("장바구니 조회 성공 - cartId: {}", cartId);
-        return cart;
     }
 
     // 장바구니 상품 추가
     @Transactional
     @Override
     public void addItemToCart(CartItem cartItem) {
-        log.info("장바구니 상품 추가 시작 - cartId: {}, 상품Id: {}", cartItem.getCart().getCartId(), cartItem.getProduct().getGseq());
+        log.info("장바구니 상품 추가 시작 - cartId: {}, 상품Id: {}", cartItem.getCartId(), cartItem.getProductId());
         
-        CartItem savedCartItem = cartItemRepo.save(cartItem);
+        cartItemRepo.save(cartItem);
         
-        log.info("장바구니 상품 추가 성공 - cartId: {}, 상품Id: {}", savedCartItem.getCart().getCartId(), savedCartItem.getProduct().getGseq());
+        log.info("장바구니 상품 추가 성공 - cartId: {}, 상품Id: {}", cartItem.getCartId(), cartItem.getProductId());
     }
 
     // 장바구니 상품 삭제
     @Override
-    public void removeItemFromCart(Long cartItemId) {
+    public void removeItemFromCart(String cartItemId) {
         log.info("장바구니 상품 삭제 시작 - cartItemId: {}", cartItemId);
         
         cartItemRepo.deleteById(cartItemId);
@@ -132,9 +82,9 @@ public class CartServiceImpl implements CartService {
         log.info("장바구니 상품 삭제 성공 - cartItemId: {}", cartItemId);
     }
 
-    // 장바구니의 상품 조회
+    // 장바구니 상품 조회
     @Override
-    public CartItem getCartItemByCartItemId(Long cartItemId) {
+    public CartItem getCartItemByCartItemId(String cartItemId) {
         log.info("장바구니 상품 조회 시작 - cartItemId: {}", cartItemId);
         
         CartItem cartItem = cartItemRepo.findByCartItemId(cartItemId);
@@ -147,4 +97,31 @@ public class CartServiceImpl implements CartService {
         log.info("장바구니 상품 조회 성공 - cartItemId: {}", cartItemId);
         return cartItem;
     }
+
+    // 장바구니 생성
+    @Override
+    public String createCartIdForUser(String userId) {
+        log.info("새 장바구니 생성 시작 - 사용자: {}", userId);
+        
+        Users user = userRepo.findByUserId(userId);
+        
+        if (user == null) {
+            log.error("해당 사용자가 존재하지 않습니다. userId: {}", userId);
+            throw new IllegalArgumentException("해당 사용자가 존재하지 않습니다.");
+        }
+        
+        // 새로운 장바구니 생성
+        String newCartId = CodeGenerator.generateCode(7);
+        
+        // 
+        user.setCartId(newCartId);
+        userRepo.save(user);
+        
+        log.info("새 장바구니 생성 성공 - 사용자: {}, 장바구니 cartId: {}", user.getUserId(), newCartId);
+        
+        return newCartId;
+    }
+
+
+	
 }

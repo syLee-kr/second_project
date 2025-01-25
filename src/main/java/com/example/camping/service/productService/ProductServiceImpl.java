@@ -35,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 	// 상품 삭제
 	@Override
-	public void deleteProduct(Long gseq) {
+	public void deleteProduct(String gseq) {
 		productRepo.deleteById(gseq);
 		
 	}
@@ -70,14 +70,14 @@ public class ProductServiceImpl implements ProductService {
 	
 	// 상품 상세보기 
 	@Override
-	public Products getProductById(Long gseq) {
+	public Products getProductById(String gseq) {
 		 
 		return productRepo.findById(gseq).orElse(null);
 	}
 	
 	// 상품 수정 처리
 	@Override
-	public Products updateProduct(Long gseq, Products product) {
+	public Products updateProduct(String gseq, Products product) {
 		Products currentProduct = productRepo.findById(gseq).orElseThrow(()-> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 		
 		currentProduct.setName(product.getName());  // 이름 수정

@@ -10,7 +10,7 @@ public interface ProductService {
 	Products registerProduct(Products product);
 	
 	// 상품 삭제
-	void deleteProduct(Long gseq);
+	void deleteProduct(String gseq);
 	
 	// 전체 상품 조회
 	List<Products> getAllProducts();
@@ -19,9 +19,9 @@ public interface ProductService {
 	List<Products> getProductsByCategory(String name);
 	
 	// 상품 상세 보기 
-	Products getProductById(Long gseq);
+	Products getProductById(String gseq);
 	
 	// 상품 수정처리
-	Products updateProduct(Long gseq, Products product);
+	Products updateProduct(String gseq, Products product);
 
 }
