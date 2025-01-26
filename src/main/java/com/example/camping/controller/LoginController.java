@@ -22,27 +22,32 @@ public class LoginController {
 	
 	// 로그인 폼
 	@GetMapping("/login")
-	public String loginForm() {
-		return "users/login/login-form";
-	}
+	public String loginForm(HttpSession session) {
+		Users loggedInUser = (Users) session.getAttribute("user");
+        if (loggedInUser != null) {
+            log.info("현재 로그인 상태: 사용자 {}가 로그인 중", loggedInUser.getUserId());
+            return "users/profile/profile-form";  // 로그인된 상태라면 프로필 페이지로
+        } else {
+            log.info("로그인되지 않은 상태입니다.");
+            return "users/login/login-form";  // 로그인되지 않으면 로그인 폼
+        }
+    }
 	
 	// 로그인 처리
     @PostMapping("/login")
     public String login(@RequestParam ("userId")String userId, 
     					@RequestParam ("password")String password, 
-    					HttpSession session,
-    					Model model) {
+    					HttpSession session) {
         Users user = userService.login(userId, password);
 
         if (user != null) {
             // 로그인 성공 시 세션에 사용자 정보 저장
             session.setAttribute("user", user);
-            log.info("로그인 성공: {}", user.getUserId());
+            System.out.println("세션에 저장된 사용자: " + session.getAttribute("user")); // 세션 값 출력
            
             return "users/profile/profile-form"; // 로그인 후 프로필 화면으로 이동
         } else {
-            // 로그인 실패 시
-            model.addAttribute("error", "로그인 실패, 아이디와 비밀번호를 확인해주세요.");
+        	log.warn("로그인 실패: 사용자 ID가 존재하지 않거나 비밀번호 불일치");  // 로그인 실패 로그
             return "users/login/login-form"; // 로그인 폼으로 돌아감
         }
     }

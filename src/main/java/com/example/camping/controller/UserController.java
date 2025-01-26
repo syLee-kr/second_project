@@ -26,13 +26,27 @@ public class UserController {
 	private PasswordEncoder passwordEncoder;
 	
 	private void setDefaultValuesForUser(Users user) {
-		if (user.getUserId() == null) user.setUserId("정보 없음");
-		if (user.getName() == null) user.setName("정보 없음");
-		if (user.getEmail() == null) user.setEmail("정보 없음");
-		if (user.getPhone() == null) user.setPhone("정보 없음");
-		if (user.getAddress() == null) user.setAddress("정보 없음");
-		if (user.getBirthday() == null) user.setBirthday(LocalDate.now());
-		if (user.getGender() == null) user.setGender(Users.Gender.MALE);
+		if (user.getUserId() == null) {
+			user.setUserId("정보 없음");
+		}
+		if (user.getName() == null) {
+			user.setName("정보 없음");
+		}
+		if (user.getEmail() == null) {
+			user.setEmail("정보 없음");
+		}
+		if (user.getPhone() == null) {
+			user.setPhone("정보 없음");
+		}
+		if (user.getAddress() == null) {
+			user.setAddress("정보 없음");
+		}
+		if (user.getBirthday() == null) {
+			user.setBirthday(LocalDate.now());
+		}
+		if (user.getGender() == null) {
+			user.setGender(Users.Gender.MALE);
+		}
 	}
 		
 	

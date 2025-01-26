@@ -8,16 +8,16 @@
 <body>
     <h1>Profile</h1>
     <div>
-        <p>userId: {{users.userId}}</p>
-        <p>Name: {{users.name}}</p>
-        <p>Email: {{users.email}}</p>
-        <p>Phone: {{users.phone}}</p>
-        <p>Address: {{users.address}}</p>
-        <p>Birthday: {{users.birthday}}</p>
-        <p>Gender: {{users.gender}}</p>
+        <p th:text="'userId: ' + ${user.userId}"></p>
+        <p th:text="'Name: ' + ${user.name}"></p>
+        <p th:text="'Email: ' + ${user.email}"></p>
+        <p th:text="'Phone: ' + ${user.phone}"></p>
+        <p th:text="'Address: ' + ${user.address}"></p>
+        <p th:text="'Birthday: ' + ${user.birthday}"></p>
+        <p th:text="'Gender: ' + ${user.gender}"></p>
         
-        <a href="/users/edit">Edit Profile</a>
-        <a href="/change-password">Change Password</a>
+        <a th:href="@{/users/edit}">Edit Profile</a>
+        <a th:href="@{/change-password}">Change Password</a>
         
         <form th:action="@{/logout}" method="POST">
             <button type="submit">Logout</button>
