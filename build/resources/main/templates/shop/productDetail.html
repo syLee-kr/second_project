@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${product.name}">상품 상세</title>
+    <link rel="stylesheet" th:href="@{/css/head.css}" />
+    <link rel="stylesheet" th:href="@{/css/footer.css}" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            font-size: 18px;
+        }
+        .product-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .product-images img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .cart-form button, .admin-actions button {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            background-color: #ff7e00;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .cart-form button:hover, .admin-actions button:hover {
+            background-color: #e56b00;
+        }
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        p {
+            color: #555;
+            line-height: 1.6;
+        }
+        .review-form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .star-rating {
+            color: #ffcc00;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+<div class="header" th:replace="~{header :: header}"></div>
+<div class="product-container">
+    <h1 th:text="${product.name}">상품 이름</h1>
+    <p>가격: <span th:text="${product.price1}">가격</span></p>
+    <p th:text="${product.content}">상품 설명</p>
+    <p>카테고리: <span th:text="${product.category.name}">카테고리명</span></p>
+    <p>베스트 상품 여부: <span th:text="${product.isBest ? 'Yes' : 'No'}"></span></p>
+    <p>재고 수량: <span th:text="${product.stock}"></span></p>
+
+    <!-- 상품 이미지 출력 -->
+    <div class="product-images" th:if="${not #lists.isEmpty(product.imagePaths)}">
+        <div th:each="image : ${product.imagePaths}">
+            <img th:src="@{${image}}" alt="상품 이미지" />
+        </div>
+    </div>
+
+    <!-- 장바구니 담기 폼 -->
+    <form class="cart-form" th:action="@{/shop/product/{id}/cart(id=${product.gseq})}" method="post">
+        <label for="quantity">수량:</label>
+        <input type="number" id="quantity" name="quantity" value="1" min="1" required />
+        <button type="submit">장바구니 담기</button>
+    </form>
+</div>
+
+<!-- 리뷰 섹션 -->
+<div class="review-section">
+    <h2>리뷰</h2>
+    <div th:if="${reviews}">
+        <ul>
+            <li th:each="review : ${reviews}">
+                <strong th:text="${review.userId}">사용자</strong>
+                <span class="star-rating">
+                    <th:block th:each="i : ${#numbers.sequence(1, review.rating / 2)}">★</th:block>
+                    <th:block th:if="${review.rating % 2 != 0}">☆</th:block>
+                </span>
+                <p th:text="${review.content}">리뷰 내용</p>
+                <p th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</p>
+            </li>
+        </ul>
+    </div>
+    <div th:unless="${reviews}">
+        <p>리뷰가 없습니다.</p>
+    </div>
+    <!-- 리뷰 작성 폼 -->
+    <div class="review-form" th:if="${session.user != null}">
+        <h3>리뷰 작성</h3>
+        <form th:action="@{/shop/product/{id}/review(id=${product.gseq})}" method="post">
+            <label for="rating">평점 (1-10):</label>
+            <input type="number" id="rating" name="rating" min="1" max="10" required />
+            <label for="content">리뷰 내용:</label>
+            <textarea id="content" name="content" required></textarea>
+            <button type="submit">리뷰 작성</button>
+        </form>
+    </div>
+</div>
+
+<div class="footer" th:replace="~{footer :: footer}"></div>
+</body>
+</html>

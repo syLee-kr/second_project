@@ -1,325 +1,282 @@
-@font-face {
-    font-family: 'Pretendard-Regular';
-    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
-    font-weight: 400;
-    font-style: normal;
+/* CSS 변수 정의 */
+:root {
+    --primary-color: #ff9800; /* 당근마켓 오렌지 색상 */
+    --primary-hover-color: #e68900;
+    --secondary-color: #f2f2f2; /* 배경색 */
+    --text-color: #333333;
+    --muted-text-color: #777777;
+    --border-color: #e0e0e0;
+    --background-color: #ffffff;
+    --font-family-main: 'Pretendard-Regular', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    --font-size-base: 24px;
+    --font-size-title: 2rem;
+    --font-size-subtitle: 1.7rem;
+    --font-size-meta: 1.4rem;
+    --font-size-button: 1.6rem;
 }
-@font-face {
-    font-family: 'NotoSerifKR';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NotoSerifKR.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-body {
-    font-family: 'Pretendard-Regular', sans-serif;
-    background-color: #f8f9fa;
+
+html, body {
     margin: 0;
     padding: 0;
+    font-family: var(--font-family-main);
+    background-color: var(--secondary-color);
+    font-size: var(--font-size-base);
+    color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-.search-container {
-    display: flex;
-    flex-direction: column;  /* 기본적으로 세로 정렬 (모바일 우선) */
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
+/* 페이지 타이틀 */
+.page-title {
+    font-size: var(--font-size-title);
     text-align: center;
+    margin: 1rem 0;
+    color: var(--text-color);
 }
-.search-container h1 {
-    font-family: 'NotoSerifKR', serif;
-}
-/* 검색 폼 가로 배치 */
-.search-box {
+
+/* 상품 리스트 컨테이너 */
+.product-list-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    width: 100%;
-    gap: 10px; /* 요소 간 간격 조절 */
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.search-box input, .search-box select, .search-box button {
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 30px;
-    font-size: 16px;
-}
-
-.search-box button {
-    background-color: #ff5a5f;
-    color: white;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-}
-
-/* 캠핑장 검색 결과 카드 */
-.results {
+/* 상품 아이템 */
+.product-item {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    padding: 20px;
+    width: 100%;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.result-card {
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 300px;
-    transition: transform 0.3s ease-in-out;
+/* 상품 이미지 */
+.product-image-wrapper img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-right: 1px solid var(--border-color);
+}
+
+/* 상품 정보 */
+.product-info {
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.product-name a {
+    font-size: var(--font-size-subtitle);
+    font-weight: bold;
+    color: var(--text-color);
+    text-decoration: none;
+    margin-bottom: 10px;
+    transition: color 0.3s;
+}
+
+.product-name a:hover {
+    color: var(--primary-color);
+}
+
+.product-price {
+    font-size: var(--font-size-meta);
+    color: var(--muted-text-color);
+}
+
+/* 관리자 권한 작업 */
+.admin-actions button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: var(--font-size-button);
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.result-card:hover {
-    transform: translateY(-5px);
+.admin-actions button:hover {
+    background-color: var(--primary-hover-color);
+}
+
+.add-product {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: var(--font-size-button);
+    transition: background-color 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.add-product:hover {
+    background-color: var(--primary-hover-color);
+}
+
+/* 로딩 표시 */
+.loading {
+    text-align: center;
+    font-size: var(--font-size-meta);
+    color: var(--muted-text-color);
+    margin-top: 20px;
+}
+.recommend-btn {
+    display: block;
+    width: 90%;
+    height: 25% !important;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: var(--font-size-button);
+    border: none; /* 테두리 제거 */
+    outline: none; /* 포커스 시 외곽선 제거 */
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+.recommend-btn:hover {
+    background-color: var(--primary-hover-color);
+}
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    .product-list-container {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-item {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .product-image-wrapper img {
+        width: 100%;
+        height: auto;
+    }
+
+    .product-info {
+        padding: 10px;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+    }
+}
+/* 무한 스크롤 컨테이너 스타일 */
+.infinite-scroll {
+    width: 100%;
+    max-width: 1200px;  /* 최대 너비 제한 */
+    margin: 0 auto;  /* 가운데 정렬 */
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;  /* 세로 스크롤 활성화 */
+    height: 80%;  /* 최대 높이 설정 (스크롤이 필요한 경우) */
+}
+
+/* 캠핑장 목록 아이템 스타일 */
+.result-card {
+    display: block;
+    padding: 15px;
+    background-color: var(--secondary-color);
+    border-bottom: 1px solid var(--border-color);
+    text-decoration: none;
+    color: var(--text-color);
+    transition: background-color 0.3s;
 }
 
 .result-card h2 {
-    font-size: 22px;
-    color: #333;
-    margin-bottom: 10px;
-}
-/* 모달 오버레이 스타일 */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    z-index: 1000;
-}
-
-.modal-overlay.open {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* 모달 콘텐츠 스타일 */
-.modal-content {
-
-    background: #fff;
-    border-radius: 15px;
-    padding: 25px 20px;
-    max-width: 700px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    position: relative;
-    text-align: left;
-    font-family: 'Pretendard-Regular', sans-serif;
-}
-
-/* 스크롤바 숨기기 */
-.modal-content::-webkit-scrollbar {
-    display: none;
-}
-.modal-content {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-}
-
-/* 닫기 버튼 스타일 */
-.close-button {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #555;
-    transition: color 0.2s ease;
-}
-
-.close-button:hover {
-    color: #000;
-}
-
-/* 제목 스타일 */
-.modal-content h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 1.8rem;
-}
-
-/* 캠핑장 리스트 스타일 */
-.camp-list ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.camp-item {
-    border-bottom: 1px solid #e0e0e0;
-    padding: 15px 0;
-}
-
-.camp-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    padding: 10px 0;
-}
-
-.camp-header h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    color: #2c3e50;
-}
-
-.toggle-icon {
-    font-size: 1.2rem;
-    transition: transform 0.3s ease;
-}
-
-.camp-header[aria-expanded="true"] .toggle-icon {
-    transform: rotate(45deg);
-}
-
-/* 캠핑장 세부 정보 스타일 */
-.camp-details {
-    padding: 10px 20px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    margin-top: 10px;
-    animation: fadeIn 0.3s ease;
-}
-
-.camp-details p {
-    margin: 8px 0;
-    color: #555;
-    line-height: 1.5;
-}
-
-.camp-details strong {
-    color: #2c3e50;
-    font-weight: 600;
-}
-
-/* 순위 선택 컨테이너 스타일 */
-.rank-select-container {
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-}
-
-.rank-select-container label {
-    margin-right: 10px;
-    font-weight: 600;
-    color: #333;
-}
-
-.rank-select {
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    appearance: none;
-    background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><path fill="%23999" d="M6 8l-5-5h10z"/></svg>') no-repeat right 10px center;
-    background-size: 12px;
-    cursor: pointer;
-    transition: border-color 0.2s ease;
-}
-
-.rank-select:focus {
-    border-color: #3498db;
-    outline: none;
-}
-
-.rank-select option {
-    padding: 10px;
-}
-
-/* 제출 버튼 스타일 */
-.modal-content form button[type="submit"] {
-    display: block;
-    margin: 25px auto 0;
-    padding: 10px 25px;
-    background: #3498db;
-    color: #fff;
-    border: none;
-    border-radius: 25px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.modal-content form button[type="submit"]:hover {
-    background: #2980b9;
-}
-
-/* 애니메이션 */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.close-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 24px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #ff5a5f;
-}
-
-/* 캠핑장 리스트 스타일 */
-.camp-list ul {
-    list-style: none;
-    padding: 0;
-}
-
-.camp-item {
-    background: #f1f1f1;
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 10px;
-}
-
-.camp-header {
-    font-size: 18px;
+    font-size: var(--font-size-subtitle);
     font-weight: bold;
+    margin: 0 0 10px 0;
+}
+
+.result-card p {
+    font-size: var(--font-size-meta);
+    color: var(--muted-text-color);
+    margin: 5px 0;
+}
+
+/* 마우스 오버 시 효과 */
+.result-card:hover {
+    background-color: var(--primary-color);
+    color: #fff;
     cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
-.toggle-icon {
-    font-size: 22px;
-    color: #ff5a5f;
+/* 로딩 메시지 스타일 */
+.loading {
+    text-align: center;
+    font-size: var(--font-size-meta);
+    color: var(--muted-text-color);
+    margin: 20px 0;
 }
 
-.camp-details {
-    display: none;
-    padding-top: 10px;
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .infinite-scroll {
+        padding: 15px;
+        max-height: 500px;
+    }
+
+    .result-card {
+        padding: 10px;
+    }
+
+    .result-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .result-card p {
+        font-size: 1.2rem;
+    }
+}
+.recommend-result {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
 }
 
-/* 버튼 스타일 */
-button {
-    background-color: #ff5a5f;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 30px;
-    font-size: 18px;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
+.recommend-list {
+    list-style-type: none;
+    padding: 0;
 }
 
-button:hover {
-    background-color: #ff3035;
+.recommend-item {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.recommend-item:last-child {
+    border-bottom: none;
+}
+
+.recommend-item a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.error-message {
+    color: red;
+}
+
+.no-result {
+    color: gray;
 }

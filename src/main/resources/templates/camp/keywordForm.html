@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>키워드 등록/수정</title>
+</head>
+<body>
+<h1>키워드 등록/수정</h1>
+<form th:action="@{/camp/addKeyword}" method="post">
+    <!-- id 값이 있는지(수정 모드) 없는지(신규 등록 모드) -->
+    <input type="hidden" name="id" th:value="${keyword.id}" />
+
+    <label>검색타입(columnName):
+        <input type="text" name="columnName" th:value="${keyword.columnName}" />
+    </label>
+    <br/>
+
+    <label>키워드(keyword):
+        <input type="text" name="keyword" th:value="${keyword.keyword}" />
+    </label>
+    <br/>
+
+    <label>표시 라벨(label):
+        <input type="text" name="label" th:value="${keyword.label}" />
+    </label>
+    <br/>
+
+    <button type="submit">저장</button>
+</form>
+
+<!-- 수정 모드일 때만 삭제 기능 제공 -->
+<div th:if="${keyword.id != null}">
+    <form th:action="@{/camp/removeKeyword}" method="post">
+        <input type="hidden" name="id" th:value="${keyword.id}" />
+        <button type="submit">삭제</button>
+    </form>
+</div>
+
+</body>
+</html>

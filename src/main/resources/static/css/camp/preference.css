@@ -1,0 +1,115 @@
+:root {
+    --primary-color: #ff9800; /* 당근마켓 오렌지 색상 */
+    --primary-hover-color: #e68900;
+    --secondary-color: #f2f2f2; /* 배경색 */
+    --text-color: #333333;
+    --muted-text-color: #777777;
+    --border-color: #e0e0e0;
+    --background-color: #ffffff;
+    --font-family-main: 'Pretendard-Regular', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    --font-size-base: 24px;
+    --font-size-title: 2rem;
+    --font-size-subtitle: 1.7rem;
+    --font-size-meta: 1.4rem;
+    --font-size-button: 1.6rem;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family-main);
+    background-color: var(--secondary-color);
+    font-size: var(--font-size-base);
+    color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 페이지 설명 */
+.pref-description {
+    text-align: center;
+    font-size: var(--font-size-meta);
+    color: var(--muted-text-color);
+    margin: 20px;
+}
+
+/* 폼 컨테이너 스타일 */
+.pref-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 200px !important;
+}
+
+/* 캠핑장 리스트 스타일 */
+.pref-list {
+    list-style: none;
+    padding: 0;
+}
+
+.pref-item {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.pref-title {
+    font-size: var(--font-size-subtitle);
+    color: var(--text-color);
+}
+
+.pref-address {
+    font-size: var(--font-size-meta);
+    color: var(--muted-text-color);
+}
+
+.pref-label {
+    display: block;
+    margin-top: 10px;
+    font-size: var(--font-size-base);
+}
+
+.pref-input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    font-size: var(--font-size-meta);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.pref-submit {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: var(--font-size-button);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.pref-submit:hover {
+    background-color: var(--primary-hover-color);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .pref-form {
+        width: 90%;
+    }
+
+    .pref-input {
+        font-size: var(--font-size-meta);
+    }
+
+    .pref-submit {
+        font-size: 1.4rem;
+    }
+}

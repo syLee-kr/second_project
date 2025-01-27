@@ -1,0 +1,138 @@
+/* 공통 스타일 */
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard-Regular', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background-color: #f2f2f2; /* 당근마켓 느낌의 밝은 배경 */
+    font-size: 24px; /* 1.5배 확대 */
+    color: #333;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* 페이지 타이틀 */
+.form-title {
+    font-size: 2rem;
+    text-align: center;
+    margin: 1.5rem 0;
+    color: #333;
+}
+
+/* 상품 등록 폼 */
+.product-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 폼 그룹 */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* 입력 필드 스타일 */
+.form-control {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1.6rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #ff7e36;
+    outline: none;
+}
+
+/* 체크박스 그룹 */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 0.5rem;
+    transform: scale(1.2);
+}
+
+.checkbox-label {
+    font-weight: normal;
+    color: #555;
+    user-select: none;
+}
+
+/* 제출 버튼 */
+.submit-button {
+    width: 100%;
+    padding: 1rem;
+    background-color: #ff7e36; /* 당근마켓 오렌지 컬러 느낌 */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.6rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #e76b2d;
+}
+
+/* 뒤로가기 링크 */
+.back-link {
+    display: block;
+    text-align: center;
+    margin: 1rem 0;
+    color: #ff7e36;
+    text-decoration: none;
+    font-size: 1.6rem;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* 이미지 미리보기 */
+.image-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.preview-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.main-content {
+    padding-bottom: 140px; /* 네비게이션 바의 높이에 맞게 조정 */
+}
+/* 반응형 디자인 */
+@media (max-width: 1000px) {
+    .bottom-nav {
+        width: 100%;
+        border-radius: 30px 30px 0 0;
+        height: 100px; /* 모바일용으로 높이 조정 */
+    }
+
+    .bottom-nav a img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .bottom-nav a span {
+        font-size: 24px !important;
+    }
+
+    .main-content {
+        padding-bottom: 120px; /* 모바일 네비게이션 바 높이에 맞게 조정 */
+    }
+}

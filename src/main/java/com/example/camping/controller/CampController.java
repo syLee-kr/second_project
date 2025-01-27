@@ -4,6 +4,7 @@ import com.example.camping.entity.Users;
 import com.example.camping.entity.camp.Camp;
 import com.example.camping.entity.camp.CampRating;
 import com.example.camping.entity.dto.RecommendedKeyword;
+import com.example.camping.repository.UserRepository;
 import com.example.camping.service.CampRatingService;
 import com.example.camping.service.CampService;
 import com.example.camping.service.RecommendedKeywordService;
@@ -21,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/camp")
@@ -28,6 +30,7 @@ import java.util.*;
 public class CampController {
 
     private final CampService campService;
+    private final UserRepository userRepo;
     private final CampRatingService campRatingService;
     private final RecommendedKeywordService recommendedKeywordService;
 
@@ -45,6 +48,7 @@ public class CampController {
             HttpSession session,
             Model model
     ) {
+        System.out.println("현재 세션 ID: " + session.getAttribute("user"));
         int pageSize = 20;
 
         List<Camp> camps;
@@ -94,21 +98,56 @@ public class CampController {
                              Model model,
                              HttpSession session) {
         // 캠핑장 정보
-        System.out.println(campId);
+        System.out.println("캠핑장 ID: " + campId);
         Camp camp = campService.findById(campId);
-        System.out.println(camp);
+        System.out.println("캠핑장 정보: " + camp);
         if (camp == null) {
             return "redirect:/camp?error=NotFound";
         }
 
         // 해당 캠핑장에 대한 모든 리뷰
         List<CampRating> ratings = campRatingService.getRatingsByCampId(campId);
+        List<Users> users = userRepo.getAllUsers();
+        model.addAttribute("users", users);
+        model.addAttribute("ratings", ratings);
+
+        // 현재 사용자 정보
+        Users user = (Users) session.getAttribute("user");
+        model.addAttribute("currentUser", user);
 
         model.addAttribute("camp", camp);
         model.addAttribute("ratings", ratings);
+        // 평균 평점 계산
+        double averageRating = 0.0;
+        if (!ratings.isEmpty()) {
+            double total = 0.0;
+            for (CampRating rating : ratings) {
+                total += rating.getRating();
+            }
+            averageRating = total / ratings.size(); // 1~10 점수 기준
+        }
+        System.out.println("평균 평점 (1~10): " + averageRating);
+
+        // 1~10 점수를 1~5 별로 변환
+        double averageRatingOutOf5 = averageRating / 2.0;
+        System.out.println("평균 평점 (1~5): " + averageRatingOutOf5);
+
+        int fullStars = (int) averageRatingOutOf5;
+        boolean halfStar = (averageRatingOutOf5 - fullStars) >= 0.25 && (averageRatingOutOf5 - fullStars) < 0.75;
+        if ((averageRatingOutOf5 - fullStars) >= 0.75) {
+            fullStars += 1;
+            halfStar = false;
+        }
+
+        System.out.println("Full Stars: " + fullStars);
+        System.out.println("Half Star: " + halfStar);
+
+        model.addAttribute("fullStars", fullStars);
+        model.addAttribute("halfStar", halfStar);
 
         return "camp/campDetail"; // Thymeleaf 템플릿
     }
+
 
     /**
      * 상세 페이지에서 평점/리뷰 등록
@@ -182,6 +221,28 @@ public class CampController {
         return Collections.singletonMap("recommend", Collections.emptyList());
     }
 
+    @PostMapping("/detail/deleteRating")
+    public String deleteRating(@RequestParam("ratingId") String ratingId,
+                               @RequestParam("campId") String campId,
+                               HttpSession session) {
+        Users user = (Users) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        CampRating rating = campRatingService.findById(ratingId);
+        if (rating == null) {
+            return "redirect:/camp/detail?id=" + campId + "&error=RatingNotFound";
+        }
+
+        // 리뷰 소유자이거나 ADMIN 역할인 경우 삭제 허용
+        String role = (String) session.getAttribute("role");
+        if (rating.getUserId().equals(user.getUserId()) || "ADMIN".equals(role)) {
+            campRatingService.deleteRating(ratingId);
+        }
+
+        return "redirect:/camp/detail?id=" + campId;
+    }
     /**
      * [신규] 선호도 조사 페이지 (평점 10개 미만 유저가 필요한 만큼만 랜덤 캠프 조사)
      */
@@ -231,18 +292,25 @@ public class CampController {
      * (ADMIN 전용) 추천 키워드 추가/삭제 로직 (기존 로직 유지 가정)
      */
     @PostMapping("/addKeyword")
-    public String addKeyword(
-            @RequestParam("columnName") String columnName,
-            @RequestParam("keyword") String keyword,
-            @RequestParam("label") String label,
-            HttpSession session
-    ) {
+    public String addOrUpdateKeyword(@RequestParam(value = "id", required = false) String id,
+                                     @RequestParam("columnName") String columnName,
+                                     @RequestParam("keyword") String keyword,
+                                     @RequestParam("label") String label,
+                                     HttpSession session) {
         String role = (String) session.getAttribute("role");
         if (!"ADMIN".equals(role)) {
             return "redirect:/camp";
         }
 
-        recommendedKeywordService.saveKeyword(columnName, keyword, label);
+        // id가 있으면 수정, 없으면 신규 등록
+        if (id != null && !id.isEmpty()) {
+            // 수정 로직
+            recommendedKeywordService.updateKeyword(id, columnName, keyword, label);
+        } else {
+            // 신규 등록 로직
+            recommendedKeywordService.saveKeyword(columnName, keyword, label);
+        }
+
         return "redirect:/camp";
     }
 
@@ -258,5 +326,32 @@ public class CampController {
 
         recommendedKeywordService.deleteById(id);
         return "redirect:/camp";
+    }
+    @GetMapping("/keywordForm")
+    public String keywordForm(@RequestParam(value = "id", required = false) String id,
+                              Model model,
+                              HttpSession session) {
+        // 로그인 정보 및 권한 확인
+        String role = (String) session.getAttribute("role");
+        if (!"ADMIN".equals(role)) {
+            // ADMIN이 아닌 경우 접근 불가 → 캠핑장 목록으로 리다이렉트
+            return "redirect:/camp";
+        }
+
+        RecommendedKeyword keyword = null;
+        if (id != null) {
+            // id가 있으면 수정 모드
+            keyword = recommendedKeywordService.findById(id);
+            if (keyword == null) {
+                // 존재하지 않는 키워드인 경우
+                return "redirect:/camp?error=KeywordNotFound";
+            }
+        } else {
+            // 신규 등록 모드
+            keyword = new RecommendedKeyword();
+        }
+
+        model.addAttribute("keyword", keyword);
+        return "camp/keywordForm"; // 아래에서 새롭게 추가할 폼 페이지
     }
 }

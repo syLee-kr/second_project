@@ -1,0 +1,141 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard-Regular', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background-color: #f2f2f2; /* 당근마켓 느낌의 밝은 배경 */
+    font-size: 24px; /* 1.5배 확대 */
+    color: #333;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.edit-post-form {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 제목 */
+.edit-post-form h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: #333333;
+}
+
+/* 폼 그룹 */
+.edit-post-form .form-group {
+    margin-bottom: 20px;
+}
+
+/* 레이블 */
+.edit-post-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555555;
+    font-size: 1.1rem;
+}
+
+/* 텍스트 입력 */
+.edit-post-form input[type="text"],
+.edit-post-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.edit-post-form input[type="text"]:focus,
+.edit-post-form textarea:focus {
+    border-color: #ff9800;
+    outline: none;
+}
+
+/* 파일 입력 */
+.edit-post-form input[type="file"] {
+    margin-top: 8px;
+}
+
+.edit-post-form .instruction {
+    font-size: 0.9rem;
+    color: #777777;
+    margin-top: 5px;
+}
+
+/* 현재 이미지 표시 */
+.edit-post-form .current-images {
+    margin-top: 15px;
+}
+
+.edit-post-form .images-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.edit-post-form .images-container img {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+/* 제출 버튼 */
+.edit-post-form .submit-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #ff9800;
+    border: none;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-post-form .submit-button:hover {
+    background-color: #e68900;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .edit-post-form {
+        padding: 15px;
+        margin: 20px;
+    }
+
+    .edit-post-form h1 {
+        font-size: 1.8rem;
+    }
+
+    .edit-post-form label {
+        font-size: 1rem;
+    }
+
+    .edit-post-form input[type="text"],
+    .edit-post-form textarea {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+
+    .edit-post-form .submit-button {
+        font-size: 1rem;
+        padding: 10px;
+    }
+
+    .edit-post-form .images-container img {
+        width: 80px;
+        height: 80px;
+    }
+}

@@ -37,6 +37,7 @@ public class LoginController {
         try {
             Users user = userService.login(userId, password);
             session.setAttribute("user", user);
+            System.out.println("user:" + session.getAttribute("user"));
             return "redirect:/camp";
         } catch (RuntimeException e) {
             return "redirect:/login?error=" + e.getMessage();  // 로그인 실패 시 에러 메시지 전달

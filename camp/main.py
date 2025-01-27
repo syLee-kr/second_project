@@ -45,7 +45,6 @@ def convert_pet_allowed(value: Optional[str]) -> int:
         return 1
     return 0
 
-
 def extract_features(camp: dict) -> dict:
     """camp 문서에서 사용하고자 하는 feature들을 추출하여 dict로 반환"""
     features = {}

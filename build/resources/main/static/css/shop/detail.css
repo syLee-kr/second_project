@@ -1,0 +1,151 @@
+/* 전체 페이지 스타일 */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+/* 제목 스타일 */
+h1 {
+    color: #333;
+    text-align: center;
+}
+
+/* 상품 정보 스타일 */
+p {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+/* 장바구니 폼 스타일 */
+.cart-form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.cart-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.cart-form input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.cart-form button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+.cart-form button:hover {
+    background-color: #218838;
+}
+
+/* ADMIN 버튼 스타일 */
+.admin-actions {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.admin-actions a,
+.admin-actions button[type="submit"] {
+    display: inline-block;
+    margin: 10px 5px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.admin-actions a:hover,
+.admin-actions button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* 리뷰 섹션 스타일 */
+.review-section h2 {
+    text-align: center;
+    color: #444;
+}
+
+.review-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.review-section ul li {
+    background: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.review-section strong {
+    color: #333;
+}
+
+.review-form textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+}
+
+.review-form button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+.review-form button:hover {
+    background-color: #218838;
+}
+
+/* 로그인 안내 스타일 */
+.login-prompt p {
+    text-align: center;
+    color: #d9534f;
+}
+
+.login-prompt a {
+    color: #d9534f;
+    text-decoration: none;
+}
+
+.login-prompt a:hover {
+    text-decoration: underline;
+}
+
+/* 헤더 & 푸터 스타일 */
+.header, .footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 18px;
+}

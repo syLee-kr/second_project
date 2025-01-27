@@ -118,4 +118,9 @@ public class UserServiceImpl implements UserService {
         user.setResetTokenExpiry(null);
         userRepo.save(user);
     }
+
+    @Override
+    public Optional<Users> findByUserId(String userId) {
+        return userRepo.findId(userId);
+    }
 }

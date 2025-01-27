@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>상점 페이지</title>
+    <!-- CSS 파일 -->
+    <link rel="stylesheet" th:href="@{/css/shop/shop.css}" />
+    <link rel="stylesheet" th:href="@{/css/footer.css}" />
+    <link rel="stylesheet" type="text/css" href="/css/head.css">
+</head>
+<body>
+<div th:replace="~{header :: header}"></div>
+
+<div>
+    <div class="product-list-container" th:if="${productList}">
+        <ul class="product-list" id="productList">
+            <li class="product-item" th:each="product : ${productList}">
+                <!-- 왼쪽: 상품 이미지 (첫 번째) -->
+                <div class="product-image-wrapper" th:if="${product.imagePaths}">
+                    <img th:src="@{${#lists.isEmpty(product.imagePaths) ? '/images/no-image.png' : product.imagePaths.get(0)}}"
+                         alt="상품 이미지" class="product-image"/>
+                </div>
+
+                <!-- 오른쪽: 상품 상세 정보 -->
+                <div class="product-info">
+                    <h3 class="product-name">
+                        <a th:href="@{/shop/product/{id}(id=${product.gseq})}"
+                           th:text="${#strings.length(product.name) > 15 ? #strings.substring(product.name, 0, 15) + '...' : product.name}">
+                            상품 이름
+                        </a>
+                    </h3>
+
+
+                    <p class="product-price">
+                        <strong>가격:</strong>
+                        <span th:text="${product.price1} + '원'">가격</span>
+                    </p>
+
+                    <p>
+                        <strong>카테고리:</strong>
+                        <span th:text="${product.category.name}">카테고리</span>
+                    </p>
+
+                    <p th:if="${product.isBest}">
+                        <strong>베스트 상품</strong>
+                    </p>
+
+                    <p>
+                        <strong>평점:</strong>
+                        <span th:text="${averageRatings[product.gseq] != null ? averageRatings[product.gseq] : '0.0'}">0</span>점
+                        (<span th:text="${reviewCounts[product.gseq] != null ? reviewCounts[product.gseq] : '0'}">0</span>개)
+                    </p>
+
+                </div>
+
+                <!-- ADMIN 권한일 경우 삭제 버튼 표시 -->
+                <div class="admin-actions" th:if="${role == 'ADMIN'}">
+                    <form th:action="@{/shop/product/{id}/delete(id=${product.gseq})}" method="post">
+                        <button type="submit">삭제</button>
+                    </form>
+                </div>
+            </li>
+        </ul>
+
+        <!-- 로딩중 표시 -->
+        <div id="loading" class="loading" style="display:none;">
+            <p>로딩 중...</p>
+        </div>
+    </div>
+
+    <div th:unless="${productList}">
+        <p>등록된 상품이 없습니다.</p>
+    </div>
+</div>
+
+<!-- ADMIN 권한일 경우 상품 등록 버튼 표시 -->
+<div class="add-product-wrapper" th:if="${role == 'ADMIN'}">
+    <a class="add-product" th:href="@{/shop/product/new}">상품 등록</a>
+</div>
+
+<div th:replace="~{footer :: footer}"></div>
+
+<!-- 무한 스크롤 스크립트 -->
+<script>
+    let page = 1;
+    const productList = document.getElementById('productList');
+    const loading = document.getElementById('loading');
+
+    window.addEventListener('scroll', () => {
+        // 스크롤 바닥 부근 접근 시 다음 페이지 로드
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+            loadMoreProducts();
+        }
+    });
+
+    function loadMoreProducts() {
+        // 이미 로딩 중이면 중복 호출 방지
+        if (loading.style.display === 'block') return;
+
+        loading.style.display = 'block';
+        fetch(`/shop/products?page=${page + 1}`)
+            .then(response => response.text())
+            .then(data => {
+                // data가 비어있지 않으면(더 로드할 상품이 있으면)
+                if (data.trim()) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data, 'text/html');
+                    const newProducts = doc.querySelectorAll('.product-item');
+                    newProducts.forEach(product => {
+                        productList.appendChild(product);
+                    });
+                    page++;
+                } else {
+                    // 더 이상 로드할 상품이 없을 경우
+                    window.removeEventListener('scroll', this);
+                }
+                loading.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error loading more products:', error);
+                loading.style.display = 'none';
+            });
+    }
+</script>
+</body>
+</html>

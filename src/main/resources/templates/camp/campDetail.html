@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8" />
     <title>캠핑장 상세</title>
-    <!-- 다음 지도 API (Kakao Developers에서 발급받은 앱 키를 사용하세요) -->
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" type="text/css" href="/css/head.css">
+    <link rel="stylesheet" type="text/css" href="/css/camp/camp.css">
+    <link rel="stylesheet" type="text/css" href="/css/footer.css">
+    <!-- Kakao 지도 API -->
     <script type="text/javascript"
-            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_DAUM_MAP_APPKEY"></script>
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e24e796b1bf0d9ff5c158d9fcb744e42"></script>
+    <!-- FontAwesome for star icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <script th:inline="javascript">
         /*<![CDATA[*/
@@ -29,55 +34,85 @@
         /*]]>*/
     </script>
 </head>
-<body onload="initMap([[${camp.latitude}]], [[${camp.longitude}]])">
+<body th:attr="onload='initMap(' + ${camp.latitude} + ', ' + ${camp.longitude} + ')'">
 
-<h1 th:text="${camp.name}">캠핑장 상세 정보</h1>
+<!-- 공통 헤더 (head.html) -->
+<div th:replace="~{header :: header}"></div>
 
-<div>
-    <strong>주소:</strong> <span th:text="${camp.address}">주소</span><br/>
-    <strong>테마환경:</strong> <span th:text="${camp.themeEnvironment}"></span><br/>
-    <strong>글램핑 개수:</strong> <span th:text="${camp.glamping}"></span><br/>
-    <strong>카라반 개수:</strong> <span th:text="${camp.caravan}"></span><br/>
-    <!-- 필요 시 더 많은 필드 표시 -->
-</div>
-
-<!-- 지도 표시 영역 -->
-<div id="map" style="width:600px;height:400px;"></div>
-
-<hr/>
-
-<!-- 평점/리뷰 작성 폼 -->
-<h2>리뷰 남기기</h2>
-<form th:action="@{/camp/detail/rate}" method="post">
-    <input type="hidden" name="campId" th:value="${camp.id}" />
-    <div>
-        <label>평점 (1~10):
-            <input type="number" name="rating" min="1" max="10" required />
-        </label>
+<!-- 캠핑장 상세 정보 컨테이너 -->
+<div class="camp-detail-container">
+    <div id="map" style="width:90%; height:600px; margin: 0 auto;"></div>
+    <h1 class="camp-name" th:text="${camp.name}">캠핑장 상세 정보</h1>
+    <div class="camp-info">
+        <p><strong>주소:</strong> <span th:text="${camp.address}">주소</span></p>
+        <p><strong>테마 환경:</strong> <span th:text="${camp.themeEnvironment}">테마 환경</span></p>
+        <p><strong>글램핑 개수:</strong> <span th:text="${camp.glamping}">글램핑 개수</span></p>
+        <p><strong>카라반 개수:</strong> <span th:text="${camp.caravan}">카라반 개수</span></p>
     </div>
-    <div>
-        <label>리뷰:
-            <textarea name="review" rows="4" cols="50"></textarea>
-        </label>
-    </div>
-    <button type="submit">등록</button>
-</form>
 
-<hr/>
-
-<!-- 기존 리뷰 목록 -->
-<h2>등록된 리뷰</h2>
-<div th:if="${#lists.isEmpty(ratings)}">
-    <p>아직 등록된 리뷰가 없습니다.</p>
-</div>
-<div th:each="r : ${ratings}">
-    <p>
-        <strong th:text="${r.userId}">userId</strong>
-        <span> - 평점: </span><span th:text="${r.rating}">10</span>
-    </p>
-    <p th:text="${r.review}">리뷰 내용</p>
     <hr/>
+
+    <!-- 평점/리뷰 작성 폼 -->
+    <h2 class="section-title">리뷰 남기기</h2>
+    <form th:action="@{/camp/detail/rate}" method="post" class="review-form">
+        <input type="hidden" name="campId" th:value="${camp.id}" />
+        <div class="form-group">
+            <label for="rating">평점 (1~10):</label>
+            <input type="number" id="rating" name="rating" min="1" max="10" required />
+        </div>
+        <div class="form-group">
+            <label for="review">리뷰:</label>
+            <textarea id="review" name="review" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">등록</button>
+    </form>
+
+    <hr/>
+
+    <!-- 기존 리뷰 목록 -->
+    <h2 class="section-title">등록된 리뷰</h2>
+    <div th:if="${#lists.isEmpty(ratings)}" class="no-reviews">
+        <p>아직 등록된 리뷰가 없습니다.</p>
+    </div>
+    <div th:each="r : ${ratings}" class="review-item">
+        <p>
+            <th:block th:each="user : ${users}">
+                <strong th:if="${r.userId == user.userId}" th:text="${user.nickname}">닉네임 없음</strong>
+            </th:block>
+            <span> 평점 </span>
+            <!-- 별 평점 표시 -->
+            <span>
+                <!-- 전체 별 표시 -->
+                <span th:each="i : ${#numbers.sequence(1, fullStars)}">
+                    <i class="fa fa-star"></i>
+                </span>
+                            <!-- 반 별 표시 (halfStar가 true일 경우) -->
+                <span th:if="${halfStar}">
+                    <i class="fa fa-star-half-o"></i>
+                </span>
+                            <!-- 빈 별 표시 -->
+                <span th:each="i : ${#numbers.sequence(1, 5 - fullStars - (halfStar ? 1 : 0))}">
+                    <i class="fa fa-star-o"></i>
+                </span>
+            </span>
+        </p>
+        <p th:text="${r.review}">리뷰 내용</p>
+
+        <!-- 조건부 삭제 버튼 표시 -->
+        <div th:if="${currentUser != null and currentUser.userId == r.userId}">
+            <form th:action="@{/camp/detail/deleteRating}" method="post" onsubmit="return confirm('리뷰를 삭제하시겠습니까?');">
+                <input type="hidden" name="ratingId" th:value="${r.id}" />
+                <input type="hidden" name="campId" th:value="${camp.id}" />
+                <button type="submit" class="delete-btn">삭제</button>
+            </form>
+        </div>
+
+        <hr/>
+    </div>
 </div>
+
+<!-- footer.html (하단) -->
 <div th:replace="~{footer :: footer}"></div>
+
 </body>
 </html>

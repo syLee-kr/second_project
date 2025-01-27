@@ -1,15 +1,13 @@
 package com.example.camping.entity.post;
 
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.*;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -35,12 +33,15 @@ public class Post {
     private String content;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
-    private List<PostComment> comments;
+    @EqualsAndHashCode.Exclude // 순환 참조 방지
+    private Set<PostComment> comments;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
-    private List<PostImage> images;
+    private Set<PostImage> images;
 
 
     @Column(columnDefinition = "NUMBER default 0")

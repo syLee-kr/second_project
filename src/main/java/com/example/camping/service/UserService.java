@@ -45,4 +45,6 @@ public interface UserService {
 
     // 비밀번호 재설정
     void resetPassword(Users user, String newPassword);
+
+    Optional<Users> findByUserId(String userId);
 }

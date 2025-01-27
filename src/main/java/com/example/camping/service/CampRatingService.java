@@ -56,4 +56,11 @@ public class CampRatingService {
     public List<CampRating> getRatingsByCampId(String campId) {
         return campR.findByCampId(campId);
     }
+    public CampRating findById(String ratingId) {
+        return campR.findById(ratingId).orElse(null);
+    }
+
+    public void deleteRating(String ratingId) {
+        campR.deleteById(ratingId);
+    }
 }

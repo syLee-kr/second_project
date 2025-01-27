@@ -11,6 +11,8 @@ import java.util.Optional;
 //  데이터가 비어있을 경우, null 출력이 되었을 때 생기는 오류를 방지하기 위함.
 public interface UserRepository extends JpaRepository<Users, String> {
 
+    @Query("SELECT u FROM Users u")
+    List<Users> getAllUsers();
     //  일반 유저용
     // 사용자 아이디로 유저 찾기
     @Query("SELECT u FROM Users u WHERE u.userId = :userId")

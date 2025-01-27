@@ -1,11 +1,7 @@
 package com.example.camping.entity.post;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import lombok.*;
 
 @Data
 @Entity
@@ -15,7 +11,6 @@ import org.springframework.data.annotation.Id;
 @Table(name = "POST_IMAGE")
 public class PostImage {
 
-    @jakarta.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,9 +18,9 @@ public class PostImage {
     // 어떤 게시글에 속하는 이미지인지
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "POST_ID", nullable = false)
+    @EqualsAndHashCode.Exclude // 순환 참조 방지
     private Post post;
 
-    @Column(name = "IMAGE_PATH", nullable = false)
     private String imagePath; // 이미지 파일 경로
 
 }

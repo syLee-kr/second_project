@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="header">
+<head>
+  <meta charset="UTF-8">
+  <title>공통 헤더</title>
+  <link rel="stylesheet" type="text/css" href="/css/head.css"/>
+</head>
+<body>
+<div class="header-container">
+  <!-- 한 개의 form으로 묶어서 /camp로 GET 전송 -->
+  <form th:action="@{/camp}" method="get" class="search-form">
+
+    <!-- 맨 윗줄: 로고와 검색타입 select -->
+    <div class="header-top">
+      <!-- 로고 -->
+      <a class="logo" th:href="@{/}">CampHub</a>
+
+      <!-- 검색 타입 선택 -->
+      <select name="searchType">
+        <option value="address"
+                th:selected="${param.searchType == 'address'}">주소</option>
+        <option value="name"
+                th:selected="${param.searchType == 'name'}">캠핑장 명</option>
+        <option value="themeEnvironment"
+                th:selected="${param.searchType == 'themeEnvironment'}">테마환경</option>
+        <option value="glamping"
+                th:selected="${param.searchType == 'glamping'}">글램핑</option>
+      </select>
+    </div>
+
+    <!-- 아래줄: 검색어 입력 창 -->
+    <div class="search-box">
+      <input type="text"
+             name="searchKeyword"
+             placeholder="검색어를 입력하세요"
+             th:value="${param.searchKeyword}"
+             required/>
+      <button type="submit">검색</button>
+    </div>
+  </form>
+</div>
+</body>
+</html>

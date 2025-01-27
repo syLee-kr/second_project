@@ -13,6 +13,11 @@ public class RecommendedKeywordService {
 
     private final RecommendedKeywordRepository repository;
 
+    public RecommendedKeyword findById(String id) {
+        // JPA인 경우
+        return repository.findById(id).orElse(null);
+    }
+
     public List<RecommendedKeyword> findAll() {
         return repository.findAll();
     }
@@ -28,4 +33,14 @@ public class RecommendedKeywordService {
     public void deleteById(String id) {
         repository.deleteById(id);
     }
+    public void updateKeyword(String id, String columnName, String keyword, String label) {
+        RecommendedKeyword existing = repository.findById(id).orElse(null);
+        if (existing != null) {
+            existing.setColumnName(columnName);
+            existing.setKeyword(keyword);
+            existing.setLabel(label);
+            repository.save(existing);
+        }
+    }
+
 }

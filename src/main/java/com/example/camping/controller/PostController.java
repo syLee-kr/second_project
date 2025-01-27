@@ -35,17 +35,21 @@ public class PostController {
      * 게시글 목록
      */
     @GetMapping
-    public String list(@RequestParam(defaultValue = "0") int page,
-                       @RequestParam(required = false) String searchUserId,
-                       @RequestParam(required = false) String searchTitle,
-                       Model model) {
+    public String list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) String searchUserId,
+            @RequestParam(required = false) String searchTitle,
+            Model model,
+            @RequestHeader(value = "X-Requested-With", required = false) String requestedWith) {
+
+        // 게시글 목록 조회 (페이지 번호, 작성자, 제목 검색 기준)
         Page<Post> postPage = postService.getPostList(searchUserId, searchTitle, page);
         model.addAttribute("postPage", postPage);
         model.addAttribute("currentPage", page);
         model.addAttribute("searchUserId", searchUserId);
         model.addAttribute("searchTitle", searchTitle);
 
-        // 간단한 페이지 네비게이션 (5 단위 페이지 표시)
+        // 페이지 네비게이션 계산 (5 단위 페이지 표시)
         int totalPages = postPage.getTotalPages();
         int startPage = (page / 5) * 5;
         int endPage = Math.min(startPage + 4, totalPages - 1);
@@ -54,6 +58,13 @@ public class PostController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("totalPages", totalPages);
 
+        // AJAX 요청 여부 확인
+        if ("XMLHttpRequest".equals(requestedWith)) {
+            // AJAX 요청 시 게시글 프래그먼트만 반환
+            return "post/postFragment :: postItems";
+        }
+
+        // 일반 요청 시 전체 페이지 반환
         return "post/list"; // Thymeleaf 템플릿
     }
 

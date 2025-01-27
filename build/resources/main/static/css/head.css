@@ -1,0 +1,151 @@
+@font-face {
+    font-family: 'NotoSerifKR';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NotoSerifKR.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+.header-container {
+    width: 100%;
+    background-color: #ffffff;
+    /* 박스 그림자도 살짝 키움 (원래 0 1px 3px) */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+
+/* 맨 윗줄: 로고와 검색타입 select */
+.header-top {
+    font-family: 'NotoSerifKR', sans-serif; /* h1에만 NotoSerifKR 적용 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* padding 2배 (원래 0.5rem 1rem) */
+    padding: 1rem 2rem;
+}
+
+/* 로고 */
+.logo {
+    text-decoration: none;
+    /* 폰트 1.5배 (원래 1.5rem -> 2.25rem) */
+    font-size: 2.25rem;
+    font-weight: bold;
+    color: #FF7E36; /* 당근마켓 계열 주황 */
+}
+
+/* 검색 타입 선택 폼 (우측) */
+.header-top select {
+    font-size: 1.6rem; /* 기존 2rem에서 1.6rem로 조정 */
+    padding: 0.3rem 0.8rem;   /* 패딩 조절 (위아래 0.3rem, 좌우 0.8rem) */
+    border: 2px solid #ccc; /* 기존 3px에서 2px로 축소 */
+    border-radius: 5px; /* 기존 6px에서 5px로 조정 */
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    appearance: none; /* 기본 브라우저 스타일 제거 */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+}
+
+/* 드롭다운 화살표 스타일 조정 */
+.header-top select::-ms-expand {
+    display: none; /* IE 기본 화살표 숨김 */
+}
+
+.header-top select::after {
+    content: "▼"; /* 커스텀 화살표 */
+    font-size: 1.4rem; /* 화살표 크기 조정 */
+    color: #333;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+
+/* 아래줄: 검색 박스 */
+.search-box {
+    display: flex;
+    /* padding 2배 (원래 0.5rem 1rem) */
+    padding: 1rem 2rem;
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+}
+.search-form-a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+}
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 드롭다운 스타일 */
+.search-bar select {
+    padding: 12px;
+    font-size: 1.2rem;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* 검색어 입력 */
+.search-form-a input[type="text"] {
+    flex: 0.8;
+    font-size: 1rem;
+    padding: 0.5rem;
+    /* border도 2px (원래 1px) */
+    border: 2px solid #ccc;
+    border-radius: 6px;
+}
+/* 검색 버튼 */
+.search-form-a button {
+    height: 2rem;
+    font-size: 1rem;
+    /* margin-left 2배 (원래 0.5rem -> 1rem) */
+    background-color: #FF7E36;
+    border: none;
+    /* border-radius 2배 (원래 4px -> 8px) */
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+}
+.search-box input[type="text"] {
+    flex: 1;
+    /* 폰트 1.5배 (원래 1rem -> 1.5rem) */
+    font-size: 1.5rem;
+    /* 패딩 2배 (원래 0.5rem -> 1rem) */
+    padding: 1rem;
+    /* border도 2px (원래 1px) */
+    border: 2px solid #ccc;
+    border-radius: 6px;
+}
+
+/* 검색 버튼 */
+.search-box button {
+    /* 폰트 1.5배 (원래 1rem -> 1.5rem) */
+    font-size: 1.5rem;
+    /* 패딩 2배 (원래 0.5rem 1rem -> 1rem 2rem) */
+    padding: 1rem 2rem;
+    /* margin-left 2배 (원래 0.5rem -> 1rem) */
+    margin-left: 1rem;
+    background-color: #FF7E36;
+    border: none;
+    /* border-radius 2배 (원래 4px -> 8px) */
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.search-box button:hover {
+    background-color: #FF5700;
+}

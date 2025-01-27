@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+</head>
+<body>
+<!-- 여기서는 <ul> 태그 없이 list item만 append 가정 -->
+<li class="product-item" th:each="product : ${productList}">
+  <div class="product-image-wrapper" th:if="${product.imagePaths}">
+    <img th:src="@{${#lists.isEmpty(product.imagePaths) ? '/img/no-image.png' : product.imagePaths.get(0)}}"
+         alt="상품 이미지" class="product-image"/>
+  </div>
+  <div class="product-info">
+    <h3 class="product-name">
+      <a th:href="@{/shop/product/{id}(id=${product.gseq})}"
+         th:text="${product.name}">상품 이름</a>
+    </h3>
+    <p class="product-price">
+      <strong>가격:</strong>
+      <span th:text="${product.price1} + '원'">가격</span>
+    </p>
+    <p>
+      <strong>카테고리:</strong>
+      <span th:text="${product.category.name}">카테고리</span>
+    </p>
+    <p th:if="${product.isBest}">
+      <strong>베스트 상품</strong>
+    </p>
+    <p>
+      <strong>평점:</strong>
+      <span th:text="${averageRatings[product.gseq]}">0</span>점
+      (<span th:text="${reviewCounts[product.gseq]}">0</span>개)
+    </p>
+  </div>
+</li>
+</body>
+</html>

@@ -11,10 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -22,77 +21,116 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final FileStorageService fileStorageService;
-    private final PostImageRepository postImageRepository; // 추가
+    private final PostImageRepository postImageRepository;
 
+    /**
+     * 게시글 생성
+     * @param post 게시글 정보
+     * @param images 첨부 이미지 목록
+     * @return 저장된 게시글
+     */
     @Transactional
     public Post createPost(Post post, List<MultipartFile> images) {
+        // Handle image uploads
+        Set<PostImage> postImages = new HashSet<>();
         if (images != null && !images.isEmpty()) {
-            List<PostImage> postImages = new ArrayList<>();
             for (MultipartFile image : images) {
                 if (!image.isEmpty()) {
-                    String fileName = fileStorageService.storeFile(image);
-                    PostImage postImage = PostImage.builder()
-                            .post(post)
-                            .imagePath(fileName)
-                            .build();
-                    postImages.add(postImage);
+                    try {
+                        String filePath = fileStorageService.storeFile(image);
+                        PostImage postImage = PostImage.builder()
+                                .post(post)
+                                .imagePath(filePath)
+                                .build();
+                        postImages.add(postImage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException("이미지 업로드에 실패했습니다.");
+                    }
                 }
             }
-            post.setImages(postImages);
         }
+        post.setImages(postImages);
         return postRepository.save(post);
     }
 
+    /**
+     * 게시글 업데이트
+     * @param id 게시글 ID
+     * @param updateData 업데이트할 게시글 데이터
+     * @param images 새로 첨부할 이미지 목록
+     * @return 업데이트된 게시글
+     */
     @Transactional
     public Post updatePost(Long id, Post updateData, List<MultipartFile> images) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
+        // Update basic fields
         post.setTitle(updateData.getTitle());
         post.setContent(updateData.getContent());
 
+        // Handle image uploads
         if (images != null && !images.isEmpty()) {
-            // 기존 이미지 삭제
+            // Delete existing images
             for (PostImage existingImage : post.getImages()) {
-                fileStorageService.deleteFile(existingImage.getImagePath());
+                try {
+                    fileStorageService.deleteFile(existingImage.getImagePath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException("기존 이미지 삭제에 실패했습니다.");
+                }
             }
             post.getImages().clear();
 
-            // 새로운 이미지 저장
-            List<PostImage> postImages = new ArrayList<>();
+            // Upload new images
+            Set<PostImage> newImages = new HashSet<>();
             for (MultipartFile image : images) {
                 if (!image.isEmpty()) {
-                    String fileName = fileStorageService.storeFile(image);
-                    PostImage postImage = PostImage.builder()
-                            .post(post)
-                            .imagePath(fileName)
-                            .build();
-                    postImages.add(postImage);
+                    try {
+                        String filePath = fileStorageService.storeFile(image);
+                        PostImage postImage = PostImage.builder()
+                                .post(post)
+                                .imagePath(filePath)
+                                .build();
+                        newImages.add(postImage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException("이미지 업로드에 실패했습니다.");
+                    }
                 }
             }
-            post.setImages(postImages);
+            post.setImages(newImages);
         }
 
-        return post;
-    }
-
-    @Transactional
-    public void deletePost(Long id) {
-        Optional<Post> optionalPost = postRepository.findById(id);
-        if (optionalPost.isPresent()) {
-            Post post = optionalPost.get();
-            // 이미지가 있으면 삭제
-            for (PostImage image : post.getImages()) {
-                fileStorageService.deleteFile(image.getImagePath());
-            }
-            postRepository.delete(post);
-        } else {
-            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-        }
+        return postRepository.save(post);
     }
 
     /**
-     * imageId로 PostImage 조회
+     * 게시글 삭제
+     * @param id 게시글 ID
+     */
+    @Transactional
+    public void deletePost(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
+        // Delete associated images
+        for (PostImage image : post.getImages()) {
+            try {
+                fileStorageService.deleteFile(image.getImagePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("이미지 삭제에 실패했습니다.");
+            }
+        }
+        postRepository.delete(post);
+    }
+
+    /**
+     * 특정 이미지 조회
+     * @param imageId 이미지 ID
+     * @return PostImage 객체
      */
     @Transactional(readOnly = true)
     public PostImage getPostImageById(Long imageId) {
@@ -100,11 +138,18 @@ public class PostService {
                 .orElse(null);
     }
 
+    /**
+     * 게시글 목록 조회 (검색 및 페이징)
+     * @param searchUserId 검색할 사용자 ID
+     * @param searchTitle 검색할 제목
+     * @param page 페이지 번호 (0-based)
+     * @return 페이지 객체
+     */
     @Transactional(readOnly = true)
     public Page<Post> getPostList(String searchUserId, String searchTitle, int page) {
-        // 5개씩 페이징
-        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
-        // 검색 조건에 따라 쿼리
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
         if ((searchUserId == null || searchUserId.isBlank()) &&
                 (searchTitle == null || searchTitle.isBlank())) {
             return postRepository.findAll(pageable);
@@ -117,17 +162,25 @@ public class PostService {
         }
     }
 
-    @Transactional(readOnly = true)
+    /**
+     * 게시글 상세 조회
+     * @param id 게시글 ID
+     * @return 상세 게시글
+     */
+    @Transactional
     public Post getPostDetail(Long id) {
-        Post post = postRepository.findByIdWithCommentsAndImages(id); // 수정된 부분
-        if (post == null) {
-            throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-        }
+        Post post = postRepository.findByIdWithCommentsAndImages(id);
+
         // 조회수 증가
         post.setViewCount(post.getViewCount() + 1);
+
         return post;
     }
 
+    /**
+     * 좋아요 증가
+     * @param id 게시글 ID
+     */
     @Transactional
     public void increaseLike(Long id) {
         Post post = postRepository.findById(id)
@@ -135,6 +188,10 @@ public class PostService {
         post.setLikeCount(post.getLikeCount() + 1);
     }
 
+    /**
+     * 신고 수 증가
+     * @param id 게시글 ID
+     */
     @Transactional
     public void increaseReport(Long id) {
         Post post = postRepository.findById(id)
@@ -142,6 +199,11 @@ public class PostService {
         post.setReportCount(post.getReportCount() + 1);
     }
 
+    /**
+     * 파일을 Path로 로드
+     * @param fileName 파일 이름
+     * @return Path 객체
+     */
     public Path loadFileAsPath(String fileName) {
         return fileStorageService.loadFileAsPath(fileName);
     }

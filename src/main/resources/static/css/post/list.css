@@ -1,0 +1,194 @@
+/* /css/post/list.css */
+
+/* CSS 변수 정의 */
+:root {
+    --primary-color: #ff9800; /* 당근마켓 오렌지 색상 */
+    --primary-hover-color: #e68900;
+    --secondary-color: #f2f2f2; /* 배경색 */
+    --text-color: #333333;
+    --muted-text-color: #777777;
+    --border-color: #e0e0e0;
+    --background-color: #ffffff;
+    --font-family-main: 'Pretendard-Regular', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    --font-size-base: 24px;
+    --font-size-title: 2rem;
+    --font-size-subtitle: 1.7rem;
+    --font-size-meta: 1.4rem;
+    --font-size-button: 1.6rem;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family-main);
+    background-color: var(--secondary-color); /* 당근마켓 느낌의 밝은 배경 */
+    font-size: var(--font-size-base); /* 기본 폰트 크기 */
+    color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 페이지 타이틀 */
+.page-title {
+    font-size: var(--font-size-title);
+    text-align: center;
+    margin: 1rem 0;
+    color: var(--text-color);
+}
+
+/* 게시글 컨테이너 스타일 */
+#post-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    max-width: 1200px; /* 최대 너비 설정 */
+    margin: 0 auto;
+}
+
+/* 개별 게시글 스타일 */
+.post-item {
+    display: flex;
+    width: 100%;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.post-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 게시글 이미지 */
+.post-image img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-right: 1px solid var(--border-color);
+}
+
+.post-details {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.post-title {
+    font-size: var(--font-size-subtitle);
+    font-weight: bold;
+    color: var(--text-color);
+    text-decoration: none;
+    margin-bottom: 10px;
+    transition: color 0.3s;
+}
+
+.post-title:hover {
+    color: var(--primary-color);
+}
+
+.post-meta {
+    display: flex;
+    gap: 15px;
+    font-size: var(--font-size-meta);
+    color: var(--muted-text-color);
+}
+
+.post-meta span {
+    display: flex;
+    align-items: center;
+}
+
+.post-reports {
+    color: #f44336; /* 관리자용 신고 횟수 색상 */
+}
+
+/* 글쓰기 버튼 스타일 */
+.write-button {
+    display: block;
+    width: 80%;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: var(--font-size-button);
+    transition: background-color 0.3s;
+}
+
+.write-button:hover {
+    background-color: var(--primary-hover-color);
+}
+
+/* 로더 이미지 스타일 */
+#loader img {
+    width: 50px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+    #post-container {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .post-item {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .post-image img {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .post-details {
+        padding: 10px;
+    }
+
+    #post-container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .search-form {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .search-form input[type="text"] {
+        width: 80%;
+        margin-bottom: 10px;
+    }
+
+    .write-button {
+        width: 90%;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+    }
+
+    .post-title {
+        font-size: 1.5rem;
+    }
+
+    .post-meta {
+        font-size: 1.2rem;
+    }
+
+    .write-button {
+        font-size: 1.4rem;
+    }
+}

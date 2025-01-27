@@ -3,10 +3,11 @@
 <head>
   <title>사용자 프로필</title>
   <link rel="stylesheet" type="text/css" href="/css/camp/profile.css">
+  <link rel="stylesheet" th:href="@{/css/header.css}">
   <link rel="stylesheet" th:href="@{/css/footer.css}">
 </head>
 <body>
-<h1>사용자 프로필</h1>
+<div th:replace="~{header :: header}"></div>
 
 <!-- 사용자 정보 표시 -->
 <div class="user-info">
@@ -15,7 +16,6 @@
   <p><strong>연락처:</strong> <span th:text="${user.phone}"></span></p>
   <p><strong>주소:</strong> <span th:text="${user.address}"></span></p>
   <p><strong>가입일:</strong> <span th:text="${#temporals.format(user.regdate, 'yyyy-MM-dd HH:mm')}"></span></p>
-  <p><strong>권한:</strong> <span th:text="${user.role}">USER</span></p>
 </div>
 
 <!-- 프로필 수정 폼 -->
@@ -36,11 +36,10 @@
   <button type="submit">수정</button>
 </form>
 
-<!-- 사용자 탈퇴 버튼 -->
-<h2>회원 탈퇴</h2>
 <form class="delete-form" th:action="@{/profile/delete}" method="post">
   <button type="submit" onclick="return confirm('정말로 탈퇴하시겠습니까? 모든 데이터가 삭제됩니다.')">회원 탈퇴</button>
 </form>
+
 <div th:replace="~{footer :: footer}"></div>
 </body>
 </html>

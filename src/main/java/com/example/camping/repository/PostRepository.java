@@ -13,18 +13,18 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     /**
      * n+1 문제를 완화하기 위해 댓글과 이미지까지 함께 패치 조인
      */
-    @EntityGraph(attributePaths = {"comments", "images"})
-    @Query("SELECT p FROM Post p WHERE p.id = :id")
-    Post findByIdWithCommentsAndImages(@Param("id") Long id);
+    @Query("SELECT p FROM Post p WHERE " +
+            "(:userId IS NULL OR p.userId = :userId) AND " +
+            "(:title IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :title, '%')))")
+    Page<Post> findAllBySearchCondition(@Param("userId") String userId,
+                                        @Param("title") String title,
+                                        Pageable pageable);
 
     /**
-     * 검색 조건: userId = ? OR title LIKE ?
-     * 페이징 처리
+     * 게시글 상세 조회 시 댓글과 이미지를 함께 가져오는 쿼리
+     * @param id 게시글 ID
+     * @return Post 객체
      */
-    @Query("SELECT p FROM Post p " +
-            "WHERE (:searchUserId IS NULL OR p.userId = :searchUserId) " +
-            "AND (:searchTitle IS NULL OR p.title LIKE %:searchTitle%)")
-    Page<Post> findAllBySearchCondition(@Param("searchUserId") String searchUserId,
-                                        @Param("searchTitle") String searchTitle,
-                                        Pageable pageable);
+    @Query("SELECT p FROM Post p LEFT JOIN FETCH p.images WHERE p.id = :id")
+    Post findByIdWithCommentsAndImages(@Param("id") Long id);
 }

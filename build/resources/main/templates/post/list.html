@@ -2,75 +2,113 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>게시판 목록</title>
+    <link rel="stylesheet" type="text/css" href="/css/post/list.css">
+    <link rel="stylesheet" type="text/css" href="/css/head.css">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <!-- jQuery를 추가하여 AJAX 요청을 쉽게 처리 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-<h1>게시글 목록</h1>
+<!-- 헤더 포함 -->
+<div th:replace="~{header :: header}"></div>
 
-<form th:action="@{/post}" method="get">
-    <input type="text" name="searchUserId" placeholder="작성자 검색"
-           th:value="${searchUserId}" />
-    <input type="text" name="searchTitle" placeholder="제목 검색"
-           th:value="${searchTitle}" />
-    <button type="submit">검색</button>
+<!-- 검색 폼 -->
+<form th:action="@{/post}" method="get" class="search-form-a">
+    <div class="search-bar">
+        <select name="searchOption" id="searchOption">
+            <option value="userId" th:selected="${searchOption == 'userId'}">작성자</option>
+            <option value="title" th:selected="${searchOption == 'title'}">제목</option>
+        </select>
+        <input type="text" name="searchQuery" id="searchQuery" placeholder="검색어 입력" th:value="${searchQuery}" />
+        <button type="submit">검색</button>
+    </div>
 </form>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>번호</th>
-        <th>첨부 이미지</th>
-        <th>제목</th>
-        <th>본문 요약</th>
-        <th>작성자</th>
-        <th>조회수</th>
-        <th>좋아요</th>
-        <th th:if="${session.role} == 'ADMIN'">신고 횟수</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="post : ${postPage.content}">
-        <td th:text="${post.id}"></td>
-        <td>
-            <!-- 첫 번째 이미지만 표시 -->
-            <img th:if="${#lists.size(post.images) > 0}"
-                 th:src="@{/post/download/image/{imageId}(imageId=${post.images.get(0).id})}"
-                 alt="첨부이미지" width="50"/>
-        </td>
-        <td>
-            <a th:href="@{/post/{id}(id=${post.id})}"
-               th:text="${post.title}">제목</a>
-        </td>
-        <td th:text="${post.shortContent}"></td>
-        <td th:text="${post.userId}"></td>
-        <td th:text="${post.viewCount}"></td>
-        <td th:text="${post.likeCount}"></td>
-        <td th:if="${session.role} == 'ADMIN'"
-            th:text="${post.reportCount}"></td>
-    </tr>
-    </tbody>
-</table>
 
-<div>
-    <!-- 페이지 네비게이션 -->
-    <a th:if="${startPage > 0}"
-       th:href="@{/post(page=${startPage-1}, searchUserId=${searchUserId}, searchTitle=${searchTitle})}">
-        이전
-    </a>
-    <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
-        <a th:if="${p != currentPage}"
-           th:href="@{/post(page=${p}, searchUserId=${searchUserId}, searchTitle=${searchTitle})}"
-           th:text="${p+1}"></a>
-        <span th:if="${p == currentPage}"
-              th:text="${p+1}"></span>
-    </span>
-    <a th:if="${endPage < totalPages - 1}"
-       th:href="@{/post(page=${endPage+1}, searchUserId=${searchUserId}, searchTitle=${searchTitle})}">
-        다음
-    </a>
+<!-- 게시글 컨테이너 -->
+<div id="post-container">
+    <div th:each="post : ${postPage.content}" class="post-item">
+        <div class="post-image">
+            <th:block th:if="${post.images.size() > 0}">
+                <img th:src="@{/uploads/{id}(id=${#lists.toList(post.images).get(0).id})}" alt="첫 번째 이미지" />
+            </th:block>
+        </div>
+        <div class="post-details">
+            <a th:href="@{/post/{id}(id=${post.id})}" class="post-title" th:text="${post.title}">제목</a>
+            <div class="post-meta">
+                <span class="post-author" th:text="${post.userId}">작성자</span>
+                <span class="post-views" th:text="${post.viewCount}">조회수</span>
+                <span class="post-likes" th:text="${post.likeCount}">좋아요</span>
+                <span class="post-reports" th:if="${session.role} == 'ADMIN'" th:text="${post.reportCount}">신고 횟수</span>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div>
-    <a th:href="@{/post/write}">글쓰기</a>
+<!-- 로더 및 추가 메시지 -->
+<div id="loader" style="display: none; text-align: center; padding: 20px;">
+    <img src="/images/loader.gif" alt="Loading..."/>
 </div>
+<div id="no-more-posts" style="display: none; text-align: center; padding: 20px;">
+    더 이상 게시글이 없습니다.
+</div>
+
+<!-- 글쓰기 버튼 -->
+<div>
+    <a th:href="@{/post/write}" class="write-button">글쓰기</a>
+</div>
+
+<!-- 푸터 포함 -->
+<div th:replace="~{footer :: footer}"></div>
+
+<!-- 무한 스크롤 스크립트 -->
+<script>
+    let currentPage = [[${postPage.number}]];
+    const totalPages = [[${postPage.totalPages}]];
+    const searchUserId = '[[${searchUserId}]]';
+    const searchTitle = '[[${searchTitle}]]';
+    let isLoading = false;
+
+    $(window).on('scroll', function() {
+        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+            if (currentPage < totalPages - 1 && !isLoading) {
+                loadMorePosts();
+            }
+        }
+    });
+
+    function loadMorePosts() {
+        isLoading = true;
+        currentPage++;
+        $('#loader').show();
+        $.ajax({
+            url: '/post',
+            type: 'GET',
+            data: {
+                page: currentPage,
+                searchUserId: searchUserId,
+                searchTitle: searchTitle
+            },
+            success: function(response) {
+                // 서버에서 반환된 HTML에서 .post-item 요소를 추출하여 추가
+                const newPosts = $(response).find('.post-item');
+                if (newPosts.length > 0) {
+                    $('#post-container').append(newPosts);
+                } else {
+                    $('#no-more-posts').show();
+                }
+            },
+            complete: function() {
+                $('#loader').hide();
+                isLoading = false;
+            },
+            error: function() {
+                console.error('게시글을 불러오는 중 오류가 발생했습니다.');
+                // 필요에 따라 사용자에게 오류 메시지를 표시할 수 있습니다.
+            }
+        });
+    }
+</script>
+
 </body>
 </html>

@@ -3,32 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <title>선호도 조사</title>
+  <link rel="stylesheet" th:href="@{/css/camp/preference.css}">
   <link rel="stylesheet" th:href="@{/css/footer.css}">
+  <link rel="stylesheet" th:href="@{/css/head.css}">
+  <script type="text/javascript"
+          src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e24e796b1bf0d9ff5c158d9fcb744e42"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-<h1>선호도 조사</h1>
-<p>아직 10개 미만의 평점을 등록하셨습니다. 부족한 만큼 선호도를 입력해주세요.</p>
+<div th:replace="~{header :: header}"></div>
+<p class="pref-description">추천 평점 시스템을 사용하기 위해서 선호도를 조사합니다.</p>
 
-<form th:action="@{/camp/preference}" method="post">
-  <ul>
-    <li th:each="camp : ${randomCamps}">
+<form th:action="@{/camp/preference}" method="post" class="pref-form">
+  <ul class="pref-list">
+    <li th:each="camp : ${randomCamps}" class="pref-item">
       <input type="hidden" name="campId" th:value="${camp.id}" />
       <p>
-        <strong th:text="${camp.name}">캠핑장명</strong><br/>
-        <span th:text="${camp.address}">주소</span><br/>
+        <strong th:text="${camp.name}" class="pref-title camp-link"
+                data-latitude="${camp.latitude}"
+                data-longitude="${camp.longitude}"
+                data-theme="${camp.themeEnvironment}"
+                data-glamping="${camp.glamping}"
+                data-caravan="${camp.caravan}"
+                data-address="${camp.address}">캠핑장명</strong><br/>
+        <span th:text="${camp.address}" class="pref-address">주소</span><br/>
       </p>
-      <label>선호도(1~10):
-        <input type="number" name="score" min="1" max="10" required />
+      <label class="pref-label">선호도(1~10):
+        <input type="number" name="score" class="pref-input" min="1" max="10" required />
       </label>
       <br/>
-      <label>간단 리뷰:
-        <input type="text" name="review" />
+      <label class="pref-label">간단 리뷰:
+        <input type="text" name="review" class="pref-input" />
       </label>
       <hr/>
+      <div class="camp-details" style="display: none;">
+        <h1 class="camp-name">캠핑장 상세 정보</h1>
+        <p><strong>주소:</strong> <span th:text="${camp.address}"></span></p>
+        <p><strong>테마 환경:</strong> <span th:text="${camp.themeEnvironment}"></span></p>
+        <p><strong>글램핑 개수:</strong> <span th:text="${camp.glamping}"></span></p>
+        <p><strong>카라반 개수:</strong> <span th:text="${camp.caravan}"></span></p>
+        <div th:id="'map-' + ${camp.id}" style="width:90%; height:600px; margin: 0 auto;"></div>
+      </div>
     </li>
   </ul>
-  <button type="submit">제출</button>
+  <button type="submit" class="pref-submit">제출</button>
 </form>
+
 <div th:replace="~{footer :: footer}"></div>
+
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.camp-link').forEach(function (element) {
+      element.addEventListener('click', function () {
+        var parentLi = element.closest('li');
+        var detailsDiv = parentLi.querySelector('.camp-details');
+
+        document.querySelectorAll('.camp-details').forEach(function (el) {
+          if (el !== detailsDiv) el.style.display = 'none';
+        });
+
+        detailsDiv.style.display = 'block';
+
+        // 개별 캠핑장의 ID 기반으로 지도 컨테이너 찾기
+        var campId = element.closest('li').querySelector('[name="campId"]').value;
+        var mapContainerId = 'map-' + campId;
+        var mapContainer = document.getElementById(mapContainerId);
+
+        var latitude = element.getAttribute('data-latitude');
+        var longitude = element.getAttribute('data-longitude');
+
+        if (latitude && longitude && mapContainer) {
+          initMap(mapContainer, parseFloat(latitude), parseFloat(longitude));
+        } else {
+          alert('캠핑장의 위치 정보를 불러올 수 없습니다.');
+        }
+      });
+    });
+  });
+
+  function initMap(container, latitude, longitude) {
+    var options = {
+      center: new kakao.maps.LatLng(latitude, longitude),
+      level: 3
+    };
+    var map = new kakao.maps.Map(container, options);
+
+    var markerPosition  = new kakao.maps.LatLng(latitude, longitude);
+    var marker = new kakao.maps.Marker({
+      position: markerPosition
+    });
+    marker.setMap(map);
+  }
+
+</script>
 </body>
 </html>

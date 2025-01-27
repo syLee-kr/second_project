@@ -19,6 +19,7 @@ body {
     align-items: center;
     min-height: 100vh;
     padding: 20px; /* 작은 화면에서도 여유 공간 확보 */
+
 }
 
 /* 컨테이너 스타일 */
@@ -302,5 +303,80 @@ body {
     .email select,
     .email input[type="text"][id="customDomain"] {
         max-width: 100%;
+    }
+}
+/* 주소 입력 필드 컨테이너 */
+.address-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.address-container input {
+    flex: 1;
+    padding: 12px 10px;
+    border: 1px solid #dbdbdb;
+    border-radius: 10px;
+    background-color: #fafafa;
+    font-size: 16px;
+    height: 48px;
+}
+
+.address-container button {
+    margin-left: 10px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #67d3d3;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.address-container button:hover {
+    background-color: #5cbcbc;
+}
+
+/* 상세주소 입력 필드 스타일 */
+#detailAddress {
+    width: 100%;
+    padding: 12px 10px;
+    border: 1px solid #dbdbdb;
+    border-radius: 10px;
+    background-color: #fafafa;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+#detailAddress:focus {
+    background-color: #fff;
+    border-color: #a8a8a8;
+    outline: none;
+}
+
+.address-container button:disabled {
+    background-color: #b2dffc;
+    cursor: default;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 800px) {
+    .address-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .address-container input[type="text"],
+    .address-container button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .address-container button {
+        font-size: 14px;
+        padding: 12px;
     }
 }
